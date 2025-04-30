@@ -1,10 +1,10 @@
-# Panic Proof ✌️ [currently developing...]
+# Ready to Panic Proof ✌️ [currently developing...]
 
-## a disaster preparedness and mental wellbeing app.
+## a gamified AI disaster preparedness and mental wellbeing app.
 
-### Why Panic Proof ✌️?
+### Why Ready to Panic Proof ✌️?
 
-In an increasingly unpredictable world where natural and man-made disasters are becoming more frequent and severe, being prepared can make all the difference. DisasterReady was born out of the need to provide a comprehensive, user-friendly tool that empowers individuals and communities to take proactive measures before disaster strikes, respond effectively during emergencies, and recover more quickly in the aftermath.
+In an increasingly unpredictable world where natural and man-made disasters are becoming more frequent and severe, being prepared can make all the difference. Ready to Panic Proof was born out of the need to provide a comprehensive, user-friendly tool that empowers individuals and communities to take proactive measures before disaster strikes, respond effectively during emergencies, and recover more quickly in the aftermath.
 
 Our mission is simple: to save lives and reduce suffering by making disaster preparedness accessible to everyone, regardless of their technical expertise or prior knowledge of emergency management.
 
@@ -55,6 +55,13 @@ Our mission is simple: to save lives and reduce suffering by making disaster pre
   </tr>
 </table>
 
+## Tech Stack
+
+- **Frontend**: React Native, Expo, TypeScript
+- **State Management**: Custom stores (Zustand)
+- **Navigation**: Expo Router
+- **UI Components**: Custom components with consistent styling
+
 ## Getting Started
 
 ### Prerequisites
@@ -66,8 +73,8 @@ Our mission is simple: to save lives and reduce suffering by making disaster pre
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/disaster-ready.git
-cd disaster-ready
+git clone https://github.com/yourusername/panic-proof.git
+cd panic-proof
 ```
 
 2. Install dependencies
@@ -82,16 +89,10 @@ bun install
 npx expo start
 ```
 
-## Tech Stack
-
-- **Frontend**: React Native, Expo, TypeScript
-- **State Management**: Custom stores (Zustand or similar)
-- **Navigation**: Expo Router
-- **UI Components**: Custom components with consistent styling
-
 ## Contributing
 
 We welcome contributions from the community! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on how to submit pull requests, report issues, or request features.
+
 
 ## License
 
@@ -99,9 +100,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Emergency management agencies whose guidelines informed our preparedness recommendations
+- Emergency management agencies whose guidelines helped research the preparedness recommendations
 - Open-source libraries and frameworks that made this project possible
-- Our dedicated team of developers and disaster preparedness experts
 
 ---
 

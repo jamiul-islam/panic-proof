@@ -1,6 +1,6 @@
 export default {
   expo: {
-    name: "Panic Proof",
+    name: "Ready to Panic Proof",
     slug: "panic-proof",
     version: "1.0.0",
     orientation: "portrait",
