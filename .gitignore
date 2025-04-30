@@ -37,3 +37,6 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 .vercel
+
+# project planning
+tasks/
