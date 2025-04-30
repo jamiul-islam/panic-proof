@@ -1,8 +1,8 @@
-# DisasterReady
+# Panic Proof ✌️ [currently developing...]
 
-A mobile application designed to help individuals and communities prepare for, respond to, and recover from natural and man-made disasters.
+## a disaster preparedness and mental wellbeing app.
 
-## Motivation
+### Why Panic Proof ✌️?
 
 In an increasingly unpredictable world where natural and man-made disasters are becoming more frequent and severe, being prepared can make all the difference. DisasterReady was born out of the need to provide a comprehensive, user-friendly tool that empowers individuals and communities to take proactive measures before disaster strikes, respond effectively during emergencies, and recover more quickly in the aftermath.
 
@@ -39,6 +39,21 @@ Our mission is simple: to save lives and reduce suffering by making disaster pre
 - Customize your disaster preparedness plan based on personal needs
 - Manage notification preferences and privacy settings
 - Enable two-factor authentication for enhanced security
+
+## App Screenshots
+
+<table>
+  <tr>
+    <td><img src="/assets/images/app-screenshots/1. splash.png" alt="App Screenshot" width="200"/></td>
+    <td><img src="/assets/images/app-screenshots/2. home-screen.png" alt="App Screenshot" width="200"/></td>
+    <td><img src="/assets/images/app-screenshots/3. alert-screen.png" alt="App Screenshot" width="200"/></td>
+  </tr>
+  <tr>
+    <td><img src="/assets/images/app-screenshots/4. prepare-screen.png" alt="App Screenshot" width="200"/></td>
+    <td><img src="/assets/images/app-screenshots/5. gamified prepare screen.png" alt="App Screenshot" width="200"/></td>
+    <td><img src="/assets/images/app-screenshots/6. resources-screen.png" alt="App Screenshot" width="200"/></td>
+  </tr>
+</table>
 
 ## Getting Started
 
@@ -87,21 +102,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Emergency management agencies whose guidelines informed our preparedness recommendations
 - Open-source libraries and frameworks that made this project possible
 - Our dedicated team of developers and disaster preparedness experts
-
-## App Screenshots
-
-<div align="center">
-  <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px; justify-content: center;">
-    <img src="assets/images/app-screenshots/1.%20splash.png" alt="Splash Screen" width="250" />
-    <img src="assets/images/app-screenshots/2.%20home-screen.png" alt="Home Screen" width="250" />
-    <img src="assets/images/app-screenshots/3.%20alert-screen.png" alt="Alert Screen" width="250" />
-  </div>
-  <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 10px;">
-    <img src="assets/images/app-screenshots/4.%20prepare-screen.png" alt="Prepare Screen" width="250" />
-    <img src="assets/images/app-screenshots/5.%20gamified%20prepare%20screen.png" alt="Gamified Prepare Screen" width="250" />
-    <img src="assets/images/app-screenshots/6.%20resources-screen.png" alt="Resources Screen" width="250" />
-  </div>
-</div>
 
 ---
 
