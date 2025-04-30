@@ -88,6 +88,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Open-source libraries and frameworks that made this project possible
 - Our dedicated team of developers and disaster preparedness experts
 
+## App Screenshots
+
+<div align="center">
+  <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px; justify-content: center;">
+    <img src="assets/images/app-screenshots/1.%20splash.png" alt="Splash Screen" width="250" />
+    <img src="assets/images/app-screenshots/2.%20home-screen.png" alt="Home Screen" width="250" />
+    <img src="assets/images/app-screenshots/3.%20alert-screen.png" alt="Alert Screen" width="250" />
+  </div>
+  <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 10px;">
+    <img src="assets/images/app-screenshots/4.%20prepare-screen.png" alt="Prepare Screen" width="250" />
+    <img src="assets/images/app-screenshots/5.%20gamified%20prepare%20screen.png" alt="Gamified Prepare Screen" width="250" />
+    <img src="assets/images/app-screenshots/6.%20resources-screen.png" alt="Resources Screen" width="250" />
+  </div>
+</div>
+
 ---
 
 Built with ❤️ for a safer, more resilient world.
