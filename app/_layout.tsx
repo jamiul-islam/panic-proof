@@ -98,16 +98,8 @@ function RootLayoutNav() {
       <Stack.Screen name="add-contact" options={{ headerShown: true }} />
       <Stack.Screen name="edit-contact/[id]" options={{ headerShown: true }} />
       <Stack.Screen name="edit-profile" options={{ headerShown: true }} />
-      <Stack.Screen name="emergency-kit" options={{ headerShown: true }} />
-      <Stack.Screen name="badges" options={{ headerShown: true }} />
-      <Stack.Screen name="settings" options={{ headerShown: true }} />
-      <Stack.Screen name="notification-preferences" options={{ headerShown: true }} />
-      <Stack.Screen name="privacy-security" options={{ headerShown: true }} />
-      <Stack.Screen name="help-support" options={{ headerShown: true }} />
       <Stack.Screen name="saved-locations" options={{ headerShown: true }} />
       <Stack.Screen name="add-location" options={{ headerShown: true }} />
-      <Stack.Screen name="account-settings" options={{ headerShown: true }} />
-      <Stack.Screen name="two-factor-auth" options={{ headerShown: true }} />
       <InitialLayout />
     </Stack>
   );
