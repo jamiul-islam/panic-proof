@@ -1,10 +1,10 @@
-# Ready to Panic Proof ✌️ [currently developing...]
+# Panic Proof ✌️ [currently developing...]
 
 ## a gamified AI disaster preparedness and mental wellbeing app.
 
-### Why Ready to Panic Proof ✌️?
+### Why Panic Proof ✌️?
 
-In an increasingly unpredictable world where natural and man-made disasters are becoming more frequent and severe, being prepared can make all the difference. Ready to Panic Proof was born out of the need to provide a comprehensive, user-friendly tool that empowers individuals and communities to take proactive measures before disaster strikes, respond effectively during emergencies, and recover more quickly in the aftermath.
+In an increasingly unpredictable world where natural and man-made disasters are becoming more frequent and severe, being prepared can make all the difference. Panic Proof was born out of the need to provide a comprehensive, user-friendly tool that empowers individuals and communities to take proactive measures before disaster strikes, respond effectively during emergencies, and recover more quickly in the aftermath.
 
 Our mission is simple: to save lives and reduce suffering by making disaster preparedness accessible to everyone, regardless of their technical expertise or prior knowledge of emergency management.
 
@@ -50,7 +50,7 @@ Our mission is simple: to save lives and reduce suffering by making disaster pre
   </tr>
   <tr>
     <td><img src="/assets/images/app-screenshots/4. prepare-screen.png" alt="App Screenshot" width="200"/></td>
-    <td><img src="/assets/images/app-screenshots/5. gamified prepare screen.png" alt="App Screenshot" width="200"/></td>
+    <td><img src="/assets/images/app-screenshots/5. gamified-prepare-screen.png" alt="App Screenshot" width="200"/></td>
     <td><img src="/assets/images/app-screenshots/6. resources-screen.png" alt="App Screenshot" width="200"/></td>
   </tr>
 </table>

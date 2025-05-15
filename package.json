@@ -2,8 +2,11 @@
   "name": "expo-app",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "author": "JAMIUL ISLAM",
+  "license":"MIT",
   "scripts": {
     "start": "expo start",
+    "ios" : "expo start ios",
     "start-web": "expo start --web --tunnel",
     "start-web-dev": "DEBUG=expo* expo start --web --tunnel"
   },
