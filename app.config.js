@@ -1,6 +1,6 @@
 export default {
   expo: {
-    name: "Ready to Panic Proof",
+    name: "Panic Proof",
     slug: "panic-proof",
     version: "1.0.0",
     orientation: "portrait",
@@ -9,7 +9,7 @@ export default {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     splash: {
-      image: "./assets/images/splash-icon.png",
+      image: "./assets/images/splash.png",
       resizeMode: "contain",
       backgroundColor: "#ffffff"
     },

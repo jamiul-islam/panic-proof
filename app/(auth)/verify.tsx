@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { useSignIn, useSignUp } from '@clerk/clerk-expo';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { colors } from '@/constants/colors';
+import { ArrowLeft } from 'lucide-react-native';
+import IconWrapper from '@/components/IconWrapper';
 import Button from '@/components/Button';
 import { useAuthStore } from '@/store/auth-store';
 
@@ -12,11 +13,16 @@ export default function VerifyScreen() {
   const { signUp, isLoaded: isSignUpLoaded } = useSignUp();
   const router = useRouter();
   const { setAuthenticated } = useAuthStore();
+  const { firstName, lastName } = useLocalSearchParams<{ firstName?: string; lastName?: string }>();
   
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(165); // 2:45 in seconds
+  
+  // Check if we can go back (if there's a route in the history)
+  const canGoBack = router.canGoBack();
   
   const inputRefs = useRef<Array<TextInput | null>>([]);
   
@@ -24,6 +30,27 @@ export default function VerifyScreen() {
     // Determine if we're in sign-in or sign-up flow
     setIsSigningIn(!!signIn?.status && signIn.status === 'needs_second_factor');
   }, [signIn?.status]);
+
+  useEffect(() => {
+    // Countdown timer
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
   
   const handleCodeChange = (text: string, index: number) => {
     if (text.length > 1) {
@@ -98,7 +125,16 @@ export default function VerifyScreen() {
           // Set the user as active
           await result.createdSessionId;
           setAuthenticated(true);
-          router.replace('/onboarding');
+          
+          // Navigate to onboarding with user data if available
+          if (firstName && lastName) {
+            router.replace({
+              pathname: '/onboarding',
+              params: { firstName, lastName }
+            });
+          } else {
+            router.replace('/onboarding');
+          }
         }
       }
     } catch (err: any) {
@@ -133,30 +169,44 @@ export default function VerifyScreen() {
   }
   
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#EFF6FF" />
+      
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingView}
       >
-        <View style={styles.content}>
-          <Text style={styles.title}>
-            {isSigningIn ? 'Two-Factor Authentication' : 'Verify Your Email'}
-          </Text>
-          <Text style={styles.subtitle}>
-            {isSigningIn 
-              ? 'Enter the 6-digit code sent to your phone'
-              : 'Enter the 6-digit code sent to your email'
-            }
-          </Text>
+        {/* Back Button - only show if we can go back */}
+        {canGoBack && (
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <IconWrapper icon={ArrowLeft} size={24} color="#000000" />
+          </TouchableOpacity>
+        )}
+
+        <View style={[styles.content, !canGoBack && styles.contentNoBack]}>
+          {/* Title and Subtitle */}
+          <View style={styles.headerContainer}>
+            <Text style={styles.title}>Verification</Text>
+            <Text style={styles.subtitle}>
+              Enter the 6-digit code sent to your email
+            </Text>
+          </View>
           
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
           
+          {/* Code Input Container */}
           <View style={styles.codeContainer}>
             {code.map((digit, index) => (
               <TextInput
                 key={index}
                 ref={(ref) => (inputRefs.current[index] = ref)}
-                style={styles.codeInput}
+                style={[
+                  styles.codeInput,
+                  digit ? styles.codeInputFilled : null
+                ]}
                 value={digit}
                 onChangeText={(text) => handleCodeChange(text, index)}
                 onKeyPress={(e) => handleKeyPress(e, index)}
@@ -168,55 +218,80 @@ export default function VerifyScreen() {
             ))}
           </View>
           
+          {/* Verify Button */}
           <Button
             title="Verify"
             onPress={handleVerify}
             variant="primary"
+            size="large"
             isLoading={isLoading}
             disabled={code.some(digit => !digit) || isLoading}
             style={styles.button}
           />
           
+          {/* Resend Code */}
           <View style={styles.resendContainer}>
-            <Text style={styles.resendText}>Didn't receive a code?</Text>
+            <Text style={styles.resendText}>Didn't receive a code? </Text>
             <TouchableOpacity onPress={handleResendCode}>
-              <Text style={styles.resendLink}>Resend Code</Text>
+              <Text style={styles.resendLink}>Resend</Text>
             </TouchableOpacity>
+          </View>
+
+          {/* Timer */}
+          <View style={styles.timerContainer}>
+            <Text style={styles.timerText}>
+              Code expires in <Text style={styles.timerHighlight}>{formatTime(timeLeft)}</Text>
+            </Text>
           </View>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#EFF6FF', // Light blue background matching Figma
   },
   keyboardAvoidingView: {
     flex: 1,
   },
-  content: {
-    flex: 1,
-    padding: 24,
+  backButton: {
+    position: 'absolute',
+    top: 124,
+    left: 24,
+    zIndex: 1,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
     justifyContent: 'center',
   },
+  content: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 188, // Position content below back button
+  },
+  contentNoBack: {
+    paddingTop: 124, // Less top padding when there's no back button
+  },
+  headerContainer: {
+    marginBottom: 60,
+  },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#1E3A8A', // Blue-900 matching Figma
     marginBottom: 8,
-    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
-    marginBottom: 32,
-    textAlign: 'center',
+    color: '#64748B', // Slate-500 matching Figma
   },
   errorText: {
-    color: colors.danger,
+    color: '#EF4444',
     marginBottom: 16,
     fontSize: 14,
     textAlign: 'center',
@@ -224,35 +299,50 @@ const styles = StyleSheet.create({
   codeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 32,
+    marginBottom: 40,
   },
   codeInput: {
-    width: 50,
+    width: 60,
     height: 60,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
+    borderColor: '#E2E8F0', // Slate-200 matching Figma
+    borderRadius: 12,
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: '500',
     textAlign: 'center',
-    backgroundColor: '#F9FAFB',
-    color: colors.text,
+    backgroundColor: '#FFFFFF',
+    color: '#1E3A8A', // Blue-900 for text
+  },
+  codeInputFilled: {
+    color: '#1E3A8A', // Blue-900 for filled inputs
   },
   button: {
-    marginBottom: 24,
+    marginBottom: 26,
+    height: 56,
   },
   resendContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    marginBottom: 16,
   },
   resendText: {
-    color: '#6B7280',
+    color: '#64748B', // Slate-500
     fontSize: 14,
-    marginRight: 4,
   },
   resendLink: {
-    color: colors.primary,
+    color: '#2563EB', // Blue-600 matching Figma
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: 'bold',
+  },
+  timerContainer: {
+    alignItems: 'center',
+  },
+  timerText: {
+    color: '#64748B', // Slate-500
+    fontSize: 12,
+  },
+  timerHighlight: {
+    color: '#1E3A8A', // Blue-900 for timer
+    fontWeight: '400',
   },
 });

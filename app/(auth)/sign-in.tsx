@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useSignIn } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '@/constants/colors';
-import Button from '@/components/Button';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react-native';
 import IconWrapper from '@/components/IconWrapper';
+import Button from '@/components/Button';
 
 export default function SignInScreen() {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -18,6 +18,9 @@ export default function SignInScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   
+  // Check if we can go back (if there's a route in the history)
+  const canGoBack = router.canGoBack();
+
   const handleSignIn = async () => {
     if (!isLoaded) return;
     
@@ -55,7 +58,10 @@ export default function SignInScreen() {
   };
   
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />                  
+      
+      {/* Main Content */}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingView}
@@ -64,26 +70,28 @@ export default function SignInScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.logoContainer}>
-            <Image
-              source={require('@/assets/images/icon.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-            <Text style={styles.appName}>Disaster Ready</Text>
-            <Text style={styles.tagline}>Be prepared, stay safe</Text>
+          {/* Back Button - only show if we can go back */}
+          {canGoBack && (
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <IconWrapper icon={ArrowLeft} size={24} color="#000000" />
+            </TouchableOpacity>
+          )}
+
+          {/* Welcome Text */}
+          <View style={[styles.welcomeContainer, !canGoBack && styles.welcomeContainerNoBack]}>
+            <Text style={styles.welcomeTitle}>Welcome Back</Text>
+            <Text style={styles.welcomeSubtitle}>Sign in to continue</Text>
           </View>
           
+          {/* Form Container */}
           <View style={styles.formContainer}>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Sign in to your account</Text>
-            
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
             
+            {/* Email Input */}
             <View style={styles.inputContainer}>
-              <View style={styles.iconContainer}>
-                <IconWrapper icon={Mail} size={20} color="#9CA3AF" />
-              </View>
               <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -95,12 +103,10 @@ export default function SignInScreen() {
               />
             </View>
             
+            {/* Password Input */}
             <View style={styles.inputContainer}>
-              <View style={styles.iconContainer}>
-                <IconWrapper icon={Lock} size={20} color="#9CA3AF" />
-              </View>
               <TextInput
-                style={styles.input}
+                style={styles.passwordInput}
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
@@ -119,137 +125,159 @@ export default function SignInScreen() {
               </TouchableOpacity>
             </View>
             
+            {/* Forgot Password */}
             <TouchableOpacity
               style={styles.forgotPasswordContainer}
               onPress={handleForgotPassword}
             >
-              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
             
+            {/* Sign In Button */}
             <Button
-              title="Sign In"
+              title={isLoading ? 'Signing In...' : 'Sign In'}
               onPress={handleSignIn}
               variant="primary"
+              size="large"
               isLoading={isLoading}
               disabled={!email || !password || isLoading}
-              style={styles.button}
+              style={styles.signInButton}
             />
-            
-            <View style={styles.signUpContainer}>
-              <Text style={styles.signUpText}>Don't have an account?</Text>
-              <TouchableOpacity onPress={handleSignUp}>
-                <Text style={styles.signUpLink}>Sign Up</Text>
-              </TouchableOpacity>
-            </View>
+          </View>
+          
+          {/* Sign Up Link */}
+          <View style={styles.signUpContainer}>
+            <Text style={styles.signUpText}>Don't have an account? </Text>
+            <TouchableOpacity onPress={handleSignUp}>
+              <Text style={styles.signUpLink}>Sign Up</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#EFF6FF', // Light blue background to simulate gradient
+  },
+  statusBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    height: 44,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+  },
+  statusTime: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#000000',
+  },
+  statusIcons: {
+    flexDirection: 'row',
+    gap: 8,
+    width: 64,
   },
   keyboardAvoidingView: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 24,
+    paddingHorizontal: 24,
+    justifyContent: 'center',
+    minHeight: '100%',
   },
-  logoContainer: {
-    alignItems: 'center',
-    marginTop: 40,
+  backButton: {
+    position: 'absolute',
+    top: 60, // Account for status bar + extra spacing
+    left: 24,
+    zIndex: 1,
+    padding: 8,
+  },
+  welcomeContainer: {
     marginBottom: 40,
   },
-  logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 16,
+  welcomeContainerNoBack: {
+    marginTop: 0, // No extra margin needed since content is centered
   },
-  appName: {
+  welcomeTitle: {
     fontSize: 28,
-    fontWeight: '700',
-    color: colors.primary,
+    fontWeight: 'bold',
+    color: '#1E3A8A', // Blue-900
     marginBottom: 8,
   },
-  tagline: {
+  welcomeSubtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: '#64748B', // Slate-500
   },
   formContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6B7280',
-    marginBottom: 24,
+    gap: 16,
   },
   errorText: {
-    color: colors.danger,
+    color: '#EF4444',
     marginBottom: 16,
     fontSize: 14,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    marginBottom: 16,
-    backgroundColor: '#F9FAFB',
-  },
-  iconContainer: {
-    paddingHorizontal: 12,
+    borderColor: '#E2E8F0', // Slate-200
+    height: 56,
+    paddingHorizontal: 16,
+    justifyContent: 'center',
   },
   input: {
-    flex: 1,
-    height: 50,
     fontSize: 16,
-    color: colors.text,
+    color: '#1F2937',
+    height: '100%',
+  },
+  passwordInput: {
+    fontSize: 16,
+    color: '#1F2937',
+    height: '100%',
+    paddingRight: 40,
   },
   eyeIcon: {
-    padding: 12,
+    position: 'absolute',
+    right: 16,
+    padding: 4,
   },
   forgotPasswordContainer: {
     alignItems: 'flex-end',
-    marginBottom: 24,
+    marginBottom: 8,
   },
   forgotPasswordText: {
-    color: colors.primary,
+    color: '#2563EB', // Blue-600
     fontSize: 14,
   },
-  button: {
-    marginBottom: 24,
+  signInButton: {
+    marginBottom: 20,
   },
   signUpContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
   },
   signUpText: {
-    color: '#6B7280',
+    color: '#64748B',
     fontSize: 14,
-    marginRight: 4,
   },
   signUpLink: {
-    color: colors.primary,
+    color: '#2563EB',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: 'bold',
+  },
+  homeIndicator: {
+    backgroundColor: '#000000',
+    height: 5,
+    width: 134,
+    borderRadius: 2.5,
+    alignSelf: 'center',
+    marginBottom: 20,
   },
 });

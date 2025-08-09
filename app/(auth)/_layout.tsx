@@ -36,6 +36,7 @@ export default function AuthLayout() {
         name="verify"
         options={{
           title: "Verify Code",
+          headerShown: false,
         }}
       />
       <Stack.Screen

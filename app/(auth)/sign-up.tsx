@@ -1,143 +1,132 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useSignUp } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '@/constants/colors';
-import Button from '@/components/Button';
-import { Mail, Lock, Eye, EyeOff, User, ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react-native';
 import IconWrapper from '@/components/IconWrapper';
+import Button from '@/components/Button';
 
 export default function SignUpScreen() {
-  const { signUp, isLoaded } = useSignUp();
+  const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
-  
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  
-  const handleSignUp = async () => {
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Check if we can go back (if there's a route in the history)
+  const canGoBack = router.canGoBack();
+
+  const onSignUpPress = async () => {
     if (!isLoaded) return;
-    
-    setIsLoading(true);
-    setError('');
-    
+
+    // Validate password match
+    if (password !== confirmPassword) {
+      alert("Passwords don't match");
+      return;
+    }
+
+    setLoading(true);
     try {
-      // Start the sign-up process
+      // Create the Clerk account with email and password
       await signUp.create({
-        firstName,
-        lastName,
         emailAddress: email,
         password,
       });
-      
-      // Send email verification code
+
+      // Send verification email
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
       
-      // Navigate to verification screen
-      router.push('/(auth)/verify');
+      // Navigate to verify screen with user data
+      router.push({
+        pathname: '/(auth)/verify',
+        params: { firstName, lastName }
+      });
     } catch (err: any) {
-      console.error('Error signing up:', err);
-      setError(err.errors?.[0]?.message || 'Failed to sign up. Please try again.');
+      console.error('Sign up error:', JSON.stringify(err, null, 2));
+      alert(`Sign up failed: ${err.errors?.[0]?.message || err.message || 'Unknown error'}`);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
-  
-  const handleSignIn = () => {
-    router.push('/(auth)/sign-in');
-  };
-  
+
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <KeyboardAvoidingView
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#E0F2FE" />
+      
+      <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoidingView}
+        style={styles.flex}
       >
         <ScrollView 
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
-            <IconWrapper icon={ArrowLeft} size={24} color={colors.text} />
-          </TouchableOpacity>
-          
-          <View style={styles.logoContainer}>
-            <Image
-              source={require('@/assets/images/icon.png')}
-              style={styles.logo}
-              resizeMode="contain"
+          {/* Back Button - only show if we can go back */}
+          {canGoBack && (
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <IconWrapper icon={ArrowLeft} size={24} color="#000000" />
+            </TouchableOpacity>
+          )}
+
+          <View style={styles.content}>
+            <View style={[styles.titleContainer, !canGoBack && styles.titleContainerNoBack]}>
+              <Text style={styles.title}>Create Account</Text>
+              <Text style={styles.subtitle}>Sign up to get started</Text>
+            </View>
+
+            {/* First Name Input */}
+            <TextInput
+              value={firstName}
+              onChangeText={setFirstName}
+              placeholder="First Name"
+              style={styles.input}
+              placeholderTextColor="#9CA3AF"
+              autoCapitalize="words"
             />
-            <Text style={styles.appName}>Disaster Ready</Text>
-          </View>
-          
-          <View style={styles.formContainer}>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Sign up to get started</Text>
-            
-            {error ? <Text style={styles.errorText}>{error}</Text> : null}
-            
-            <View style={styles.nameRow}>
-              <View style={[styles.inputContainer, styles.nameInput]}>
-                <View style={styles.iconContainer}>
-                  <IconWrapper icon={User} size={20} color="#9CA3AF" />
-                </View>
-                <TextInput
-                  style={styles.input}
-                  placeholder="First Name"
-                  value={firstName}
-                  onChangeText={setFirstName}
-                  placeholderTextColor="#9CA3AF"
-                />
-              </View>
-              
-              <View style={[styles.inputContainer, styles.nameInput]}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Last Name"
-                  value={lastName}
-                  onChangeText={setLastName}
-                  placeholderTextColor="#9CA3AF"
-                />
-              </View>
-            </View>
-            
-            <View style={styles.inputContainer}>
-              <View style={styles.iconContainer}>
-                <IconWrapper icon={Mail} size={20} color="#9CA3AF" />
-              </View>
+
+            {/* Last Name Input */}
+            <TextInput
+              value={lastName}
+              onChangeText={setLastName}
+              placeholder="Last Name"
+              style={styles.input}
+              placeholderTextColor="#9CA3AF"
+              autoCapitalize="words"
+            />
+
+            {/* Email Input */}
+            <TextInput
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Email"
+              style={styles.input}
+              placeholderTextColor="#9CA3AF"
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+
+            {/* Password Input */}
+            <View style={styles.passwordContainer}>
               <TextInput
-                style={styles.input}
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                placeholderTextColor="#9CA3AF"
-              />
-            </View>
-            
-            <View style={styles.inputContainer}>
-              <View style={styles.iconContainer}>
-                <IconWrapper icon={Lock} size={20} color="#9CA3AF" />
-              </View>
-              <TextInput
-                style={styles.input}
-                placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry={!showPassword}
+                placeholder="Password"
+                style={styles.passwordInput}
                 placeholderTextColor="#9CA3AF"
+                secureTextEntry={!showPassword}
               />
               <TouchableOpacity
-                style={styles.eyeIcon}
+                style={styles.eyeButton}
                 onPress={() => setShowPassword(!showPassword)}
               >
                 <IconWrapper 
@@ -147,138 +136,142 @@ export default function SignUpScreen() {
                 />
               </TouchableOpacity>
             </View>
-            
-            <Text style={styles.passwordRequirements}>
-              Password must be at least 8 characters long and include a mix of letters, numbers, and symbols.
-            </Text>
-            
+
+            {/* Confirm Password Input */}
+            <View style={styles.passwordContainer}>
+              <TextInput
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder="Confirm Password"
+                style={styles.passwordInput}
+                placeholderTextColor="#9CA3AF"
+                secureTextEntry={!showConfirmPassword}
+              />
+              <TouchableOpacity
+                style={styles.eyeButton}
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                <IconWrapper 
+                  icon={showConfirmPassword ? EyeOff : Eye} 
+                  size={20} 
+                  color="#9CA3AF" 
+                />
+              </TouchableOpacity>
+            </View>
+
             <Button
-              title="Create Account"
-              onPress={handleSignUp}
+              title={loading ? "Creating Account..." : "Sign Up"}
+              onPress={onSignUpPress}
               variant="primary"
-              isLoading={isLoading}
-              disabled={!firstName || !lastName || !email || !password || isLoading}
+              size="large"
+              isLoading={loading}
+              disabled={loading || !firstName || !lastName || !email || !password || !confirmPassword}
               style={styles.button}
             />
-            
-            <View style={styles.signInContainer}>
-              <Text style={styles.signInText}>Already have an account?</Text>
-              <TouchableOpacity onPress={handleSignIn}>
-                <Text style={styles.signInLink}>Sign In</Text>
-              </TouchableOpacity>
+
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>
+                Already have an account?{' '}
+                <Text 
+                  style={styles.signInLink}
+                  onPress={() => router.push('/sign-in')}
+                >
+                  Sign In
+                </Text>
+              </Text>
             </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#E0F2FE', // Light blue background matching sign-in
   },
-  keyboardAvoidingView: {
+  flex: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 24,
+    justifyContent: 'center',
+    minHeight: '100%',
+    paddingTop: 60, // Account for status bar + extra spacing
+  },
+  content: {
+    paddingHorizontal: 24,
+    paddingBottom: 24,
   },
   backButton: {
-    marginBottom: 16,
+    alignSelf: 'flex-start',
+    marginLeft: 24,
+    marginBottom: 40,
+    padding: 8,
   },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 32,
+  titleContainer: {
+    marginBottom: 40,
   },
-  logo: {
-    width: 80,
-    height: 80,
-    marginBottom: 16,
-  },
-  appName: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.primary,
-  },
-  formContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  titleContainerNoBack: {
+    marginTop: 40, // Add top margin when there's no back button for spacing
   },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: '700',
-    color: colors.text,
+    color: '#000000',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
-    marginBottom: 24,
-  },
-  errorText: {
-    color: colors.danger,
-    marginBottom: 16,
-    fontSize: 14,
-  },
-  nameRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  nameInput: {
-    flex: 0.48,
-    marginBottom: 0,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    marginBottom: 16,
-    backgroundColor: '#F9FAFB',
-  },
-  iconContainer: {
-    paddingHorizontal: 12,
+    color: '#666666',
   },
   input: {
-    flex: 1,
-    height: 50,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
     fontSize: 16,
-    color: colors.text,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    height: 56, // Consistent height from Figma
   },
-  eyeIcon: {
-    padding: 12,
+  passwordContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 56, // Consistent height from Figma
   },
-  passwordRequirements: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginBottom: 24,
+  passwordInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#000000',
+  },
+  eyeButton: {
+    padding: 4,
   },
   button: {
-    marginBottom: 24,
+    marginTop: 24,
+    marginBottom: 20,
   },
-  signInContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+  footer: {
+    alignItems: 'center',
+    marginBottom: 20,
   },
-  signInText: {
-    color: '#6B7280',
+  footerText: {
     fontSize: 14,
-    marginRight: 4,
+    color: '#666666',
   },
   signInLink: {
-    color: colors.primary,
-    fontSize: 14,
+    color: '#2563EB',
     fontWeight: '600',
   },
 });
