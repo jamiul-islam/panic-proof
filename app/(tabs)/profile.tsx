@@ -165,7 +165,7 @@ export default function ProfileScreen() {
   if (!profile) return null;
   
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.profileHeader}>
           <View style={styles.profileImageContainer}>
@@ -371,6 +371,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     padding: 16,
+    paddingTop: 20,
   },
   profileHeader: {
     flexDirection: 'row',

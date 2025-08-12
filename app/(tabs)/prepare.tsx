@@ -35,7 +35,7 @@ export default function PrepareScreen() {
   };
   
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.progressContainer}>
         <Text style={styles.progressTitle}>Your Preparedness</Text>
         <View style={styles.progressDetails}>
@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
   progressContainer: {
     backgroundColor: '#fff',
     padding: 16,
+    paddingTop: 20,
     marginBottom: 8,
   },
   progressTitle: {

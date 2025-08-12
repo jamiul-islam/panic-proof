@@ -41,7 +41,7 @@ export default function ResourcesScreen() {
   };
   
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Search size={20} color="#9CA3AF" style={styles.searchIcon} />
@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     padding: 16,
+    paddingTop: 20,
     backgroundColor: '#fff',
   },
   searchInputContainer: {

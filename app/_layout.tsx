@@ -40,7 +40,8 @@ function InitialLayout() {
     if (!isAuthenticated && !inAuthGroup) {
       // If not authenticated and not in auth group, redirect to sign-in
       console.log("Redirecting to sign-in");
-      router.replace("/(auth)/sign-in");
+      //  TODO: Uncomment this line to enable redirection
+      // router.replace("/(auth)/sign-in");
     } else if (isAuthenticated) {
       if (!hasCompletedOnboarding && !inOnboardingGroup) {
         // If authenticated but not onboarded, redirect to onboarding
