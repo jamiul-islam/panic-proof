@@ -9,20 +9,13 @@ import { useAuth } from '@clerk/clerk-expo';
 import { useAuthStore } from '@/store/auth-store';
 import * as ImagePicker from 'expo-image-picker';
 import { 
-  Settings, 
-  UserCog, 
   Phone, 
-  Package, 
-  Award, 
   LogOut,
   ChevronRight,
-  Bell,
   MapPin,
-  Lock,
-  HelpCircle,
   Camera,
   Edit,
-  Shield
+  BookOpen
 } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
 import ProfileHeader from '@/components/ProfileHeader';
@@ -49,40 +42,12 @@ export default function ProfileScreen() {
     router.push('/emergency-contacts');
   };
   
-  const handleEmergencyKit = () => {
-    router.push('/emergency-kit');
-  };
-  
-  const handleBadges = () => {
-    router.push('/badges');
-  };
-  
-  const handleSettings = () => {
-    router.push('/settings');
-  };
-  
-  const handleNotificationPreferences = () => {
-    router.push('/notification-preferences');
-  };
-  
-  const handlePrivacySecurity = () => {
-    router.push('/privacy-security');
-  };
-  
-  const handleHelpSupport = () => {
-    router.push('/help-support');
-  };
-  
   const handleSavedLocations = () => {
     router.push('/saved-locations');
   };
   
-  const handleAccountSettings = () => {
-    router.push('/account-settings');
-  };
-  
-  const handleTwoFactorAuth = () => {
-    router.push('/two-factor-auth');
+  const handleResources = () => {
+    router.push('/(tabs)/resources');
   };
   
   const handleLogout = async () => {
@@ -209,29 +174,7 @@ export default function ProfileScreen() {
         <ProfileHeader />
         
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account</Text>
-          
-          <TouchableOpacity 
-            style={styles.menuItem} 
-            onPress={handleAccountSettings}
-          >
-            <View style={styles.menuItemLeft}>
-              <IconWrapper icon={UserCog} size={20} color={colors.text} />
-              <Text style={styles.menuItemText}>Account Settings</Text>
-            </View>
-            <IconWrapper icon={ChevronRight} size={20} color="#9CA3AF" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.menuItem} 
-            onPress={handleNotificationPreferences}
-          >
-            <View style={styles.menuItemLeft}>
-              <IconWrapper icon={Bell} size={20} color={colors.text} />
-              <Text style={styles.menuItemText}>Notification Preferences</Text>
-            </View>
-            <IconWrapper icon={ChevronRight} size={20} color="#9CA3AF" />
-          </TouchableOpacity>
+          <Text style={styles.sectionTitle}>Emergency Preparedness</Text>
           
           <TouchableOpacity 
             style={styles.menuItem} 
@@ -246,32 +189,6 @@ export default function ProfileScreen() {
           
           <TouchableOpacity 
             style={styles.menuItem} 
-            onPress={handleTwoFactorAuth}
-          >
-            <View style={styles.menuItemLeft}>
-              <IconWrapper icon={Shield} size={20} color={colors.text} />
-              <Text style={styles.menuItemText}>Two-Factor Authentication</Text>
-            </View>
-            <IconWrapper icon={ChevronRight} size={20} color="#9CA3AF" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.menuItem} 
-            onPress={handlePrivacySecurity}
-          >
-            <View style={styles.menuItemLeft}>
-              <IconWrapper icon={Lock} size={20} color={colors.text} />
-              <Text style={styles.menuItemText}>Privacy & Security</Text>
-            </View>
-            <IconWrapper icon={ChevronRight} size={20} color="#9CA3AF" />
-          </TouchableOpacity>
-        </View>
-        
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Emergency Preparedness</Text>
-          
-          <TouchableOpacity 
-            style={styles.menuItem} 
             onPress={handleEmergencyContacts}
           >
             <View style={styles.menuItemLeft}>
@@ -283,48 +200,11 @@ export default function ProfileScreen() {
           
           <TouchableOpacity 
             style={styles.menuItem} 
-            onPress={handleEmergencyKit}
+            onPress={handleResources}
           >
             <View style={styles.menuItemLeft}>
-              <IconWrapper icon={Package} size={20} color={colors.text} />
-              <Text style={styles.menuItemText}>Emergency Kit</Text>
-            </View>
-            <IconWrapper icon={ChevronRight} size={20} color="#9CA3AF" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.menuItem} 
-            onPress={handleBadges}
-          >
-            <View style={styles.menuItemLeft}>
-              <IconWrapper icon={Award} size={20} color={colors.text} />
-              <Text style={styles.menuItemText}>Badges & Achievements</Text>
-            </View>
-            <IconWrapper icon={ChevronRight} size={20} color="#9CA3AF" />
-          </TouchableOpacity>
-        </View>
-        
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Support</Text>
-          
-          <TouchableOpacity 
-            style={styles.menuItem} 
-            onPress={handleHelpSupport}
-          >
-            <View style={styles.menuItemLeft}>
-              <IconWrapper icon={HelpCircle} size={20} color={colors.text} />
-              <Text style={styles.menuItemText}>Help & Support</Text>
-            </View>
-            <IconWrapper icon={ChevronRight} size={20} color="#9CA3AF" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.menuItem} 
-            onPress={handleSettings}
-          >
-            <View style={styles.menuItemLeft}>
-              <IconWrapper icon={Settings} size={20} color={colors.text} />
-              <Text style={styles.menuItemText}>Settings</Text>
+              <IconWrapper icon={BookOpen} size={20} color={colors.text} />
+              <Text style={styles.menuItemText}>Resources</Text>
             </View>
             <IconWrapper icon={ChevronRight} size={20} color="#9CA3AF" />
           </TouchableOpacity>
