@@ -129,10 +129,10 @@ export default function TaskDetailsScreen() {
             </View>
             
             <Button
-              title={task.isCompleted ? "Mark as Incomplete" : "Mark as Complete"}
+              title={!task.isCompleted ? "Mark as Incomplete" : "Mark as Complete"}
               onPress={handleToggleCompletion}
-              variant={task.isCompleted ? "outline" : "primary"}
-              icon={task.isCompleted ? 
+              variant={!task.isCompleted ? "outline" : "primary"}
+              icon={!task.isCompleted ? 
                 <IconWrapper icon={Circle} size={20} color={colors.primary} /> : 
                 <IconWrapper icon={CheckCircle} size={20} color="#fff" />
               }
