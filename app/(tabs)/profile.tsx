@@ -165,7 +165,7 @@ export default function ProfileScreen() {
   if (!profile) return null;
   
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <SafeAreaView style={styles.container} edges={[]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.profileHeader}>
           <View style={styles.profileImageContainer}>

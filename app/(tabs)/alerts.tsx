@@ -35,7 +35,7 @@ export default function AlertsScreen() {
   };
   
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <SafeAreaView style={styles.container} edges={[]}>
       <CategoryFilter
         categories={alertCategories}
         selectedCategory={selectedCategory}

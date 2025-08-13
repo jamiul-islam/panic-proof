@@ -35,7 +35,7 @@ export default function PrepareScreen() {
   };
   
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <SafeAreaView style={styles.container} edges={[]}>
       <View style={styles.progressContainer}>
         <Text style={styles.progressTitle}>Your Preparedness</Text>
         <View style={styles.progressDetails}>
