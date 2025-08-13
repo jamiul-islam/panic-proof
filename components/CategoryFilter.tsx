@@ -62,7 +62,7 @@ export default function CategoryFilter({
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 16,    
     gap: 8,
   },
   categoryButton: {
@@ -71,6 +71,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#F3F4F6',
     marginRight: 8,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: 60,
   },
   selectedCategory: {
     backgroundColor: colors.primary,
@@ -78,6 +82,8 @@ const styles = StyleSheet.create({
   categoryText: {
     fontSize: 14,
     color: colors.text,
+    fontWeight: '400',
+    textAlign: 'center',
   },
   selectedCategoryText: {
     color: '#fff',

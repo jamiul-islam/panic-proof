@@ -4,6 +4,7 @@ export const disasterInfo: DisasterInfo[] = [
   {
     type: "flood",
     name: "Flood",
+    category: "natural",
     description: "Floods are one of the most common natural disasters and can occur anywhere. They happen when water overflows onto normally dry land, often after heavy rainfall, rapid snow melt, or dam failures.",
     beforeTips: [
       "Know your area's flood risk and evacuation routes",
@@ -32,6 +33,7 @@ export const disasterInfo: DisasterInfo[] = [
   {
     type: "earthquake",
     name: "Earthquake",
+    category: "geological",
     description: "Earthquakes are sudden, rapid shaking of the ground caused by the shifting of rocks deep beneath the earth's surface. They can happen without warning and can be followed by aftershocks.",
     beforeTips: [
       "Secure heavy furniture and objects that could fall",
@@ -60,6 +62,7 @@ export const disasterInfo: DisasterInfo[] = [
   {
     type: "wildfire",
     name: "Wildfire",
+    category: "natural",
     description: "Wildfires are unplanned, uncontrolled fires that burn in natural areas like forests, grasslands, or prairies. They can be caused by humans or natural phenomena like lightning.",
     beforeTips: [
       "Create a defensible space around your home",
@@ -88,6 +91,7 @@ export const disasterInfo: DisasterInfo[] = [
   {
     type: "hurricane",
     name: "Hurricane",
+    category: "weather",
     description: "Hurricanes are massive storm systems that form over warm ocean waters and move toward land. They can cause catastrophic damage from heavy rainfall, high winds, and storm surges.",
     beforeTips: [
       "Know your evacuation zone and route",
@@ -116,6 +120,7 @@ export const disasterInfo: DisasterInfo[] = [
   {
     type: "tornado",
     name: "Tornado",
+    category: "weather",
     description: "Tornadoes are violently rotating columns of air that extend from a thunderstorm to the ground. They can destroy buildings, uproot trees, and throw vehicles hundreds of yards.",
     beforeTips: [
       "Know the signs of a tornado (dark, greenish sky; large hail; loud roar)",
@@ -144,6 +149,7 @@ export const disasterInfo: DisasterInfo[] = [
   {
     type: "tsunami",
     name: "Tsunami",
+    category: "geological",
     description: "Tsunamis are giant waves caused by earthquakes or volcanic eruptions under the sea. They can travel across entire oceans and cause extensive destruction when they hit land.",
     beforeTips: [
       "Know if you live in a tsunami hazard zone",
@@ -172,6 +178,7 @@ export const disasterInfo: DisasterInfo[] = [
   {
     type: "winter_storm",
     name: "Winter Storm",
+    category: "weather",
     description: "Winter storms can bring freezing temperatures, heavy snow, ice, sleet, and dangerous wind chills. They can cause power outages, transportation disruptions, and hypothermia.",
     beforeTips: [
       "Prepare your home with insulation, caulking, and weather stripping",
@@ -200,6 +207,7 @@ export const disasterInfo: DisasterInfo[] = [
   {
     type: "extreme_heat",
     name: "Extreme Heat",
+    category: "weather",
     description: "Extreme heat is a period of high heat and humidity with temperatures above 90 degrees for at least two to three days. It can lead to heat-related illnesses like heat exhaustion and heat stroke.",
     beforeTips: [
       "Install window air conditioners snugly",
@@ -228,6 +236,7 @@ export const disasterInfo: DisasterInfo[] = [
   {
     type: "pandemic",
     name: "Pandemic",
+    category: "biological",
     description: "A pandemic is an epidemic of an infectious disease that has spread across a large region, affecting a substantial number of people. Recent examples include COVID-19.",
     beforeTips: [
       "Stock up on non-perishable food, medications, and supplies",

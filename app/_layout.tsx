@@ -61,6 +61,7 @@ function InitialLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="modal" options={{ presentation: "modal" }} />
       <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+      <Stack.Screen name="disasters" options={{ headerShown: true }} />
       <Stack.Screen name="alert-details/[id]" options={{ headerShown: true }} />
       <Stack.Screen name="task-details/[id]" options={{ headerShown: true }} />
       <Stack.Screen name="disaster-details/[type]" options={{ headerShown: true }} />

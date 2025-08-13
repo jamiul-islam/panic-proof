@@ -102,6 +102,7 @@ export interface DisasterInfo {
   type: DisasterType;
   name: string;
   description: string;
+  category: "natural" | "weather" | "geological" | "human-made" | "biological";
   beforeTips: string[];
   duringTips: string[];
   afterTips: string[];
