@@ -19,12 +19,11 @@ import {
 } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
 import ProfileHeader from '@/components/ProfileHeader';
-import EmergencyContactCard from '@/components/EmergencyContactCard';
 import IconWrapper from '@/components/IconWrapper';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { profile, removeEmergencyContact, updateProfile } = useUserStore();
+  const { profile, updateProfile } = useUserStore();
   const { fetchTasks } = useTasksStore();
   const { signOut } = useAuth();
   const { reset } = useAuthStore();
@@ -71,28 +70,6 @@ export default function ProfileScreen() {
               console.error('Error signing out:', error);
             }
           }
-        }
-      ]
-    );
-  };
-  
-  const handleEditContact = (contactId: string) => {
-    router.push(`/edit-contact/${contactId}`);
-  };
-  
-  const handleDeleteContact = (contactId: string) => {
-    Alert.alert(
-      "Delete Contact",
-      "Are you sure you want to delete this contact?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => removeEmergencyContact(contactId)
         }
       ]
     );
@@ -209,26 +186,6 @@ export default function ProfileScreen() {
             <IconWrapper icon={ChevronRight} size={20} color="#9CA3AF" />
           </TouchableOpacity>
         </View>
-        
-        {profile.emergencyContacts.length > 0 && (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Emergency Contacts</Text>
-              <TouchableOpacity onPress={handleEmergencyContacts}>
-                <Text style={styles.seeAll}>See all</Text>
-              </TouchableOpacity>
-            </View>
-            
-            {profile.emergencyContacts.slice(0, 2).map((contact) => (
-              <EmergencyContactCard 
-                key={contact.id} 
-                contact={contact} 
-                onEdit={() => handleEditContact(contact.id)}
-                onDelete={() => handleDeleteContact(contact.id)}
-              />
-            ))}
-          </View>
-        )}
         
         <TouchableOpacity 
           style={styles.logoutButton} 

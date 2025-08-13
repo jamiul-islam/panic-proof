@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserProfile, EmergencyContact, Badge, KitItem } from '@/types';
+import { UserProfile, EmergencyContact, Badge, KitItem, SavedLocation } from '@/types';
 
 interface UserState {
   profile: UserProfile | null;
@@ -17,6 +17,9 @@ interface UserState {
   addKitItem: (item: KitItem) => void;
   updateKitItem: (itemId: string, updates: Partial<KitItem>) => void;
   removeKitItem: (itemId: string) => void;
+  addSavedLocation: (location: SavedLocation) => void;
+  updateSavedLocation: (locationId: string, updates: Partial<SavedLocation>) => void;
+  removeSavedLocation: (locationId: string) => void;
   setOnboarded: (value: boolean) => void;
   reset: () => void;
 }
@@ -36,7 +39,30 @@ const initialProfile: UserProfile = {
   points: 0,
   level: 1,
   badges: [],
-  customKit: []
+  customKit: [],
+  savedLocations: [
+    {
+      id: '1',
+      name: 'Home',
+      address: '123 Main Street, London, UK',
+      type: 'home',
+      isPrimary: true,
+    },
+    {
+      id: '2',
+      name: 'Work',
+      address: '456 Business Avenue, London, UK',
+      type: 'work',
+      isPrimary: false,
+    },
+    {
+      id: '3',
+      name: 'Parents',
+      address: '789 Family Road, Manchester, UK',
+      type: 'favorite',
+      isPrimary: false,
+    },
+  ]
 };
 
 export const useUserStore = create<UserState>()(
@@ -165,6 +191,38 @@ export const useUserStore = create<UserState>()(
           profile: {
             ...state.profile,
             customKit: state.profile.customKit.filter((item) => item.id !== itemId)
+          }
+        };
+      }),
+      
+      addSavedLocation: (location) => set((state) => {
+        if (!state.profile) return { profile: null };
+        return {
+          profile: {
+            ...state.profile,
+            savedLocations: [...(state.profile.savedLocations || []), location]
+          }
+        };
+      }),
+      
+      updateSavedLocation: (locationId, updates) => set((state) => {
+        if (!state.profile) return { profile: null };
+        return {
+          profile: {
+            ...state.profile,
+            savedLocations: (state.profile.savedLocations || []).map((location) =>
+              location.id === locationId ? { ...location, ...updates } : location
+            )
+          }
+        };
+      }),
+      
+      removeSavedLocation: (locationId) => set((state) => {
+        if (!state.profile) return { profile: null };
+        return {
+          profile: {
+            ...state.profile,
+            savedLocations: (state.profile.savedLocations || []).filter((location) => location.id !== locationId)
           }
         };
       }),

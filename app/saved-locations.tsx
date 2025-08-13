@@ -1,52 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { colors } from '@/constants/colors';
-import { MapPin, Home, Briefcase, Heart, Edit, Trash2, Plus } from 'lucide-react-native';
+import { MapPin, Edit, Trash2, Plus } from 'lucide-react-native';
 import IconWrapper from '@/components/IconWrapper';
 import Button from '@/components/Button';
-
-// Mock data for saved locations
-const mockLocations = [
-  {
-    id: '1',
-    name: 'Home',
-    address: '123 Main Street, London, UK',
-    type: 'home',
-    isPrimary: true,
-  },
-  {
-    id: '2',
-    name: 'Work',
-    address: '456 Business Avenue, London, UK',
-    type: 'work',
-    isPrimary: false,
-  },
-  {
-    id: '3',
-    name: 'Parents',
-    address: '789 Family Road, Manchester, UK',
-    type: 'favorite',
-    isPrimary: false,
-  },
-];
+import { useUserStore } from '@/store/user-store';
+import { SavedLocation } from '@/types';
+import SavedLocationCard from '@/components/SavedLocationCard';
 
 export default function SavedLocationsScreen() {
   const router = useRouter();
-  const [locations, setLocations] = useState(mockLocations);
+  const { profile, removeSavedLocation, updateSavedLocation } = useUserStore();
+  const savedLocations = profile?.savedLocations || [];
   
   const handleAddLocation = () => {
     router.push('/add-location');
   };
   
   const handleEditLocation = (id: string) => {
-    // In a real app, this would navigate to an edit location screen
-    Alert.alert(
-      "Edit Location",
-      "This would navigate to an edit location screen in a real app.",
-      [{ text: "OK" }]
-    );
+    router.push(`/edit-location/${id}`);
   };
   
   const handleDeleteLocation = (id: string) => {
@@ -62,7 +36,7 @@ export default function SavedLocationsScreen() {
           text: "Delete",
           style: "destructive",
           onPress: () => {
-            setLocations(locations.filter(location => location.id !== id));
+            removeSavedLocation(id);
           }
         }
       ]
@@ -70,88 +44,24 @@ export default function SavedLocationsScreen() {
   };
   
   const handleSetPrimary = (id: string) => {
-    setLocations(locations.map(location => ({
-      ...location,
-      isPrimary: location.id === id
-    })));
+    // First, set all locations to non-primary
+    savedLocations.forEach(location => {
+      if (location.isPrimary) {
+        updateSavedLocation(location.id, { isPrimary: false });
+      }
+    });
+    
+    // Then set the selected location as primary
+    updateSavedLocation(id, { isPrimary: true });
   };
   
-  const getLocationIcon = (type: string) => {
-    switch (type) {
-      case 'home':
-        return <IconWrapper icon={Home} size={20} color="#fff" />;
-      case 'work':
-        return <IconWrapper icon={Briefcase} size={20} color="#fff" />;
-      case 'favorite':
-        return <IconWrapper icon={Heart} size={20} color="#fff" />;
-      default:
-        return <IconWrapper icon={MapPin} size={20} color="#fff" />;
-    }
-  };
-  
-  const getLocationColor = (type: string) => {
-    switch (type) {
-      case 'home':
-        return colors.primary;
-      case 'work':
-        return colors.secondary;
-      case 'favorite':
-        return colors.danger;
-      default:
-        return colors.text;
-    }
-  };
-  
-  const renderLocationItem = ({ item }: { item: typeof mockLocations[0] }) => (
-    <View style={styles.locationItem}>
-      <View style={styles.locationHeader}>
-        <View style={styles.locationLeft}>
-          <View 
-            style={[
-              styles.locationIconContainer,
-              { backgroundColor: getLocationColor(item.type) }
-            ]}
-          >
-            {getLocationIcon(item.type)}
-          </View>
-          <View>
-            <Text style={styles.locationName}>{item.name}</Text>
-            <Text style={styles.locationAddress}>{item.address}</Text>
-          </View>
-        </View>
-        
-        <View style={styles.locationActions}>
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => handleEditLocation(item.id)}
-          >
-            <IconWrapper icon={Edit} size={18} color={colors.text} />
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => handleDeleteLocation(item.id)}
-          >
-            <IconWrapper icon={Trash2} size={18} color={colors.danger} />
-          </TouchableOpacity>
-        </View>
-      </View>
-      
-      <View style={styles.locationFooter}>
-        {item.isPrimary ? (
-          <View style={styles.primaryBadge}>
-            <Text style={styles.primaryText}>Primary Location</Text>
-          </View>
-        ) : (
-          <TouchableOpacity 
-            style={styles.setPrimaryButton}
-            onPress={() => handleSetPrimary(item.id)}
-          >
-            <Text style={styles.setPrimaryText}>Set as Primary</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-    </View>
+  const renderLocationItem = ({ item }: { item: SavedLocation }) => (
+    <SavedLocationCard
+      location={item}
+      onEdit={() => handleEditLocation(item.id)}
+      onDelete={() => handleDeleteLocation(item.id)}
+      onSetPrimary={() => handleSetPrimary(item.id)}
+    />
   );
   
   return (
@@ -165,11 +75,20 @@ export default function SavedLocationsScreen() {
           </Text>
           
           <FlatList
-            data={locations}
+            data={savedLocations}
             renderItem={renderLocationItem}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
+            ListEmptyComponent={() => (
+              <View style={styles.emptyState}>
+                <IconWrapper icon={MapPin} size={48} color="#9CA3AF" />
+                <Text style={styles.emptyStateTitle}>No Saved Locations</Text>
+                <Text style={styles.emptyStateText}>
+                  Add your first location to get started with personalized alerts and recommendations.
+                </Text>
+              </View>
+            )}
           />
           
           <Button
@@ -204,83 +123,26 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 16,
   },
-  locationItem: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  locationHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  locationLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  locationIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  locationName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  locationAddress: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  locationActions: {
-    flexDirection: 'row',
-  },
-  actionButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#F3F4F6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 8,
-  },
-  locationFooter: {
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-    paddingTop: 12,
-  },
-  primaryBadge: {
-    backgroundColor: '#EFF6FF',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 16,
-    alignSelf: 'flex-start',
-  },
-  primaryText: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  setPrimaryButton: {
-    paddingVertical: 6,
-  },
-  setPrimaryText: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: '500',
-  },
   addButton: {
     marginTop: 8,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 48,
+    paddingHorizontal: 32,
+  },
+  emptyStateTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyStateText: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });

@@ -1,20 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { colors } from '@/constants/colors';
 import { MapPin, Home, Briefcase, Heart, Search } from 'lucide-react-native';
 import Button from '@/components/Button';
 import IconWrapper from '@/components/IconWrapper';
 import { useUserStore } from '@/store/user-store';
 
-export default function AddLocationScreen() {
+export default function EditLocationScreen() {
   const router = useRouter();
-  const { addSavedLocation } = useUserStore();
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { profile, updateSavedLocation } = useUserStore();
+  
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
-  const [locationType, setLocationType] = useState('home');
+  const [locationType, setLocationType] = useState<'home' | 'work' | 'favorite' | 'other'>('home');
   const [isPrimary, setIsPrimary] = useState(false);
+  
+  // Load existing location data
+  useEffect(() => {
+    if (profile?.savedLocations && id) {
+      const location = profile.savedLocations.find(loc => loc.id === id);
+      if (location) {
+        setName(location.name);
+        setAddress(location.address);
+        setLocationType(location.type);
+        setIsPrimary(location.isPrimary);
+      }
+    }
+  }, [profile, id]);
   
   const handleSave = () => {
     // Validate required fields
@@ -27,22 +42,25 @@ export default function AddLocationScreen() {
       return;
     }
 
-    // Create the new location object
-    const newLocation = {
-      id: Date.now().toString(), // Simple ID generation
+    if (!id) {
+      Alert.alert("Error", "Location ID not found.");
+      return;
+    }
+
+    // Update the location
+    const updates = {
       name: name.trim(),
       address: address.trim(),
-      type: locationType as "home" | "work" | "favorite" | "other",
+      type: locationType,
       isPrimary
     };
 
-    // Save to store
-    addSavedLocation(newLocation);
+    updateSavedLocation(id, updates);
 
     // Show success message and go back
     Alert.alert(
-      "Location Saved",
-      "Your location has been successfully saved.",
+      "Location Updated",
+      "Your location has been successfully updated.",
       [{ 
         text: "OK", 
         onPress: () => router.back() 
@@ -52,7 +70,7 @@ export default function AddLocationScreen() {
   
   return (
     <>
-      <Stack.Screen options={{ title: "Add Location" }} />
+      <Stack.Screen options={{ title: "Edit Location" }} />
       
       <SafeAreaView style={styles.container} edges={['bottom']}>
         <ScrollView 
@@ -81,6 +99,8 @@ export default function AddLocationScreen() {
                   onChangeText={setAddress}
                   placeholder="Search for an address"
                   placeholderTextColor="#9CA3AF"
+                  multiline={true}
+                  numberOfLines={2}
                 />
               </View>
             </View>
@@ -181,49 +201,33 @@ export default function AddLocationScreen() {
               </View>
             </View>
             
-            <View style={styles.switchContainer}>
-              <Text style={styles.switchLabel}>Set as Primary Location</Text>
-              <TouchableOpacity
-                style={[
-                  styles.switchButton,
-                  isPrimary && styles.switchButtonActive,
-                ]}
-                onPress={() => setIsPrimary(!isPrimary)}
-              >
-                <View 
-                  style={[
-                    styles.switchThumb,
-                    isPrimary && styles.switchThumbActive,
-                  ]}
-                />
-              </TouchableOpacity>
+            <View style={styles.inputContainer}>
+              <View style={styles.checkboxContainer}>
+                <TouchableOpacity
+                  style={[styles.checkbox, isPrimary && styles.checkedCheckbox]}
+                  onPress={() => setIsPrimary(!isPrimary)}
+                >
+                  {isPrimary && <Text style={styles.checkmark}>✓</Text>}
+                </TouchableOpacity>
+                <View style={styles.checkboxLabelContainer}>
+                  <Text style={styles.checkboxLabel}>Set as primary location</Text>
+                  <Text style={styles.checkboxDescription}>
+                    This will be your default location for alerts and recommendations
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
-          
-          <View style={styles.mapPlaceholder}>
-            <IconWrapper icon={MapPin} size={32} color="#9CA3AF" />
-            <Text style={styles.mapPlaceholderText}>Map View</Text>
-            <Text style={styles.mapPlaceholderSubtext}>
-              In a real app, a map would be displayed here to select a location.
-            </Text>
-          </View>
-          
-          <View style={styles.buttonsContainer}>
-            <Button
-              title="Cancel"
-              onPress={() => router.back()}
-              variant="outline"
-              style={styles.button}
-            />
-            <Button
-              title="Save Location"
-              onPress={handleSave}
-              variant="primary"
-              style={styles.button}
-              disabled={!name || !address}
-            />
-          </View>
         </ScrollView>
+        
+        <View style={styles.footer}>
+          <Button
+            title="Update Location"
+            onPress={handleSave}
+            variant="primary"
+            disabled={!name.trim() || !address.trim()}
+          />
+        </View>
       </SafeAreaView>
     </>
   );
@@ -235,133 +239,122 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   scrollContent: {
-    padding: 16,
+    flexGrow: 1,
   },
   formContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
     padding: 16,
-    marginBottom: 16,
   },
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: 24,
   },
   label: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
     color: colors.text,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#E5E7EB',
     borderRadius: 8,
-    padding: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     fontSize: 16,
     color: colors.text,
   },
   addressInputContainer: {
     flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  searchIcon: {
+    marginTop: 2,
+    marginRight: 12,
+  },
+  addressInput: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.text,
+    minHeight: 44,
+    textAlignVertical: 'top',
+  },
+  locationTypeContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  locationTypeButton: {
+    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F9FAFB',
     borderWidth: 1,
     borderColor: '#E5E7EB',
     borderRadius: 8,
-    paddingHorizontal: 12,
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  addressInput: {
-    flex: 1,
-    height: 44,
-    fontSize: 16,
-    color: colors.text,
-  },
-  locationTypeContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  locationTypeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    marginRight: 8,
-    marginBottom: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minWidth: 80,
   },
   selectedLocationType: {
     backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   locationTypeText: {
     fontSize: 14,
+    fontWeight: '500',
     color: colors.text,
-    marginLeft: 4,
+    marginLeft: 8,
   },
   selectedLocationTypeText: {
     color: '#fff',
   },
-  switchContainer: {
+  checkboxContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 8,
+    alignItems: 'flex-start',
   },
-  switchLabel: {
-    fontSize: 16,
-    color: colors.text,
-  },
-  switchButton: {
-    width: 50,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#E5E7EB',
-    padding: 2,
-  },
-  switchButtonActive: {
-    backgroundColor: colors.primary,
-  },
-  switchThumb: {
+  checkbox: {
     width: 24,
     height: 24,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-  },
-  switchThumbActive: {
-    transform: [{ translateX: 22 }],
-  },
-  mapPlaceholder: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 12,
-    height: 200,
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    borderRadius: 4,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginRight: 12,
+    marginTop: 2,
   },
-  mapPlaceholderText: {
+  checkedCheckbox: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  checkmark: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  checkboxLabelContainer: {
+    flex: 1,
+  },
+  checkboxLabel: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#9CA3AF',
-    marginTop: 8,
+    color: colors.text,
+    marginBottom: 4,
   },
-  mapPlaceholderSubtext: {
+  checkboxDescription: {
     fontSize: 14,
-    color: '#9CA3AF',
-    textAlign: 'center',
-    marginTop: 4,
-    paddingHorizontal: 32,
+    color: '#6B7280',
+    lineHeight: 20,
   },
-  buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 24,
-  },
-  button: {
-    flex: 1,
-    marginHorizontal: 4,
+  footer: {
+    padding: 16,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
   },
 });
