@@ -68,6 +68,7 @@ export interface UserProfile {
   level: number;
   badges: Badge[];
   customKit: KitItem[];
+  customChecklists: CustomChecklist[];
   profileImage?: string;
   savedLocations?: SavedLocation[];
   notificationPreferences?: NotificationPreferences;
@@ -96,6 +97,26 @@ export interface KitItem {
   quantity: number;
   isAcquired: boolean;
   category: "food" | "water" | "medical" | "tools" | "documents" | "clothing" | "hygiene" | "other";
+}
+
+export interface CustomChecklist {
+  id: string;
+  title: string;
+  description: string;
+  category: "supplies" | "planning" | "skills" | "home" | "personal";
+  items: ChecklistItem[];
+  isCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  imageUrl?: string;
+  points?: number;
+  steps?: string[];
+}
+
+export interface ChecklistItem {
+  id: string;
+  text: string;
+  isCompleted: boolean;
 }
 
 export interface DisasterInfo {

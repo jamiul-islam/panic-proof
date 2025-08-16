@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserProfile, EmergencyContact, Badge, KitItem, SavedLocation } from '@/types';
+import { UserProfile, EmergencyContact, Badge, KitItem, SavedLocation, CustomChecklist, ChecklistItem } from '@/types';
 
 interface UserState {
   profile: UserProfile | null;
@@ -20,6 +20,10 @@ interface UserState {
   addSavedLocation: (location: SavedLocation) => void;
   updateSavedLocation: (locationId: string, updates: Partial<SavedLocation>) => void;
   removeSavedLocation: (locationId: string) => void;
+  addCustomChecklist: (checklist: CustomChecklist) => void;
+  updateCustomChecklist: (checklistId: string, updates: Partial<CustomChecklist>) => void;
+  removeCustomChecklist: (checklistId: string) => void;
+  toggleChecklistItem: (checklistId: string, itemId: string) => void;
   setOnboarded: (value: boolean) => void;
   reset: () => void;
 }
@@ -40,6 +44,42 @@ const initialProfile: UserProfile = {
   level: 1,
   badges: [],
   customKit: [],
+  customChecklists: [
+    {
+      id: 'demo-1',
+      title: 'Emergency Supply Kit',
+      description: 'Essential items to keep ready for any emergency',
+      category: 'supplies',
+      items: [
+        { id: '1', text: 'Water - 1 gallon per person per day (3-day supply)', isCompleted: true },
+        { id: '2', text: 'Non-perishable food (3-day supply)', isCompleted: true },
+        { id: '3', text: 'Battery-powered or hand crank radio', isCompleted: false },
+        { id: '4', text: 'Flashlight', isCompleted: false },
+        { id: '5', text: 'First aid kit', isCompleted: true },
+        { id: '6', text: 'Extra batteries', isCompleted: false },
+      ],
+      isCompleted: false,
+      imageUrl: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=400',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'demo-2',
+      title: 'Family Communication Plan',
+      description: 'Plan for staying connected with family during emergencies',
+      category: 'planning',
+      items: [
+        { id: '1', text: 'Create contact list with phone numbers', isCompleted: true },
+        { id: '2', text: 'Choose out-of-state contact person', isCompleted: true },
+        { id: '3', text: 'Identify meeting locations', isCompleted: false },
+        { id: '4', text: 'Make copies of important documents', isCompleted: false },
+      ],
+      isCompleted: false,
+      imageUrl: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=400',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ],
   savedLocations: [
     {
       id: '1',
@@ -67,9 +107,9 @@ const initialProfile: UserProfile = {
 
 export const useUserStore = create<UserState>()(
   persist(
-    (set) => ({
-      profile: null,
-      isOnboarded: false,
+    (set, get) => ({
+      profile: initialProfile, // Initialize with demo data
+      isOnboarded: true, // Set to true for testing
       
       setProfile: (profile) => set({ profile }),
       
@@ -223,6 +263,63 @@ export const useUserStore = create<UserState>()(
           profile: {
             ...state.profile,
             savedLocations: (state.profile.savedLocations || []).filter((location) => location.id !== locationId)
+          }
+        };
+      }),
+      
+      addCustomChecklist: (checklist) => set((state) => {
+        if (!state.profile) return { profile: null };
+        return {
+          profile: {
+            ...state.profile,
+            customChecklists: [...(state.profile.customChecklists || []), checklist]
+          }
+        };
+      }),
+      
+      updateCustomChecklist: (checklistId, updates) => set((state) => {
+        if (!state.profile) return { profile: null };
+        const updatedChecklist = { ...updates, updatedAt: new Date().toISOString() };
+        return {
+          profile: {
+            ...state.profile,
+            customChecklists: (state.profile.customChecklists || []).map((checklist) =>
+              checklist.id === checklistId ? { ...checklist, ...updatedChecklist } : checklist
+            )
+          }
+        };
+      }),
+      
+      removeCustomChecklist: (checklistId) => set((state) => {
+        if (!state.profile) return { profile: null };
+        return {
+          profile: {
+            ...state.profile,
+            customChecklists: (state.profile.customChecklists || []).filter((checklist) => checklist.id !== checklistId)
+          }
+        };
+      }),
+      
+      toggleChecklistItem: (checklistId, itemId) => set((state) => {
+        if (!state.profile) return { profile: null };
+        return {
+          profile: {
+            ...state.profile,
+            customChecklists: (state.profile.customChecklists || []).map((checklist) => {
+              if (checklist.id === checklistId) {
+                const updatedItems = checklist.items.map((item) =>
+                  item.id === itemId ? { ...item, isCompleted: !item.isCompleted } : item
+                );
+                const isCompleted = updatedItems.every((item) => item.isCompleted);
+                return {
+                  ...checklist,
+                  items: updatedItems,
+                  isCompleted,
+                  updatedAt: new Date().toISOString()
+                };
+              }
+              return checklist;
+            })
           }
         };
       }),
