@@ -27,6 +27,7 @@ export default function ModalScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [points, setPoints] = useState('');
   const [category, setCategory] = useState<'supplies' | 'planning' | 'skills' | 'home' | 'personal'>('personal');
   const [items, setItems] = useState<ChecklistItem[]>([{ id: '1', text: '', isCompleted: false }]);
   
@@ -39,6 +40,7 @@ export default function ModalScreen() {
         setTitle(checklist.title);
         setDescription(checklist.description);
         setImageUrl(checklist.imageUrl || '');
+        setPoints(checklist.points?.toString() || '');
         setCategory(checklist.category);
         setItems(checklist.items.length > 0 ? checklist.items : [{ id: '1', text: '', isCompleted: false }]);
       }
@@ -99,6 +101,7 @@ export default function ModalScreen() {
     
     const now = new Date().toISOString();
     const finalImageUrl = imageUrl.trim() || getDefaultImageUrl(category);
+    const checklistPoints = points ? parseInt(points, 10) : (nonEmptyItems.length * 10);
     
     if (isEditing) {
       const updates: Partial<CustomChecklist> = {
@@ -107,6 +110,7 @@ export default function ModalScreen() {
         category,
         items: nonEmptyItems,
         imageUrl: finalImageUrl,
+        points: checklistPoints,
         isCompleted: nonEmptyItems.every(item => item.isCompleted),
       };
       updateCustomChecklist(checklistId as string, updates);
@@ -118,6 +122,7 @@ export default function ModalScreen() {
         category,
         items: nonEmptyItems,
         imageUrl: finalImageUrl,
+        points: checklistPoints,
         isCompleted: false,
         createdAt: now,
         updatedAt: now,
@@ -185,6 +190,21 @@ export default function ModalScreen() {
           />
           <Text style={styles.helperText}>
             Leave empty to use a default image based on category
+          </Text>
+        </View>
+        
+        <View style={styles.section}>
+          <Text style={styles.label}>Points (Optional)</Text>
+          <TextInput
+            style={styles.input}
+            value={points}
+            onChangeText={setPoints}
+            placeholder="Enter points value or leave empty for auto-calculation"
+            placeholderTextColor="#9CA3AF"
+            keyboardType="numeric"
+          />
+          <Text style={styles.helperText}>
+            Leave empty to automatically calculate (10 points per item)
           </Text>
         </View>
         

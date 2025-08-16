@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import { useTasksStore } from '@/store/tasks-store';
 import { useUserStore } from '@/store/user-store';
 import { colors } from '@/constants/colors';
@@ -69,8 +69,19 @@ export default function PrepareScreen() {
   });
   
   return (
-    <SafeAreaView style={styles.container} edges={[]}>
-      <View style={styles.header}>
+    <>
+      <Stack.Screen 
+        options={{
+          title: "Prepare",
+          headerRight: () => (
+            <TouchableOpacity onPress={handleAddChecklist}>
+              <Plus size={24} color="#000" style={{ marginRight: 16 }} />
+            </TouchableOpacity>
+          ),
+        }} 
+      />
+      
+      <SafeAreaView style={styles.container} edges={[]}>
         <View style={styles.progressContainer}>
           <Text style={styles.progressTitle}>Your Preparedness</Text>
           <View style={styles.progressDetails}>
@@ -84,44 +95,40 @@ export default function PrepareScreen() {
           <ProgressBar progress={taskProgress.percentage} height={8} />
         </View>
         
-        <TouchableOpacity style={styles.addButton} onPress={handleAddChecklist}>
-          <IconWrapper icon={Plus} size={24} color="#fff" />
-        </TouchableOpacity>
-      </View>
-      
-      <View style={styles.categorySection}>
-        <CategoryFilter
-          categories={taskCategories}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
+        <View style={styles.categorySection}>
+          <CategoryFilter
+            categories={taskCategories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
+        </View>
+        
+        <FlatList
+          data={combinedItems}
+          keyExtractor={(item, index) => `${item.type}-${item.data.id}-${index}`}
+          renderItem={({ item }) => {
+            if (item.type === 'task') {
+              return (
+                <TaskCard 
+                  task={item.data} 
+                  onPress={() => handleTaskPress(item.data.id)} 
+                />
+              );
+            } else {
+              return (
+                <ChecklistCard
+                  checklist={item.data}
+                  onPress={() => handleChecklistPress(item.data.id)}
+                  onEdit={() => handleEditChecklist(item.data.id)}
+                />
+              );
+            }
+          }}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
         />
-      </View>
-      
-      <FlatList
-        data={combinedItems}
-        keyExtractor={(item, index) => `${item.type}-${item.data.id}-${index}`}
-        renderItem={({ item }) => {
-          if (item.type === 'task') {
-            return (
-              <TaskCard 
-                task={item.data} 
-                onPress={() => handleTaskPress(item.data.id)} 
-              />
-            );
-          } else {
-            return (
-              <ChecklistCard
-                checklist={item.data}
-                onPress={() => handleChecklistPress(item.data.id)}
-                onEdit={() => handleEditChecklist(item.data.id)}
-              />
-            );
-          }
-        }}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
-    </SafeAreaView>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -130,34 +137,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: '#fff',
-    paddingBottom: 8,
-  },
   progressContainer: {
-    flex: 1,
+    backgroundColor: '#fff',
     padding: 16,
     paddingTop: 20,
-  },
-  addButton: {
-    backgroundColor: colors.primary,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-    marginRight: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    marginBottom: 8,
   },
   categorySection: {
     marginBottom: 8,

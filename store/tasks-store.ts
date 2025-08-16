@@ -88,8 +88,20 @@ export const useTasksStore = create<TasksState>()((set, get) => ({
   
   getTaskProgress: () => {
     const tasks = get().tasks;
-    const completed = tasks.filter(task => task.isCompleted).length;
-    const total = tasks.length;
+    const userProfile = useUserStore.getState().profile;
+    const customChecklists = userProfile?.customChecklists || [];
+    
+    // Count completed tasks
+    const completedTasks = tasks.filter(task => task.isCompleted).length;
+    const totalTasks = tasks.length;
+    
+    // Count completed custom checklists
+    const completedChecklists = customChecklists.filter(checklist => checklist.isCompleted).length;
+    const totalChecklists = customChecklists.length;
+    
+    // Combined totals
+    const completed = completedTasks + completedChecklists;
+    const total = totalTasks + totalChecklists;
     const percentage = total > 0 ? (completed / total) * 100 : 0;
     
     return { completed, total, percentage };

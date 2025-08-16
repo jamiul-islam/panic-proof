@@ -466,6 +466,10 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     marginTop: 8,
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
     borderColor: '#EF4444',
+    alignItems: 'center',
   },
 });

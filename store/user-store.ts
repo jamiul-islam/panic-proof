@@ -50,6 +50,7 @@ const initialProfile: UserProfile = {
       title: 'Emergency Supply Kit',
       description: 'Essential items to keep ready for any emergency',
       category: 'supplies',
+      points: 80,
       items: [
         { id: '1', text: 'Water - 1 gallon per person per day (3-day supply)', isCompleted: true },
         { id: '2', text: 'Non-perishable food (3-day supply)', isCompleted: true },
@@ -68,6 +69,7 @@ const initialProfile: UserProfile = {
       title: 'Family Communication Plan',
       description: 'Plan for staying connected with family during emergencies',
       category: 'planning',
+      points: 60,
       items: [
         { id: '1', text: 'Create contact list with phone numbers', isCompleted: true },
         { id: '2', text: 'Choose out-of-state contact person', isCompleted: true },
@@ -302,6 +304,12 @@ export const useUserStore = create<UserState>()(
       
       toggleChecklistItem: (checklistId, itemId) => set((state) => {
         if (!state.profile) return { profile: null };
+        
+        const currentChecklist = (state.profile.customChecklists || []).find(c => c.id === checklistId);
+        if (!currentChecklist) return { profile: state.profile };
+        
+        const wasCompleted = currentChecklist.isCompleted;
+        
         return {
           profile: {
             ...state.profile,
@@ -311,6 +319,27 @@ export const useUserStore = create<UserState>()(
                   item.id === itemId ? { ...item, isCompleted: !item.isCompleted } : item
                 );
                 const isCompleted = updatedItems.every((item) => item.isCompleted);
+                
+                // Calculate points based on checklist completion
+                const checklistPoints = checklist.points || (checklist.items.length * 10); // Default: 10 points per item
+                let newPoints = state.profile!.points;
+                
+                // Award points when checklist becomes completed
+                if (!wasCompleted && isCompleted) {
+                  newPoints += checklistPoints;
+                }
+                // Remove points when checklist becomes uncompleted
+                else if (wasCompleted && !isCompleted) {
+                  newPoints = Math.max(0, newPoints - checklistPoints);
+                }
+                
+                // Update user points and level if this checklist's completion status changed
+                if (wasCompleted !== isCompleted) {
+                  const newLevel = Math.floor(newPoints / 100) + 1;
+                  state.profile!.points = newPoints;
+                  state.profile!.level = newLevel;
+                }
+                
                 return {
                   ...checklist,
                   items: updatedItems,
