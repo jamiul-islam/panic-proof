@@ -1,6 +1,6 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { Home, ListChecks, BookOpen, User, Bell } from "lucide-react-native";
+import { Home, ListChecks, BookOpen, User, Bell, MessageCircle } from "lucide-react-native";
 import { colors } from "@/constants/colors";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -53,6 +53,13 @@ export default function TabLayout() {
         options={{
           title: "Prepare",
           tabBarIcon: ({ color, size }) => <ListChecks size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="chat"
+        options={{
+          title: "Chat",
+          tabBarIcon: ({ color, size }) => <MessageCircle size={size} color={color} />,
         }}
       />
       <Tabs.Screen

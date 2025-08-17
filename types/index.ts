@@ -152,3 +152,19 @@ export interface NotificationPreferences {
   pushNotifications: boolean;
   emailNotifications: boolean;
 }
+
+export interface ChatMessage {
+  id: string;
+  text: string;
+  isUser: boolean;
+  timestamp: string;
+  isTyping?: boolean;
+}
+
+export interface ChatSession {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  createdAt: string;
+  updatedAt: string;
+}
