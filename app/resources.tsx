@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Stack } from 'expo-router';
 import { useResourcesStore } from '@/store/resources-store';
 import { Search, X } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
@@ -41,8 +42,23 @@ export default function ResourcesScreen() {
   };
   
   return (
-    <SafeAreaView style={styles.container} edges={[]}>
-      <View style={styles.searchContainer}>
+    <>
+      <Stack.Screen 
+        options={{
+          title: "Resources",
+          headerStyle: {
+            backgroundColor: "#fff",
+          },
+          headerTitleStyle: {
+            fontWeight: "600",
+            fontSize: 18,
+          },
+          headerShadowVisible: false,
+        }} 
+      />
+      
+      <SafeAreaView style={styles.container} edges={['bottom']}>
+        <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Search size={20} color="#9CA3AF" style={styles.searchIcon} />
           <TextInput
@@ -77,6 +93,7 @@ export default function ResourcesScreen() {
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
+    </>
   );
 }
 
@@ -87,7 +104,6 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     padding: 16,
-    paddingTop: 20,
     backgroundColor: '#fff',
   },
   searchInputContainer: {

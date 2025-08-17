@@ -46,7 +46,7 @@ export default function ProfileScreen() {
   };
   
   const handleResources = () => {
-    router.push('/(tabs)/resources');
+    router.push('/resources');
   };
   
   const handleLogout = async () => {
