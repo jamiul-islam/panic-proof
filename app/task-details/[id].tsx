@@ -192,10 +192,9 @@ export default function TaskDetailsScreen() {
               )}
               
               {isCustomChecklist && checklist && (
-                <View style={styles.progressContainer}>
-                  <Text style={styles.progressText}>
-                    {completedItems}/{totalItems} completed ({Math.round(progressPercentage)}%)
-                  </Text>
+                <View style={styles.pointsContainer}>
+                  <IconWrapper icon={Award} size={16} color={colors.secondary} />
+                  <Text style={styles.pointsText}>{checklist.points || 0} points</Text>
                 </View>
               )}
             </View>
@@ -423,14 +422,6 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     marginTop: 8,
-  },
-  progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  progressText: {
-    color: '#6B7280',
-    fontSize: 14,
   },
   checklistItem: {
     paddingVertical: 12,

@@ -70,9 +70,6 @@ export default function ChecklistCard({ checklist, onPress, onEdit }: ChecklistC
             ]} 
           />
         </View>
-        <Text style={styles.progressText}>
-          {completedItems}/{totalItems} completed
-        </Text>
       </View>
       
       <View style={styles.itemsPreview}>
@@ -108,7 +105,9 @@ export default function ChecklistCard({ checklist, onPress, onEdit }: ChecklistC
       </View>
       
       <View style={styles.footer}>
-        <Text style={styles.category}>{checklist.category.toUpperCase()}</Text>
+        <View style={styles.pointsContainer}>
+          <Text style={styles.pointsText}>{checklist.points || 0} points</Text>
+        </View>
         <IconWrapper icon={ChevronRight} size={16} color={colors.text} />
       </View>
     </TouchableOpacity>
@@ -177,10 +176,6 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 3,
   },
-  progressText: {
-    fontSize: 12,
-    color: '#6B7280',
-  },
   itemsPreview: {
     marginBottom: 12,
   },
@@ -209,6 +204,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  pointsContainer: {
+    backgroundColor: '#EFF6FF',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  pointsText: {
+    fontSize: 12,
+    color: colors.primary,
+    fontWeight: '500',
   },
   category: {
     fontSize: 12,
