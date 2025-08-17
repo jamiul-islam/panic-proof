@@ -66,7 +66,10 @@ export default function SavedLocationsScreen() {
   
   return (
     <>
-      <Stack.Screen options={{ title: "Saved Locations" }} />
+      <Stack.Screen options={{ 
+        title: "Saved Locations",
+        headerBackTitle: "",
+      }} />
       
       <SafeAreaView style={styles.container} edges={['bottom']}>
         <View style={styles.content}>

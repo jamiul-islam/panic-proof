@@ -52,7 +52,10 @@ export default function AddLocationScreen() {
   
   return (
     <>
-      <Stack.Screen options={{ title: "Add Location" }} />
+      <Stack.Screen options={{ 
+        title: "Add Location",
+        headerBackTitle: "",
+      }} />
       
       <SafeAreaView style={styles.container} edges={['bottom']}>
         <ScrollView 

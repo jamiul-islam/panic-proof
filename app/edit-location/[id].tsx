@@ -70,7 +70,10 @@ export default function EditLocationScreen() {
   
   return (
     <>
-      <Stack.Screen options={{ title: "Edit Location" }} />
+      <Stack.Screen options={{ 
+        title: "Edit Location",
+        headerBackTitle: "",
+      }} />
       
       <SafeAreaView style={styles.container} edges={['bottom']}>
         <ScrollView 

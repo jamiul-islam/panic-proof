@@ -45,6 +45,7 @@ export default function EmergencyContactsScreen() {
       <Stack.Screen 
         options={{
           title: "Emergency Contacts",
+          headerBackTitle: "",
           headerRight: () => (
             <TouchableOpacity onPress={handleAddContact}>
               <Plus size={24} color="#000" style={{ marginRight: 16 }} />

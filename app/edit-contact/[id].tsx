@@ -81,7 +81,10 @@ export default function EditContactScreen() {
   
   return (
     <>
-      <Stack.Screen options={{ title: "Edit Emergency Contact" }} />
+      <Stack.Screen options={{ 
+        title: "Edit Emergency Contact",
+        headerBackTitle: "",
+      }} />
       
       <SafeAreaView style={styles.container} edges={['bottom']}>
         <ScrollView 
