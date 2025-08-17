@@ -1,30 +1,40 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useUserStore } from '@/store/user-store';
+import { useTasksStore } from '@/store/tasks-store';
 import { colors } from '@/constants/colors';
 import ProgressBar from './ProgressBar';
 
 export default function ProfileHeader() {
   const profile = useUserStore((state) => state.profile);
+  const { getCompletedTasks, getTaskProgress } = useTasksStore();
   
   if (!profile) return null;
   
-  // Calculate XP progress to next level
+  // Get completed tasks count
+  const completedTasks = getCompletedTasks();
+  const completedTasksCount = completedTasks.length;
+  
+  // Get completed checklists count
+  const completedChecklists = (profile.customChecklists || []).filter(checklist => checklist.isCompleted);
+  const completedChecklistsCount = completedChecklists.length;
+  
+  // Calculate total completed items (tasks + checklists)
+  const totalCompletedItems = completedTasksCount + completedChecklistsCount;
+  
+  // Calculate XP progress to next level (every 100 points = 1 level)
   const currentLevelPoints = (profile.level - 1) * 100;
   const nextLevelPoints = profile.level * 100;
   const pointsInCurrentLevel = profile.points - currentLevelPoints;
-  const progressToNextLevel = (pointsInCurrentLevel / 100) * 100;
+  const progressToNextLevel = Math.min((pointsInCurrentLevel / 100) * 100, 100);
   
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={styles.levelContainer}>
         <View style={styles.levelBadge}>
           <Text style={styles.levelText}>{profile.level}</Text>
         </View>
-        <View style={styles.userInfo}>
-          <Text style={styles.name}>{profile.name || "Disaster Ready User"}</Text>
-          <Text style={styles.location}>{profile.location || "Set your location"}</Text>
-        </View>
+        <Text style={styles.levelLabel}>Level {profile.level}</Text>
       </View>
       
       <View style={styles.statsContainer}>
@@ -33,8 +43,8 @@ export default function ProfileHeader() {
           <Text style={styles.statLabel}>Points</Text>
         </View>
         <View style={styles.stat}>
-          <Text style={styles.statValue}>{profile.completedTasks.length}</Text>
-          <Text style={styles.statLabel}>Tasks</Text>
+          <Text style={styles.statValue}>{totalCompletedItems}</Text>
+          <Text style={styles.statLabel}>Completed</Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.statValue}>{profile.badges.length}</Text>
@@ -44,9 +54,9 @@ export default function ProfileHeader() {
       
       <View style={styles.progressContainer}>
         <View style={styles.progressLabelContainer}>
-          <Text style={styles.progressLabel}>Level Progress</Text>
+          <Text style={styles.progressLabel}>Progress to Level {profile.level + 1}</Text>
           <Text style={styles.progressValue}>
-            {pointsInCurrentLevel}/{100} XP
+            {pointsInCurrentLevel}/100 XP
           </Text>
         </View>
         <ProgressBar progress={progressToNextLevel} height={8} />
@@ -62,8 +72,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
   },
-  header: {
-    flexDirection: 'row',
+  levelContainer: {
     alignItems: 'center',
     marginBottom: 16,
   },
@@ -74,25 +83,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginBottom: 8,
   },
   levelText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: '700',
   },
-  userInfo: {
-    flex: 1,
-  },
-  name: {
-    fontSize: 18,
+  levelLabel: {
+    fontSize: 16,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 2,
-  },
-  location: {
-    fontSize: 14,
-    color: '#6B7280',
   },
   statsContainer: {
     flexDirection: 'row',
