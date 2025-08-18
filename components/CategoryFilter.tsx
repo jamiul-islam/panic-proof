@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 
 interface CategoryFilterProps {
   categories: { id: string; name: string }[];
@@ -61,16 +62,16 @@ export default function CategoryFilter({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,    
-    gap: 8,
+    paddingHorizontal: spacings.screenPadding,
+    paddingVertical: spacings.lg,
+    gap: spacings.sm,
   },
   categoryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#F3F4F6',
-    marginRight: 8,
+    paddingHorizontal: spacings.lg,
+    paddingVertical: spacings.sm,
+    borderRadius: spacings.borderRadius.xl,
+    backgroundColor: colors.backgroundSecondary,
+    marginRight: spacings.sm,
     height: 36,
     justifyContent: 'center',
     alignItems: 'center',
@@ -80,13 +81,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   categoryText: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.text,
     fontWeight: '400',
     textAlign: 'center',
   },
   selectedCategoryText: {
-    color: '#fff',
+    color: colors.textInverse,
     fontWeight: '500',
   },
 });

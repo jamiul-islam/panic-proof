@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 
 interface ProgressBarProps {
   progress: number; // 0 to 100
@@ -45,30 +46,30 @@ export default function ProgressBar({
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 8,
+    marginVertical: spacings.sm,
   },
   labelContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    marginBottom: spacings.xs,
   },
   label: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.text,
     fontWeight: '500',
   },
   percentage: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.text,
     fontWeight: '500',
   },
   track: {
-    backgroundColor: '#E5E7EB',
-    borderRadius: 4,
+    backgroundColor: colors.border,
+    borderRadius: spacings.borderRadius.xs,
     overflow: 'hidden',
   },
   progress: {
     backgroundColor: colors.primary,
-    borderRadius: 4,
+    borderRadius: spacings.borderRadius.xs,
   },
 });

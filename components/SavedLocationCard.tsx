@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native
 import { SavedLocation } from '@/types';
 import { Home, Briefcase, Heart, MapPin, Edit, Trash2 } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import IconWrapper from './IconWrapper';
 
 interface SavedLocationCardProps {
@@ -106,30 +107,17 @@ export default function SavedLocationCard({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-      web: {
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      },
-    }),
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    padding: spacings.cardPadding,
+    marginBottom: spacings.md,
+    ...spacings.lightShadow,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   locationInfo: {
     flex: 1,
@@ -139,58 +127,58 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: '#F3F4F6',
+    borderRadius: spacings.borderRadius.xl,
+    backgroundColor: colors.backgroundSecondary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: spacings.md,
   },
   textContainer: {
     flex: 1,
   },
   name: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 4,
+    marginBottom: spacings.xs,
   },
   address: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacings.sm,
   },
   actionButton: {
-    padding: 8,
+    padding: spacings.sm,
     borderRadius: 6,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
   },
   footer: {
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-    paddingTop: 12,
+    borderTopColor: colors.borderLight,
+    paddingTop: spacings.md,
   },
   primaryBadge: {
-    backgroundColor: '#EFF6FF',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 16,
+    backgroundColor: colors.primaryBadge,
+    paddingVertical: spacings.xs + 2,
+    paddingHorizontal: spacings.md,
+    borderRadius: spacings.borderRadius.lg,
     alignSelf: 'flex-start',
   },
   primaryText: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.primary,
     fontWeight: '500',
   },
   setPrimaryButton: {
-    paddingVertical: 6,
+    paddingVertical: spacings.xs + 2,
   },
   setPrimaryText: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.primary,
     fontWeight: '500',
   },

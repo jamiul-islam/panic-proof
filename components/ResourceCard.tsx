@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Linking, Platform } from 'rea
 import { Resource } from '@/types';
 import { Phone, Globe, MapPin, Mail } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 
 interface ResourceCardProps {
   resource: Resource;
@@ -30,21 +31,21 @@ export default function ResourceCard({ resource }: ResourceCardProps) {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'emergency':
-        return '#EF4444';
+        return colors.danger;
       case 'medical':
-        return '#10B981';
+        return colors.success;
       case 'shelter':
         return '#8B5CF6';
       case 'food':
-        return '#F59E0B';
+        return colors.warning;
       case 'utilities':
-        return '#3B82F6';
+        return colors.primary;
       case 'transportation':
         return '#EC4899';
       case 'information':
         return '#6366F1';
       default:
-        return '#6B7280';
+        return colors.textSecondary;
     }
   };
   
@@ -110,68 +111,55 @@ export default function ResourceCard({ resource }: ResourceCardProps) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-      web: {
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      },
-    }),
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    padding: spacings.cardPadding,
+    marginBottom: spacings.lg,
+    ...spacings.lightShadow,
   },
   header: {
     flexDirection: 'row',
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   categoryBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: spacings.sm + 2,
+    paddingVertical: spacings.xs,
+    borderRadius: spacings.borderRadius.md,
   },
   categoryText: {
-    color: '#fff',
-    fontSize: 12,
+    color: colors.textInverse,
+    fontSize: spacings.fontSize.xs,
     fontWeight: '500',
   },
   title: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   description: {
-    fontSize: 14,
-    color: '#4B5563',
-    marginBottom: 16,
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
+    marginBottom: spacings.lg,
   },
   contactContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: spacings.sm,
   },
   contactButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginRight: 8,
-    marginBottom: 8,
+    backgroundColor: colors.backgroundSecondary,
+    paddingHorizontal: spacings.md,
+    paddingVertical: spacings.sm,
+    borderRadius: spacings.borderRadius.sm,
+    marginRight: spacings.sm,
+    marginBottom: spacings.sm,
   },
   contactText: {
     marginLeft: 6,
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.text,
   },
 });

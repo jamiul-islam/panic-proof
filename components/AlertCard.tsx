@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Alert, AlertLevel } from '@/types';
-import { alertLevelColors } from '@/constants/colors';
+import { alertLevelColors, colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import { useAlertsStore } from '@/store/alerts-store';
 import { Bell, Info, AlertTriangle, AlertOctagon } from 'lucide-react-native';
 import IconWrapper from '@/components/IconWrapper';
@@ -68,54 +69,41 @@ export default function AlertCard({ alert, onPress }: AlertCardProps) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    padding: spacings.screenPadding,
+    marginBottom: spacings.md,
     borderLeftWidth: 4,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-      web: {
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      },
-    }),
+    ...spacings.lightShadow,
   },
   iconContainer: {
-    marginRight: 12,
+    marginRight: spacings.md,
     justifyContent: 'center',
   },
   content: {
     flex: 1,
   },
   title: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '600',
-    marginBottom: 4,
-    color: '#1F2937',
+    marginBottom: spacings.xs,
+    color: colors.text,
   },
   description: {
-    fontSize: 14,
-    color: '#4B5563',
-    marginBottom: 8,
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
+    marginBottom: spacings.sm,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   location: {
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: spacings.fontSize.xs,
+    color: colors.textSecondary,
   },
   date: {
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: spacings.fontSize.xs,
+    color: colors.textSecondary,
   },
 });

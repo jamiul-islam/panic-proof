@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { DisasterInfo } from '@/types';
 import { ChevronRight } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 
 interface DisasterCardProps {
   disaster: DisasterInfo;
@@ -45,26 +46,13 @@ export default function DisasterCard({ disaster, onPress, variant = 'horizontal'
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 16,
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    marginBottom: spacings.lg,
     overflow: 'hidden',
     width: 280,
-    marginRight: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-      web: {
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      },
-    }),
+    marginRight: spacings.lg,
+    ...spacings.shadow,
   },
   wideContainer: {
     width: '100%',
@@ -80,33 +68,33 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: colors.overlay,
   },
   title: {
     position: 'absolute',
-    bottom: 12,
-    left: 12,
-    color: '#fff',
-    fontSize: 20,
+    bottom: spacings.md,
+    left: spacings.md,
+    color: colors.textInverse,
+    fontSize: spacings.fontSize.xl,
     fontWeight: '700',
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
   content: {
-    padding: 16,
+    padding: spacings.cardPadding,
   },
   description: {
-    fontSize: 14,
-    color: '#4B5563',
-    marginBottom: 12,
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
+    marginBottom: spacings.md,
   },
   wideDescription: {
-    fontSize: 15,
+    fontSize: spacings.fontSize.md - 1,
     lineHeight: 22,
   },
   footer: {
@@ -114,9 +102,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   learnMore: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.primary,
     fontWeight: '500',
-    marginRight: 4,
+    marginRight: spacings.xs,
   },
 });

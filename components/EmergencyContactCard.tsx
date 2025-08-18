@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Linking, Platform } from 'rea
 import { EmergencyContact } from '@/types';
 import { Phone, Mail, MapPin, Edit, Trash2 } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 
 interface EmergencyContactCardProps {
   contact: EmergencyContact;
@@ -85,33 +86,20 @@ export default function EmergencyContactCard({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-      web: {
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      },
-    }),
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    padding: spacings.cardPadding,
+    marginBottom: spacings.lg,
+    ...spacings.lightShadow,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: spacings.xs,
   },
   name: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
   },
@@ -119,46 +107,46 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   actionButton: {
-    marginLeft: 12,
+    marginLeft: spacings.md,
   },
   relationship: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 12,
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
+    marginBottom: spacings.md,
   },
   localBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.success,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: spacings.sm,
+    paddingVertical: spacings.xs,
+    borderRadius: spacings.borderRadius.md,
     alignSelf: 'flex-start',
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   localText: {
-    color: '#fff',
-    fontSize: 12,
+    color: colors.textInverse,
+    fontSize: spacings.fontSize.xs,
     fontWeight: '500',
-    marginLeft: 4,
+    marginLeft: spacings.xs,
   },
   contactContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: spacings.sm,
   },
   contactButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginRight: 8,
+    backgroundColor: colors.backgroundSecondary,
+    paddingHorizontal: spacings.md,
+    paddingVertical: spacings.sm,
+    borderRadius: spacings.borderRadius.sm,
+    marginRight: spacings.sm,
   },
   contactText: {
     marginLeft: 6,
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.text,
   },
 });

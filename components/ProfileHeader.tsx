@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useUserStore } from '@/store/user-store';
 import { useTasksStore } from '@/store/tasks-store';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import ProgressBar from './ProgressBar';
 
 export default function ProfileHeader() {
@@ -67,14 +68,14 @@ export default function ProfileHeader() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.lg,
+    padding: spacings.cardPadding,
+    marginBottom: spacings.lg,
   },
   levelContainer: {
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacings.lg,
   },
   levelBadge: {
     width: 48,
@@ -83,51 +84,51 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   levelText: {
-    color: '#fff',
-    fontSize: 18,
+    color: colors.textInverse,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '700',
   },
   levelLabel: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '600',
     color: colors.text,
   },
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: spacings.lg,
   },
   stat: {
     alignItems: 'center',
     flex: 1,
   },
   statValue: {
-    fontSize: 20,
+    fontSize: spacings.fontSize.xl,
     fontWeight: '700',
     color: colors.text,
-    marginBottom: 2,
+    marginBottom: spacings.xs / 2,
   },
   statLabel: {
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: spacings.fontSize.xs,
+    color: colors.textSecondary,
   },
   progressContainer: {
-    marginTop: 8,
+    marginTop: spacings.sm,
   },
   progressLabelContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    marginBottom: spacings.xs,
   },
   progressLabel: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.text,
   },
   progressValue: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
   },
 });

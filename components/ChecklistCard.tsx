@@ -4,6 +4,7 @@ import { CustomChecklist } from '@/types';
 import { useUserStore } from '@/store/user-store';
 import { CheckCircle, Circle, ChevronRight, Edit } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import IconWrapper from '@/components/IconWrapper';
 
 interface ChecklistCardProps {
@@ -21,11 +22,11 @@ export default function ChecklistCard({ checklist, onPress, onEdit }: ChecklistC
   
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'supplies': return '#EF4444';
-      case 'planning': return '#3B82F6';
-      case 'skills': return '#10B981';
-      case 'home': return '#F59E0B';
-      case 'personal': return '#8B5CF6';
+      case 'supplies': return colors.danger;
+      case 'planning': return colors.primary;
+      case 'skills': return colors.success;
+      case 'home': return colors.warning;
+      case 'personal': return colors.warning;
       default: return colors.primary;
     }
   };
@@ -116,30 +117,17 @@ export default function ChecklistCard({ checklist, onPress, onEdit }: ChecklistC
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-      web: {
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      },
-    }),
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    padding: spacings.cardPadding,
+    marginBottom: spacings.lg,
+    ...spacings.shadow,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   titleContainer: {
     flexDirection: 'row',
@@ -148,57 +136,57 @@ const styles = StyleSheet.create({
   },
   categoryIndicator: {
     width: 4,
-    height: 20,
-    borderRadius: 2,
-    marginRight: 12,
+    height: spacings.xl,
+    borderRadius: spacings.borderRadius.xs / 2,
+    marginRight: spacings.md,
   },
   title: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
     flex: 1,
   },
   description: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 12,
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
+    marginBottom: spacings.md,
   },
   progressContainer: {
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   progressBar: {
     height: 6,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border,
     borderRadius: 3,
-    marginBottom: 4,
+    marginBottom: spacings.xs,
   },
   progressFill: {
     height: '100%',
     borderRadius: 3,
   },
   itemsPreview: {
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: spacings.xs,
   },
   itemText: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.text,
-    marginLeft: 8,
+    marginLeft: spacings.sm,
     flex: 1,
   },
   completedItemText: {
     textDecorationLine: 'line-through',
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   moreItems: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginTop: 4,
-    marginLeft: 24,
+    fontSize: spacings.fontSize.xs,
+    color: colors.textSecondary,
+    marginTop: spacings.xs,
+    marginLeft: spacings.xxl,
   },
   footer: {
     flexDirection: 'row',
@@ -206,19 +194,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   pointsContainer: {
-    backgroundColor: '#EFF6FF',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    backgroundColor: colors.primaryBadge,
+    paddingHorizontal: spacings.sm + 2,
+    paddingVertical: spacings.xs,
+    borderRadius: spacings.borderRadius.md,
   },
   pointsText: {
-    fontSize: 12,
+    fontSize: spacings.fontSize.xs,
     color: colors.primary,
     fontWeight: '500',
   },
   category: {
-    fontSize: 12,
+    fontSize: spacings.fontSize.xs,
     fontWeight: '500',
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
 });

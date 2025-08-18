@@ -10,6 +10,7 @@ import {
   Platform
 } from 'react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
@@ -38,7 +39,7 @@ export default function Button({
   ...rest
 }: ButtonProps) {
   const getBackgroundColor = () => {
-    if (disabled) return '#E5E7EB';
+    if (disabled) return colors.disabled;
     
     switch (variant) {
       case 'primary':
@@ -55,7 +56,7 @@ export default function Button({
   };
   
   const getTextColor = () => {
-    if (disabled) return '#9CA3AF';
+    if (disabled) return colors.textTertiary;
     
     switch (variant) {
       case 'outline':
@@ -63,14 +64,14 @@ export default function Button({
       case 'primary':
       case 'secondary':
       case 'danger':
-        return '#fff';
+        return colors.textInverse;
       default:
-        return '#fff';
+        return colors.textInverse;
     }
   };
   
   const getBorderColor = () => {
-    if (disabled) return '#E5E7EB';
+    if (disabled) return colors.disabled;
     
     switch (variant) {
       case 'outline':
@@ -83,26 +84,26 @@ export default function Button({
   const getPadding = () => {
     switch (size) {
       case 'small':
-        return { paddingVertical: 8, paddingHorizontal: 12 };
+        return { paddingVertical: spacings.sm, paddingHorizontal: spacings.md };
       case 'medium':
-        return { paddingVertical: 12, paddingHorizontal: 16 };
+        return { paddingVertical: spacings.md, paddingHorizontal: spacings.lg };
       case 'large':
-        return { paddingVertical: 16, paddingHorizontal: 24 };
+        return { paddingVertical: spacings.lg, paddingHorizontal: spacings.xxl };
       default:
-        return { paddingVertical: 12, paddingHorizontal: 16 };
+        return { paddingVertical: spacings.md, paddingHorizontal: spacings.lg };
     }
   };
   
   const getFontSize = () => {
     switch (size) {
       case 'small':
-        return 14;
+        return spacings.fontSize.sm;
       case 'medium':
-        return 16;
+        return spacings.fontSize.md;
       case 'large':
-        return 18;
+        return spacings.fontSize.lg;
       default:
-        return 16;
+        return spacings.fontSize.md;
     }
   };
   
@@ -138,8 +139,8 @@ export default function Button({
               {
                 color: getTextColor(),
                 fontSize: getFontSize(),
-                marginLeft: icon && iconPosition === 'left' ? 8 : 0,
-                marginRight: icon && iconPosition === 'right' ? 8 : 0,
+                marginLeft: icon && iconPosition === 'left' ? spacings.sm : 0,
+                marginRight: icon && iconPosition === 'right' ? spacings.sm : 0,
               },
               textStyle,
             ]}
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: spacings.borderRadius.sm,
     borderWidth: 1,
   },
   text: {

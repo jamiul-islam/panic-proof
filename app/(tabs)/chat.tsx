@@ -15,6 +15,7 @@ import { Send, Plus, MoreHorizontal } from 'lucide-react-native';
 import { useChatStore } from '@/store/chat-store';
 import { ChatMessage } from '@/types';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import IconWrapper from '@/components/IconWrapper';
 import ChatBubble from '@/components/ChatBubble';
 
@@ -289,16 +290,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   typingBubble: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 20,
-    borderBottomLeftRadius: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    backgroundColor: colors.card,
+    paddingHorizontal: spacings.screenPadding,
+    paddingVertical: spacings.md,
+    borderRadius: spacings.borderRadius.lg,
+    borderBottomLeftRadius: spacings.borderRadius.xs + 2,
+    ...spacings.lightShadow,
   },
   typingDots: {
     flexDirection: 'row',

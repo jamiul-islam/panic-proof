@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { ChatMessage } from '@/types';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 
 interface ChatBubbleProps {
   message: ChatMessage;
@@ -45,8 +46,8 @@ export default function ChatBubble({ message, formatTime }: ChatBubbleProps) {
 
 const styles = StyleSheet.create({
   messageContainer: {
-    paddingHorizontal: 16,
-    marginBottom: 12,
+    paddingHorizontal: spacings.screenPadding,
+    marginBottom: spacings.md,
   },
   userMessageContainer: {
     alignItems: 'flex-end',
@@ -56,42 +57,38 @@ const styles = StyleSheet.create({
   },
   messageBubble: {
     maxWidth: '80%',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 20,
+    paddingHorizontal: spacings.lg,
+    paddingVertical: spacings.md,
+    borderRadius: spacings.borderRadius.xl,
   },
   userMessageBubble: {
     backgroundColor: colors.primary,
     borderBottomRightRadius: 6,
   },
   aiMessageBubble: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
     borderBottomLeftRadius: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    ...spacings.lightShadow,
   },
   messageText: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     lineHeight: 22,
   },
   userMessageText: {
-    color: '#fff',
+    color: colors.textInverse,
   },
   aiMessageText: {
     color: colors.text,
   },
   messageTime: {
-    fontSize: 11,
-    marginTop: 4,
+    fontSize: spacings.fontSize.xs - 1,
+    marginTop: spacings.xs,
   },
   userMessageTime: {
     color: 'rgba(255, 255, 255, 0.8)',
     textAlign: 'right',
   },
   aiMessageTime: {
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
 });

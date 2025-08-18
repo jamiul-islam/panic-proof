@@ -5,6 +5,7 @@ import { PrepTask } from '@/types';
 import { useTasksStore } from '@/store/tasks-store';
 import { CheckCircle, Circle, ChevronRight } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import IconWrapper from '@/components/IconWrapper';
 
 interface TaskCardProps {
@@ -70,24 +71,11 @@ export default function TaskCard({ task, onPress }: TaskCardProps) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 16,
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    marginBottom: spacings.lg,
     overflow: 'hidden',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-      web: {
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      },
-    }),
+    ...spacings.lightShadow,
   },
   imageContainer: {
     height: 140,
@@ -95,28 +83,28 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border,
   },
   content: {
-    padding: 16,
+    padding: spacings.cardPadding,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   title: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
     flex: 1,
-    marginRight: 8,
+    marginRight: spacings.sm,
   },
   description: {
-    fontSize: 14,
-    color: '#4B5563',
-    marginBottom: 12,
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
+    marginBottom: spacings.md,
   },
   footer: {
     flexDirection: 'row',
@@ -124,13 +112,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   pointsContainer: {
-    backgroundColor: '#EFF6FF',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    backgroundColor: colors.primaryBadge,
+    paddingHorizontal: spacings.sm + 2,
+    paddingVertical: spacings.xs,
+    borderRadius: spacings.borderRadius.md,
   },
   pointsText: {
-    fontSize: 12,
+    fontSize: spacings.fontSize.xs,
     color: colors.primary,
     fontWeight: '500',
   },

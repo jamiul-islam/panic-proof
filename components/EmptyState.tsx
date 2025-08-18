@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 
 interface EmptyStateProps {
   title: string;
@@ -22,21 +23,21 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
+    padding: spacings.xxl,
   },
   iconContainer: {
-    marginBottom: 16,
+    marginBottom: spacings.lg,
   },
   title: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   message: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
     textAlign: 'center',
     maxWidth: 300,
   },
