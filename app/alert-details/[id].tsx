@@ -5,6 +5,8 @@ import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { useAlertsStore } from '@/store/alerts-store';
 import { Alert as AlertType } from '@/types';
 import { alertLevelColors } from '@/constants/colors';
+import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import { 
   AlertTriangle, 
   MapPin, 
@@ -57,9 +59,9 @@ export default function AlertDetailsScreen() {
           title: alert.title,
           headerRight: () => (
             <Share2 
-              size={24} 
-              color="#000" 
-              style={{ marginRight: 16 }}
+              size={spacings.sectionSpacing} 
+              color={colors.text} 
+              style={{ marginRight: spacings.lg }}
               onPress={handleShare}
             />
           ),
@@ -74,7 +76,7 @@ export default function AlertDetailsScreen() {
               { backgroundColor: alertLevelColors[alert.level] }
             ]}
           >
-            <AlertTriangle size={24} color="#fff" />
+            <AlertTriangle size={spacings.sectionSpacing} color={colors.textInverse} />
             <Text style={styles.alertLevel}>
               {alert.level.charAt(0).toUpperCase() + alert.level.slice(1)} Alert
             </Text>
@@ -85,19 +87,19 @@ export default function AlertDetailsScreen() {
             
             <View style={styles.infoContainer}>
               <View style={styles.infoItem}>
-                <MapPin size={20} color="#6B7280" />
+                <MapPin size={spacings.xl} color={colors.textSecondary} />
                 <Text style={styles.infoText}>{alert.location}</Text>
               </View>
               
               <View style={styles.infoItem}>
-                <Clock size={20} color="#6B7280" />
+                <Clock size={spacings.xl} color={colors.textSecondary} />
                 <Text style={styles.infoText}>
                   {new Date(alert.date).toLocaleString()}
                 </Text>
               </View>
               
               <View style={styles.infoItem}>
-                <Info size={20} color="#6B7280" />
+                <Info size={spacings.xl} color={colors.textSecondary} />
                 <Text style={styles.infoText}>Source: {alert.source}</Text>
               </View>
             </View>
@@ -108,7 +110,7 @@ export default function AlertDetailsScreen() {
                 
                 {alert.instructions.map((instruction, index) => (
                   <View key={index} style={styles.instructionItem}>
-                    <CheckCircle size={20} color={alertLevelColors[alert.level]} />
+                    <CheckCircle size={spacings.xl} color={alertLevelColors[alert.level]} />
                     <Text style={styles.instructionText}>{instruction}</Text>
                   </View>
                 ))}
@@ -131,7 +133,7 @@ export default function AlertDetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
   },
   loadingContainer: {
     flex: 1,
@@ -142,62 +144,62 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    backgroundColor: '#EF4444',
+    paddingVertical: spacings.md,
+    backgroundColor: colors.danger,
   },
   alertLevel: {
-    color: '#fff',
-    fontSize: 16,
+    color: colors.textInverse,
+    fontSize: spacings.fontSize.md,
     fontWeight: '600',
-    marginLeft: 8,
+    marginLeft: spacings.xs,
   },
   content: {
-    padding: 16,
+    padding: spacings.screenPadding,
   },
   description: {
-    fontSize: 18,
-    color: '#1F2937',
-    marginBottom: 24,
-    lineHeight: 26,
+    fontSize: spacings.fontSize.lg,
+    color: colors.text,
+    marginBottom: spacings.sectionSpacing,
+    lineHeight: spacings.fontSize.lg + spacings.xs,
   },
   infoContainer: {
-    backgroundColor: '#F9FAFB',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 24,
+    backgroundColor: colors.background,
+    borderRadius: spacings.borderRadius.xs,
+    padding: spacings.screenPadding,
+    marginBottom: spacings.sectionSpacing,
   },
   infoItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   infoText: {
-    fontSize: 16,
-    color: '#4B5563',
-    marginLeft: 12,
+    fontSize: spacings.fontSize.md,
+    color: colors.textSecondary,
+    marginLeft: spacings.md,
   },
   instructionsContainer: {
-    marginBottom: 24,
+    marginBottom: spacings.sectionSpacing,
   },
   instructionsTitle: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 16,
+    color: colors.text,
+    marginBottom: spacings.lg,
   },
   instructionItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   instructionText: {
-    fontSize: 16,
-    color: '#4B5563',
-    marginLeft: 12,
+    fontSize: spacings.fontSize.md,
+    color: colors.textSecondary,
+    marginLeft: spacings.md,
     flex: 1,
-    lineHeight: 24,
+    lineHeight: spacings.sectionSpacing,
   },
   learnMoreButton: {
-    marginTop: 8,
+    marginTop: spacings.xs,
   },
 });

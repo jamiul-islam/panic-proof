@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import { MapPin, Home, Briefcase, Heart, Search } from 'lucide-react-native';
 import Button from '@/components/Button';
 import IconWrapper from '@/components/IconWrapper';
@@ -88,20 +89,20 @@ export default function EditLocationScreen() {
                 value={name}
                 onChangeText={setName}
                 placeholder="E.g., Home, Work, Parents' House"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
               />
             </View>
             
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Address</Text>
               <View style={styles.addressInputContainer}>
-                <IconWrapper icon={Search} size={20} color="#9CA3AF" style={styles.searchIcon} />
+                <IconWrapper icon={Search} size={spacings.xl} color={colors.textTertiary} style={styles.searchIcon} />
                 <TextInput
                   style={styles.addressInput}
                   value={address}
                   onChangeText={setAddress}
                   placeholder="Search for an address"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor={colors.textTertiary}
                   multiline={true}
                   numberOfLines={2}
                 />
@@ -120,8 +121,8 @@ export default function EditLocationScreen() {
                 >
                   <IconWrapper 
                     icon={Home} 
-                    size={20} 
-                    color={locationType === 'home' ? '#fff' : colors.text} 
+                    size={spacings.xl} 
+                    color={locationType === 'home' ? colors.textInverse : colors.text} 
                   />
                   <Text 
                     style={[
@@ -143,8 +144,8 @@ export default function EditLocationScreen() {
                 >
                   <IconWrapper 
                     icon={Briefcase} 
-                    size={20} 
-                    color={locationType === 'work' ? '#fff' : colors.text} 
+                    size={spacings.xl} 
+                    color={locationType === 'work' ? colors.textInverse : colors.text} 
                   />
                   <Text 
                     style={[
@@ -166,8 +167,8 @@ export default function EditLocationScreen() {
                 >
                   <IconWrapper 
                     icon={Heart} 
-                    size={20} 
-                    color={locationType === 'favorite' ? '#fff' : colors.text} 
+                    size={spacings.xl} 
+                    color={locationType === 'favorite' ? colors.textInverse : colors.text} 
                   />
                   <Text 
                     style={[
@@ -189,8 +190,8 @@ export default function EditLocationScreen() {
                 >
                   <IconWrapper 
                     icon={MapPin} 
-                    size={20} 
-                    color={locationType === 'other' ? '#fff' : colors.text} 
+                    size={spacings.xl} 
+                    color={locationType === 'other' ? colors.textInverse : colors.text} 
                   />
                   <Text 
                     style={[
@@ -245,90 +246,90 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   formContainer: {
-    padding: 16,
+    padding: spacings.screenPadding,
   },
   inputContainer: {
-    marginBottom: 24,
+    marginBottom: spacings.sectionSpacing,
   },
   label: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: spacings.xs,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
+    borderColor: colors.border,
+    borderRadius: spacings.borderRadius.xs,
+    paddingHorizontal: spacings.screenPadding,
+    paddingVertical: spacings.md,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   addressInputContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderColor: colors.border,
+    borderRadius: spacings.borderRadius.xs,
+    paddingHorizontal: spacings.screenPadding,
+    paddingVertical: spacings.md,
   },
   searchIcon: {
     marginTop: 2,
-    marginRight: 12,
+    marginRight: spacings.md,
   },
   addressInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
-    minHeight: 44,
+    minHeight: spacings.heights.button,
     textAlignVertical: 'top',
   },
   locationTypeContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: spacings.md,
   },
   locationTypeButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    minWidth: 80,
+    borderColor: colors.border,
+    borderRadius: spacings.borderRadius.xs,
+    paddingHorizontal: spacings.screenPadding,
+    paddingVertical: spacings.md,
+    minWidth: spacings.xxxxl + spacings.xxxxl,
   },
   selectedLocationType: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
   },
   locationTypeText: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     fontWeight: '500',
     color: colors.text,
-    marginLeft: 8,
+    marginLeft: spacings.xs,
   },
   selectedLocationTypeText: {
-    color: '#fff',
+    color: colors.textInverse,
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
   checkbox: {
-    width: 24,
-    height: 24,
+    width: spacings.sectionSpacing,
+    height: spacings.sectionSpacing,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
-    borderRadius: 4,
+    borderColor: colors.border,
+    borderRadius: spacings.xs,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: spacings.md,
     marginTop: 2,
   },
   checkedCheckbox: {
@@ -336,28 +337,28 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   checkmark: {
-    color: '#fff',
-    fontSize: 14,
+    color: colors.textInverse,
+    fontSize: spacings.fontSize.sm,
     fontWeight: 'bold',
   },
   checkboxLabelContainer: {
     flex: 1,
   },
   checkboxLabel: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '500',
     color: colors.text,
-    marginBottom: 4,
+    marginBottom: spacings.xs,
   },
   checkboxDescription: {
-    fontSize: 14,
-    color: '#6B7280',
-    lineHeight: 20,
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
+    lineHeight: spacings.xl,
   },
   footer: {
-    padding: 16,
-    backgroundColor: '#fff',
+    padding: spacings.screenPadding,
+    backgroundColor: colors.card,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: colors.border,
   },
 });

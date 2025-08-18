@@ -7,6 +7,7 @@ import { useDisastersStore } from '@/store/disasters-store';
 import { useTasksStore } from '@/store/tasks-store';
 import { DisasterInfo, PrepTask } from '@/types';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import { 
   Clock, 
   AlertTriangle, 
@@ -61,9 +62,9 @@ export default function DisasterDetailsScreen() {
           title: disaster.name,
           headerRight: () => (
             <Share2 
-              size={24} 
-              color="#000" 
-              style={{ marginRight: 16 }}
+              size={spacings.sectionSpacing} 
+              color={colors.text} 
+              style={{ marginRight: spacings.lg }}
               onPress={handleShare}
             />
           ),
@@ -88,13 +89,13 @@ export default function DisasterDetailsScreen() {
             
             <View style={styles.tipsContainer}>
               <View style={styles.tipsHeader}>
-                <Clock size={20} color={colors.primary} />
+                <Clock size={spacings.xl} color={colors.primary} />
                 <Text style={styles.tipsTitle}>Before It Happens</Text>
               </View>
               
               {disaster.beforeTips.map((tip, index) => (
                 <View key={index} style={styles.tipItem}>
-                  <CheckCircle size={16} color={colors.primary} />
+                  <CheckCircle size={spacings.lg} color={colors.primary} />
                   <Text style={styles.tipText}>{tip}</Text>
                 </View>
               ))}
@@ -102,13 +103,13 @@ export default function DisasterDetailsScreen() {
             
             <View style={styles.tipsContainer}>
               <View style={styles.tipsHeader}>
-                <AlertTriangle size={20} color={colors.warning} />
+                <AlertTriangle size={spacings.xl} color={colors.warning} />
                 <Text style={styles.tipsTitle}>During the Event</Text>
               </View>
               
               {disaster.duringTips.map((tip, index) => (
                 <View key={index} style={styles.tipItem}>
-                  <CheckCircle size={16} color={colors.warning} />
+                  <CheckCircle size={spacings.lg} color={colors.warning} />
                   <Text style={styles.tipText}>{tip}</Text>
                 </View>
               ))}
@@ -116,13 +117,13 @@ export default function DisasterDetailsScreen() {
             
             <View style={styles.tipsContainer}>
               <View style={styles.tipsHeader}>
-                <CheckCircle size={20} color={colors.success} />
+                <CheckCircle size={spacings.xl} color={colors.success} />
                 <Text style={styles.tipsTitle}>After It's Over</Text>
               </View>
               
               {disaster.afterTips.map((tip, index) => (
                 <View key={index} style={styles.tipItem}>
-                  <CheckCircle size={16} color={colors.success} />
+                  <CheckCircle size={spacings.lg} color={colors.success} />
                   <Text style={styles.tipText}>{tip}</Text>
                 </View>
               ))}
@@ -131,7 +132,7 @@ export default function DisasterDetailsScreen() {
             {relatedTasks.length > 0 && (
               <View style={styles.relatedTasksContainer}>
                 <View style={styles.relatedTasksHeader}>
-                  <ListChecks size={20} color={colors.text} />
+                  <ListChecks size={spacings.xl} color={colors.text} />
                   <Text style={styles.relatedTasksTitle}>
                     Preparation Tasks
                   </Text>
@@ -165,7 +166,7 @@ export default function DisasterDetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
   },
   loadingContainer: {
     flex: 1,
@@ -173,82 +174,82 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imageContainer: {
-    height: 240,
+    height: spacings.xxxxl * 6,
     width: '100%',
     position: 'relative',
   },
   image: {
     flex: 1,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.backgroundTertiary,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: colors.overlay,
   },
   imageTitle: {
     position: 'absolute',
-    bottom: 24,
-    left: 24,
-    color: '#fff',
-    fontSize: 32,
+    bottom: spacings.sectionSpacing,
+    left: spacings.sectionSpacing,
+    color: colors.textInverse,
+    fontSize: spacings.fontSize.xxxl,
     fontWeight: '700',
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
   content: {
-    padding: 16,
+    padding: spacings.screenPadding,
   },
   description: {
-    fontSize: 16,
-    color: '#4B5563',
-    lineHeight: 24,
-    marginBottom: 24,
+    fontSize: spacings.fontSize.md,
+    color: colors.textSecondary,
+    lineHeight: spacings.sectionSpacing,
+    marginBottom: spacings.sectionSpacing,
   },
   tipsContainer: {
-    marginBottom: 24,
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
-    padding: 16,
+    marginBottom: spacings.sectionSpacing,
+    backgroundColor: colors.background,
+    borderRadius: spacings.borderRadius.md,
+    padding: spacings.screenPadding,
   },
   tipsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacings.lg,
   },
   tipsTitle: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
-    marginLeft: 8,
+    marginLeft: spacings.xs,
   },
   tipItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   tipText: {
     flex: 1,
-    fontSize: 16,
-    color: '#4B5563',
-    marginLeft: 12,
-    lineHeight: 24,
+    fontSize: spacings.fontSize.md,
+    color: colors.textSecondary,
+    marginLeft: spacings.md,
+    lineHeight: spacings.sectionSpacing,
   },
   relatedTasksContainer: {
-    marginBottom: 24,
+    marginBottom: spacings.sectionSpacing,
   },
   relatedTasksHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacings.lg,
   },
   relatedTasksTitle: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
-    marginLeft: 8,
+    marginLeft: spacings.xs,
   },
   viewAllButton: {
-    marginTop: 8,
+    marginTop: spacings.xs,
   },
 });

@@ -5,6 +5,7 @@ import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { useUserStore } from '@/store/user-store';
 import { EmergencyContact } from '@/types';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import Button from '@/components/Button';
 
 export default function EditContactScreen() {
@@ -99,7 +100,7 @@ export default function EditContactScreen() {
                 value={name}
                 onChangeText={setName}
                 placeholder="Enter contact name"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
               />
               {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
             </View>
@@ -111,7 +112,7 @@ export default function EditContactScreen() {
                 value={relationship}
                 onChangeText={setRelationship}
                 placeholder="E.g., Family, Friend, Neighbor"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
               />
             </View>
             
@@ -122,7 +123,7 @@ export default function EditContactScreen() {
                 value={phone}
                 onChangeText={setPhone}
                 placeholder="Enter phone number"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
                 keyboardType="phone-pad"
               />
               {phoneError ? <Text style={styles.errorText}>{phoneError}</Text> : null}
@@ -135,7 +136,7 @@ export default function EditContactScreen() {
                 value={email}
                 onChangeText={setEmail}
                 placeholder="Enter email address"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
@@ -151,8 +152,8 @@ export default function EditContactScreen() {
               <Switch
                 value={isLocal}
                 onValueChange={setIsLocal}
-                trackColor={{ false: '#E5E7EB', true: colors.primary }}
-                thumbColor="#fff"
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor={colors.textInverse}
               />
             </View>
           </View>
@@ -188,30 +189,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollContent: {
-    padding: 16,
+    padding: spacings.screenPadding,
   },
   formContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    padding: spacings.screenPadding,
+    marginBottom: spacings.lg,
   },
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: spacings.lg,
   },
   label: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '500',
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: spacings.xs,
   },
   input: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    borderColor: colors.border,
+    borderRadius: spacings.borderRadius.xs,
+    padding: spacings.md,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   inputError: {
@@ -219,19 +220,19 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.danger,
-    fontSize: 14,
-    marginTop: 4,
+    fontSize: spacings.fontSize.sm,
+    marginTop: spacings.xs,
   },
   switchContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacings.lg,
   },
   switchDescription: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginTop: 4,
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
+    marginTop: spacings.xs,
     maxWidth: '80%',
   },
   buttonsContainer: {
@@ -240,6 +241,6 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    marginHorizontal: 4,
+    marginHorizontal: spacings.xs,
   },
 });

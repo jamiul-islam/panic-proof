@@ -7,6 +7,7 @@ import { useTasksStore } from '@/store/tasks-store';
 import { useUserStore } from '@/store/user-store';
 import { PrepTask, CustomChecklist } from '@/types';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import { 
   CheckCircle, 
   Circle, 
@@ -114,11 +115,11 @@ export default function TaskDetailsScreen() {
   
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'supplies': return '#EF4444';
-      case 'planning': return '#3B82F6';
-      case 'skills': return '#10B981';
-      case 'home': return '#F59E0B';
-      case 'personal': return '#8B5CF6';
+      case 'supplies': return colors.danger;
+      case 'planning': return colors.primary;
+      case 'skills': return colors.success;
+      case 'home': return colors.warning;
+      case 'personal': return colors.secondary;
       default: return colors.primary;
     }
   };
@@ -148,14 +149,14 @@ export default function TaskDetailsScreen() {
         options={{
           title: currentItem?.title || 'Details',
           headerRight: () => (
-            <View style={{ flexDirection: 'row', gap: 16 }}>
+            <View style={{ flexDirection: 'row', gap: spacings.lg }}>
               {isCustomChecklist && (
                 <TouchableOpacity onPress={handleEdit}>
-                  <IconWrapper icon={Edit} size={24} color="#000" />
+                  <IconWrapper icon={Edit} size={spacings.sectionSpacing} color={colors.text} />
                 </TouchableOpacity>
               )}
               <TouchableOpacity onPress={handleShare}>
-                <IconWrapper icon={Share2} size={24} color="#000" />
+                <IconWrapper icon={Share2} size={spacings.sectionSpacing} color={colors.text} />
               </TouchableOpacity>
             </View>
           ),
@@ -287,8 +288,8 @@ export default function TaskDetailsScreen() {
                 onPress={handleToggleCompletion}
                 variant={task.isCompleted ? "outline" : "primary"}
                 icon={task.isCompleted ? 
-                  <IconWrapper icon={Circle} size={20} color={colors.primary} /> : 
-                  <IconWrapper icon={CheckCircle} size={20} color="#fff" />
+                  <IconWrapper icon={Circle} size={spacings.xl} color={colors.primary} /> : 
+                  <IconWrapper icon={CheckCircle} size={spacings.xl} color={colors.textInverse} />
                 }
                 iconPosition="left"
                 style={styles.actionButton}
@@ -299,7 +300,7 @@ export default function TaskDetailsScreen() {
                 onPress={handleDelete}
                 variant="outline"
                 style={styles.deleteButton}
-                textStyle={{ color: '#EF4444' }}
+                textStyle={{ color: colors.danger }}
               />
             )}
           </View>
@@ -312,7 +313,7 @@ export default function TaskDetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
   },
   loadingContainer: {
     flex: 1,
@@ -320,31 +321,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imageContainer: {
-    height: 240,
+    height: spacings.xxxxl * 6,
     width: '100%',
   },
   image: {
     flex: 1,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.backgroundTertiary,
   },
   content: {
-    padding: 16,
+    padding: spacings.screenPadding,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacings.lg,
   },
   categoryBadge: {
-    backgroundColor: '#EFF6FF',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
+    backgroundColor: colors.primaryBadge,
+    paddingHorizontal: spacings.md,
+    paddingVertical: spacings.xs + 2,
+    borderRadius: spacings.lg,
   },
   categoryText: {
     color: colors.primary,
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     fontWeight: '500',
   },
   pointsContainer: {
@@ -353,114 +354,114 @@ const styles = StyleSheet.create({
   },
   pointsText: {
     color: colors.secondary,
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '600',
-    marginLeft: 4,
+    marginLeft: spacings.xs,
   },
   description: {
-    fontSize: 16,
-    color: '#4B5563',
-    lineHeight: 24,
-    marginBottom: 24,
+    fontSize: spacings.fontSize.md,
+    color: colors.textSecondary,
+    lineHeight: spacings.sectionSpacing,
+    marginBottom: spacings.sectionSpacing,
   },
   stepsContainer: {
-    marginBottom: 24,
+    marginBottom: spacings.sectionSpacing,
   },
   stepsTitle: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 16,
+    marginBottom: spacings.lg,
   },
   stepItem: {
     flexDirection: 'row',
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   stepNumber: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: spacings.sectionSpacing,
+    height: spacings.sectionSpacing,
+    borderRadius: spacings.md,
     backgroundColor: colors.primary,
-    color: '#fff',
+    color: colors.textInverse,
     textAlign: 'center',
-    lineHeight: 24,
-    fontSize: 14,
+    lineHeight: spacings.sectionSpacing,
+    fontSize: spacings.fontSize.sm,
     fontWeight: '600',
-    marginRight: 12,
+    marginRight: spacings.md,
   },
   stepText: {
     flex: 1,
-    fontSize: 16,
-    color: '#4B5563',
-    lineHeight: 24,
+    fontSize: spacings.fontSize.md,
+    color: colors.textSecondary,
+    lineHeight: spacings.sectionSpacing,
   },
   disasterTypesContainer: {
     marginBottom: 24,
   },
   disasterTypesTitle: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   disasterTypesList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: spacings.xs,
   },
   disasterTypeBadge: {
-    backgroundColor: '#F3F4F6',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    marginRight: 8,
-    marginBottom: 8,
+    backgroundColor: colors.backgroundSecondary,
+    paddingHorizontal: spacings.md,
+    paddingVertical: spacings.xs + 2,
+    borderRadius: spacings.lg,
+    marginRight: spacings.xs,
+    marginBottom: spacings.xs,
   },
   disasterTypeText: {
-    color: '#4B5563',
-    fontSize: 14,
+    color: colors.textSecondary,
+    fontSize: spacings.fontSize.sm,
   },
   actionButton: {
-    marginTop: 8,
+    marginTop: spacings.xs,
   },
   checklistItem: {
-    paddingVertical: 12,
+    paddingVertical: spacings.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: colors.backgroundSecondary,
   },
   itemContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   checklistItemText: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
-    marginLeft: 12,
+    marginLeft: spacings.md,
     flex: 1,
   },
   completedItemText: {
     textDecorationLine: 'line-through',
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   progressSection: {
-    marginBottom: 24,
+    marginBottom: spacings.sectionSpacing,
   },
   progressBar: {
-    height: 8,
-    backgroundColor: '#E5E7EB',
-    borderRadius: 4,
-    marginBottom: 8,
+    height: spacings.xs,
+    backgroundColor: colors.backgroundTertiary,
+    borderRadius: spacings.xs,
+    marginBottom: spacings.xs,
   },
   progressFill: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: spacings.xs,
   },
   deleteButton: {
-    marginTop: 8,
-    padding: 12,
-    borderRadius: 8,
+    marginTop: spacings.xs,
+    padding: spacings.md,
+    borderRadius: spacings.borderRadius.xs,
     borderWidth: 1,
-    borderColor: '#EF4444',
+    borderColor: colors.danger,
     alignItems: 'center',
   },
 });
