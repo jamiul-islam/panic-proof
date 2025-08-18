@@ -5,6 +5,7 @@ import { useRouter, Stack } from 'expo-router';
 import { useTasksStore } from '@/store/tasks-store';
 import { useUserStore } from '@/store/user-store';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import TaskCard from '@/components/TaskCard';
 import ChecklistCard from '@/components/ChecklistCard';
 import ProgressBar from '@/components/ProgressBar';
@@ -75,7 +76,7 @@ export default function PrepareScreen() {
           title: "Prepare",
           headerRight: () => (
             <TouchableOpacity onPress={handleAddChecklist}>
-              <Plus size={24} color="#000" style={{ marginRight: 16 }} />
+              <Plus size={spacings.sectionSpacing} color={colors.text} style={{ marginRight: spacings.lg }} />
             </TouchableOpacity>
           ),
         }} 
@@ -92,7 +93,7 @@ export default function PrepareScreen() {
               {Math.round(taskProgress.percentage)}%
             </Text>
           </View>
-          <ProgressBar progress={taskProgress.percentage} height={8} />
+          <ProgressBar progress={taskProgress.percentage} height={spacings.xs} />
         </View>
         
         <View style={styles.categorySection}>
@@ -138,36 +139,36 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   progressContainer: {
-    backgroundColor: '#fff',
-    padding: 16,
-    paddingTop: 20,
-    marginBottom: 8,
+    backgroundColor: colors.card,
+    padding: spacings.screenPadding,
+    paddingTop: spacings.xl,
+    marginBottom: spacings.xs,
   },
   categorySection: {
-    marginBottom: 8,
+    marginBottom: spacings.xs,
   },
   progressTitle: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: spacings.xs,
   },
   progressDetails: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: spacings.xs,
   },
   progressText: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
   },
   progressPercentage: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     fontWeight: '600',
     color: colors.primary,
   },
   listContent: {
-    padding: 16,
-    paddingTop: 8,
+    padding: spacings.screenPadding,
+    paddingTop: spacings.xs,
   },
 });

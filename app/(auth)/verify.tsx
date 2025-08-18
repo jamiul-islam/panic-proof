@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingVi
 import { useSignIn, useSignUp } from '@clerk/clerk-expo';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import { ArrowLeft } from 'lucide-react-native';
 import IconWrapper from '@/components/IconWrapper';
 import Button from '@/components/Button';

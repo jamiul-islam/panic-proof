@@ -128,7 +128,7 @@ export default function ChatScreen() {
             Start a conversation with your emergency preparedness assistant
           </Text>
           <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
-            <IconWrapper icon={Plus} size={20} color="#fff" />
+            <IconWrapper icon={Plus} size={20} color={colors.textInverse} />
             <Text style={styles.newChatButtonText}>Start New Chat</Text>
           </TouchableOpacity>
         </View>
@@ -181,7 +181,7 @@ export default function ChatScreen() {
               value={inputText}
               onChangeText={setInputText}
               placeholder="Ask about emergency preparedness..."
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.textTertiary}
               multiline
               maxLength={500}
             />
@@ -196,7 +196,7 @@ export default function ChatScreen() {
               <IconWrapper
                 icon={Send}
                 size={18}
-                color={inputText.trim() ? '#fff' : '#9CA3AF'}
+                color={inputText.trim() ? colors.textInverse : colors.textTertiary}
               />
             </TouchableOpacity>
           </View>
@@ -209,7 +209,7 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: colors.backgroundSecondary,
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -218,65 +218,65 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: spacings.xxxxl,
   },
   emptyChatTitle: {
-    fontSize: 24,
+    fontSize: spacings.fontSize.xxl,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: spacings.sm,
     textAlign: 'center',
   },
   emptyChatSubtitle: {
-    fontSize: 16,
-    color: '#6B7280',
+    fontSize: spacings.fontSize.md,
+    color: colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 24,
+    marginBottom: spacings.xxxl,
+    lineHeight: spacings.sectionSpacing,
   },
   newChatButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.primary,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    paddingHorizontal: spacings.xxl,
+    paddingVertical: spacings.md,
     borderRadius: 25,
-    gap: 8,
+    gap: spacings.sm,
   },
   newChatButtonText: {
-    color: '#fff',
-    fontSize: 16,
+    color: colors.textInverse,
+    fontSize: spacings.fontSize.md,
     fontWeight: '600',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#fff',
+    paddingHorizontal: spacings.screenPadding,
+    paddingVertical: spacings.md,
+    backgroundColor: colors.card,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
   },
   headerLeft: {
     flex: 1,
   },
   chatTitle: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
   },
   chatSubtitle: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   headerRight: {
     flexDirection: 'row',
-    gap: 8,
+    gap: spacings.sm,
   },
   headerButton: {
-    padding: 8,
+    padding: spacings.sm,
   },
   messagesList: {
     flex: 1,
@@ -299,42 +299,42 @@ const styles = StyleSheet.create({
   },
   typingDots: {
     flexDirection: 'row',
-    gap: 4,
+    gap: spacings.xs,
   },
   dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#9CA3AF',
+    width: spacings.xs,
+    height: spacings.xs,
+    borderRadius: spacings.xs / 2,
+    backgroundColor: colors.textTertiary,
   },
   inputContainer: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 12,
+    backgroundColor: colors.card,
+    paddingHorizontal: spacings.screenPadding,
+    paddingTop: spacings.md,
+    paddingBottom: spacings.md,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: colors.border,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    backgroundColor: '#f3f4f6',
-    borderRadius: 25,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    gap: 12,
+    backgroundColor: colors.backgroundSecondary,
+    borderRadius: spacings.borderRadius.full / 2,
+    paddingHorizontal: spacings.screenPadding,
+    paddingVertical: spacings.xs,
+    gap: spacings.md,
   },
   textInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
-    maxHeight: 100,
-    paddingVertical: 8,
+    maxHeight: spacings.xxxxl + spacings.xxxxl + spacings.xl,
+    paddingVertical: spacings.xs,
   },
   sendButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: spacings.xxxl + spacings.xs,
+    height: spacings.xxxl + spacings.xs,
+    borderRadius: spacings.fontSize.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },

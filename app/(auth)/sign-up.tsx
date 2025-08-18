@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, Keyboar
 import { useSignUp } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react-native';
 import IconWrapper from '@/components/IconWrapper';
 import Button from '@/components/Button';

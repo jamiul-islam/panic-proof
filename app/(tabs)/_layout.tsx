@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs } from "expo-router";
 import { Home, ListChecks, User, Bell, MessageCircle } from "lucide-react-native";
 import { colors } from "@/constants/colors";
+import { spacings } from "@/constants/spacings";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
@@ -11,25 +12,25 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: "#9CA3AF",
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
           borderTopWidth: 1,
-          borderTopColor: "#E5E7EB",
-          height: 60 + insets.bottom,
-          paddingBottom: insets.bottom + 8,
-          paddingTop: 8,
-          backgroundColor: "#fff",
+          borderTopColor: colors.border,
+          height: spacings.xxxxl + spacings.lg + insets.bottom,
+          paddingBottom: insets.bottom + spacings.xs,
+          paddingTop: spacings.xs,
+          backgroundColor: colors.card,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: spacings.fontSize.xs,
           fontWeight: "500",
         },
         headerStyle: {
-          backgroundColor: "#fff",
+          backgroundColor: colors.card,
         },
         headerTitleStyle: {
           fontWeight: "600",
-          fontSize: 18,
+          fontSize: spacings.fontSize.lg,
         },
         headerShadowVisible: false,
       }}

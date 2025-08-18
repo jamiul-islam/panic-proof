@@ -8,6 +8,7 @@ import { useTasksStore } from '@/store/tasks-store';
 import { useDisastersStore } from '@/store/disasters-store';
 import { AlertTriangle, MapPin, Bell, Shield, ArrowRight } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import AlertCard from '@/components/AlertCard';
 import TaskCard from '@/components/TaskCard';
 import DisasterCard from '@/components/DisasterCard';
@@ -58,7 +59,7 @@ export default function HomeScreen() {
           <View>
             <Text style={styles.greeting}>Hello, {profile?.name || 'there'}!</Text>
             <View style={styles.locationContainer}>
-              <IconWrapper icon={MapPin} size={14} color="#6B7280" />
+              <IconWrapper icon={MapPin} size={spacings.fontSize.sm} color={colors.textSecondary} />
               <Text style={styles.location}>{profile?.location || 'Set your location'}</Text>
             </View>
           </View>
@@ -68,7 +69,7 @@ export default function HomeScreen() {
               style={styles.alertBadge}
               onPress={() => router.push('/alerts')}
             >
-              <IconWrapper icon={Bell} size={16} color="#fff" />
+              <IconWrapper icon={Bell} size={spacings.lg} color={colors.textInverse} />
               <Text style={styles.alertBadgeText}>{unviewedAlertsCount}</Text>
             </TouchableOpacity>
           )}
@@ -77,7 +78,7 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View style={styles.sectionTitleContainer}>
-              <IconWrapper icon={Shield} size={20} color={colors.primary} />
+              <IconWrapper icon={Shield} size={spacings.xl} color={colors.primary} />
               <Text style={styles.sectionTitle}>Your Preparedness</Text>
             </View>
             <Text style={styles.sectionSubtitle}>
@@ -88,7 +89,7 @@ export default function HomeScreen() {
           <View style={styles.prepCard}>
             <ProgressBar 
               progress={taskProgress.percentage} 
-              height={8} 
+              height={spacings.xs} 
               showPercentage 
               label="Overall Preparedness" 
             />
@@ -99,7 +100,7 @@ export default function HomeScreen() {
               variant="primary" 
               size="small" 
               style={styles.prepButton}
-              icon={<IconWrapper icon={ArrowRight} size={16} color="#fff" />}
+              icon={<IconWrapper icon={ArrowRight} size={spacings.lg} color={colors.textInverse} />}
               iconPosition="right"
             />
           </View>
@@ -109,7 +110,7 @@ export default function HomeScreen() {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <View style={styles.sectionTitleContainer}>
-                <IconWrapper icon={AlertTriangle} size={20} color={colors.danger} />
+                <IconWrapper icon={AlertTriangle} size={spacings.xl} color={colors.danger} />
                 <Text style={styles.sectionTitle}>Active Alerts</Text>
               </View>
               <TouchableOpacity onPress={() => router.push('/alerts')}>
@@ -182,78 +183,78 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 16,
+    paddingHorizontal: spacings.screenPadding,
+    paddingTop: spacings.xl,
+    paddingBottom: spacings.lg,
   },
   greeting: {
-    fontSize: 24,
+    fontSize: spacings.fontSize.xxl,
     fontWeight: '700',
     color: colors.text,
-    marginBottom: 4,
+    marginBottom: spacings.xs,
   },
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   location: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginLeft: 4,
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
+    marginLeft: spacings.xs,
   },
   alertBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.danger,
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    borderRadius: spacings.xl,
+    paddingHorizontal: spacings.md,
+    paddingVertical: spacings.xs + 2,
   },
   alertBadgeText: {
-    color: '#fff',
-    fontSize: 14,
+    color: colors.textInverse,
+    fontSize: spacings.fontSize.sm,
     fontWeight: '600',
-    marginLeft: 4,
+    marginLeft: spacings.xs,
   },
   section: {
-    marginBottom: 24,
-    paddingHorizontal: 16,
+    marginBottom: spacings.sectionSpacing,
+    paddingHorizontal: spacings.screenPadding,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   sectionTitleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
-    marginLeft: 8,
+    marginLeft: spacings.xs,
   },
   sectionSubtitle: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
   },
   seeAll: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.primary,
     fontWeight: '500',
   },
   prepCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    padding: spacings.cardPadding,
   },
   prepButton: {
-    marginTop: 16,
+    marginTop: spacings.lg,
   },
   disastersContainer: {
-    paddingVertical: 8,
-    paddingRight: 16,
+    paddingVertical: spacings.xs,
+    paddingRight: spacings.lg,
   },
 });

@@ -4,6 +4,7 @@ import { useSignIn } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import Button from '@/components/Button';
 import { Mail, ArrowLeft } from 'lucide-react-native';
 import IconWrapper from '@/components/IconWrapper';
@@ -63,7 +64,7 @@ export default function ForgotPasswordScreen() {
         
         <View style={styles.inputContainer}>
           <View style={styles.iconContainer}>
-            <IconWrapper icon={Mail} size={20} color="#9CA3AF" />
+            <IconWrapper icon={Mail} size={20} color={colors.textTertiary} />
           </View>
           <TextInput
             style={styles.input}
@@ -72,7 +73,7 @@ export default function ForgotPasswordScreen() {
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textTertiary}
           />
         </View>
         
@@ -100,65 +101,65 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    padding: 24,
+    padding: spacings.xxl,
   },
   backButton: {
-    marginBottom: 24,
+    marginBottom: spacings.xxl,
   },
   content: {
     flex: 1,
   },
   title: {
-    fontSize: 24,
+    fontSize: spacings.fontSize.xxl,
     fontWeight: '700',
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#6B7280',
-    marginBottom: 24,
+    fontSize: spacings.fontSize.md,
+    color: colors.textSecondary,
+    marginBottom: spacings.xxl,
   },
   errorText: {
     color: colors.danger,
-    marginBottom: 16,
-    fontSize: 14,
+    marginBottom: spacings.lg,
+    fontSize: spacings.fontSize.sm,
   },
   successText: {
     color: colors.success,
-    marginBottom: 16,
-    fontSize: 14,
-    backgroundColor: '#D1FAE5',
-    padding: 12,
-    borderRadius: 8,
+    marginBottom: spacings.lg,
+    fontSize: spacings.fontSize.sm,
+    backgroundColor: colors.successBadge,
+    padding: spacings.md,
+    borderRadius: spacings.borderRadius.sm,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    marginBottom: 24,
-    backgroundColor: '#F9FAFB',
+    borderColor: colors.inputBorder,
+    borderRadius: spacings.borderRadius.sm,
+    marginBottom: spacings.xxl,
+    backgroundColor: colors.inputBackground,
   },
   iconContainer: {
-    paddingHorizontal: 12,
+    paddingHorizontal: spacings.md,
   },
   input: {
     flex: 1,
-    height: 50,
-    fontSize: 16,
+    height: spacings.heights.input,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   button: {
-    marginBottom: 24,
+    marginBottom: spacings.xxl,
   },
   signInContainer: {
     alignItems: 'center',
   },
   signInText: {
     color: colors.primary,
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '600',
   },
 });

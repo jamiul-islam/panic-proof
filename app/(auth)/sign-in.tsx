@@ -4,6 +4,7 @@ import { useSignIn } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react-native';
 import IconWrapper from '@/components/IconWrapper';
 import Button from '@/components/Button';
@@ -59,7 +60,7 @@ export default function SignInScreen() {
   
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />                  
+      <StatusBar barStyle="dark-content" backgroundColor={colors.textInverse} />                  
       
       {/* Main Content */}
       <KeyboardAvoidingView
@@ -76,7 +77,7 @@ export default function SignInScreen() {
               style={styles.backButton}
               onPress={() => router.back()}
             >
-              <IconWrapper icon={ArrowLeft} size={24} color="#000000" />
+              <IconWrapper icon={ArrowLeft} size={24} color={colors.text} />
             </TouchableOpacity>
           )}
 
@@ -92,26 +93,29 @@ export default function SignInScreen() {
             
             {/* Email Input */}
             <View style={styles.inputContainer}>
-              <TextInput
+                            <TextInput
                 style={styles.input}
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
-                autoCapitalize="none"
                 keyboardType="email-address"
-                placeholderTextColor="#9CA3AF"
+                autoCapitalize="none"
+                autoCorrect={false}
+                placeholderTextColor={colors.textTertiary}
               />
             </View>
             
             {/* Password Input */}
             <View style={styles.inputContainer}>
-              <TextInput
+                            <TextInput
                 style={styles.passwordInput}
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
-                placeholderTextColor="#9CA3AF"
+                autoCapitalize="none"
+                autoCorrect={false}
+                placeholderTextColor={colors.textTertiary}
               />
               <TouchableOpacity
                 style={styles.eyeIcon}
@@ -120,7 +124,7 @@ export default function SignInScreen() {
                 <IconWrapper 
                   icon={showPassword ? EyeOff : Eye} 
                   size={20} 
-                  color="#9CA3AF" 
+                  color={colors.textTertiary} 
                 />
               </TouchableOpacity>
             </View>
@@ -161,24 +165,24 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EFF6FF', // Light blue background to simulate gradient
+    backgroundColor: colors.primaryBadge,
   },
   statusBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: spacings.xl,
     height: 44,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   statusTime: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     fontWeight: '500',
-    color: '#000000',
+    color: colors.text,
   },
   statusIcons: {
     flexDirection: 'row',
-    gap: 8,
+    gap: spacings.sm,
     width: 64,
   },
   keyboardAvoidingView: {
@@ -186,98 +190,98 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: spacings.xxl,
     justifyContent: 'center',
     minHeight: '100%',
   },
   backButton: {
     position: 'absolute',
-    top: 60, // Account for status bar + extra spacing
-    left: 24,
+    top: 60,
+    left: spacings.xxl,
     zIndex: 1,
-    padding: 8,
+    padding: spacings.sm,
   },
   welcomeContainer: {
-    marginBottom: 40,
+    marginBottom: spacings.xxxxl,
   },
   welcomeContainerNoBack: {
-    marginTop: 0, // No extra margin needed since content is centered
+    marginTop: 0,
   },
   welcomeTitle: {
-    fontSize: 28,
+    fontSize: spacings.fontSize.xxxl - 4,
     fontWeight: 'bold',
-    color: '#1E3A8A', // Blue-900
-    marginBottom: 8,
+    color: colors.primary,
+    marginBottom: spacings.sm,
   },
   welcomeSubtitle: {
-    fontSize: 16,
-    color: '#64748B', // Slate-500
+    fontSize: spacings.fontSize.md,
+    color: colors.textSecondary,
   },
   formContainer: {
-    gap: 16,
+    gap: spacings.lg,
   },
   errorText: {
-    color: '#EF4444',
-    marginBottom: 16,
-    fontSize: 14,
+    color: colors.danger,
+    marginBottom: spacings.lg,
+    fontSize: spacings.fontSize.sm,
   },
   inputContainer: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
+    backgroundColor: colors.textInverse,
+    borderRadius: spacings.borderRadius.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0', // Slate-200
-    height: 56,
-    paddingHorizontal: 16,
+    borderColor: colors.borderLight,
+    height: spacings.heights.input + 6,
+    paddingHorizontal: spacings.lg,
     justifyContent: 'center',
   },
   input: {
-    fontSize: 16,
-    color: '#1F2937',
+    fontSize: spacings.fontSize.md,
+    color: colors.text,
     height: '100%',
   },
   passwordInput: {
-    fontSize: 16,
-    color: '#1F2937',
+    fontSize: spacings.fontSize.md,
+    color: colors.text,
     height: '100%',
-    paddingRight: 40,
+    paddingRight: spacings.xxxxl,
   },
   eyeIcon: {
     position: 'absolute',
-    right: 16,
-    padding: 4,
+    right: spacings.lg,
+    padding: spacings.xs,
   },
   forgotPasswordContainer: {
     alignItems: 'flex-end',
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   forgotPasswordText: {
-    color: '#2563EB', // Blue-600
-    fontSize: 14,
+    color: colors.primary,
+    fontSize: spacings.fontSize.sm,
   },
   signInButton: {
-    marginBottom: 20,
+    marginBottom: spacings.xl,
   },
   signUpContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: spacings.xl,
   },
   signUpText: {
-    color: '#64748B',
-    fontSize: 14,
+    color: colors.textSecondary,
+    fontSize: spacings.fontSize.sm,
   },
   signUpLink: {
-    color: '#2563EB',
-    fontSize: 14,
+    color: colors.primary,
+    fontSize: spacings.fontSize.sm,
     fontWeight: 'bold',
   },
   homeIndicator: {
-    backgroundColor: '#000000',
+    backgroundColor: colors.text,
     height: 5,
     width: 134,
     borderRadius: 2.5,
     alignSelf: 'center',
-    marginBottom: 20,
+    marginBottom: spacings.xl,
   },
 });

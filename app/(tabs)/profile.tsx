@@ -18,6 +18,7 @@ import {
   BookOpen
 } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import ProfileHeader from '@/components/ProfileHeader';
 import IconWrapper from '@/components/IconWrapper';
 
@@ -128,21 +129,21 @@ export default function ProfileScreen() {
               style={styles.cameraButton}
               onPress={handlePickImage}
             >
-              <IconWrapper icon={Camera} size={16} color="#fff" />
+              <IconWrapper icon={Camera} size={spacings.lg} color={colors.textInverse} />
             </TouchableOpacity>
           </View>
           
           <View style={styles.profileInfo}>
             <Text style={styles.profileName}>{profile.name || "User"}</Text>
             <View style={styles.locationContainer}>
-              <IconWrapper icon={MapPin} size={14} color="#6B7280" />
+              <IconWrapper icon={MapPin} size={spacings.fontSize.sm} color={colors.textSecondary} />
               <Text style={styles.locationText}>{profile.location || "Set your location"}</Text>
             </View>
             <TouchableOpacity 
               style={styles.editProfileButton}
               onPress={handleEditProfile}
             >
-              <IconWrapper icon={Edit} size={14} color={colors.primary} />
+              <IconWrapper icon={Edit} size={spacings.fontSize.sm} color={colors.primary} />
               <Text style={styles.editProfileText}>Edit Profile</Text>
             </TouchableOpacity>
           </View>
@@ -158,10 +159,10 @@ export default function ProfileScreen() {
             onPress={handleSavedLocations}
           >
             <View style={styles.menuItemLeft}>
-              <IconWrapper icon={MapPin} size={20} color={colors.text} />
+              <IconWrapper icon={MapPin} size={spacings.xl} color={colors.text} />
               <Text style={styles.menuItemText}>Saved Locations</Text>
             </View>
-            <IconWrapper icon={ChevronRight} size={20} color="#9CA3AF" />
+            <IconWrapper icon={ChevronRight} size={spacings.xl} color={colors.textTertiary} />
           </TouchableOpacity>
           
           <TouchableOpacity 
@@ -169,10 +170,10 @@ export default function ProfileScreen() {
             onPress={handleEmergencyContacts}
           >
             <View style={styles.menuItemLeft}>
-              <IconWrapper icon={Phone} size={20} color={colors.text} />
+              <IconWrapper icon={Phone} size={spacings.xl} color={colors.text} />
               <Text style={styles.menuItemText}>Emergency Contacts</Text>
             </View>
-            <IconWrapper icon={ChevronRight} size={20} color="#9CA3AF" />
+            <IconWrapper icon={ChevronRight} size={spacings.xl} color={colors.textTertiary} />
           </TouchableOpacity>
           
           <TouchableOpacity 
@@ -180,10 +181,10 @@ export default function ProfileScreen() {
             onPress={handleResources}
           >
             <View style={styles.menuItemLeft}>
-              <IconWrapper icon={BookOpen} size={20} color={colors.text} />
+              <IconWrapper icon={BookOpen} size={spacings.xl} color={colors.text} />
               <Text style={styles.menuItemText}>Resources</Text>
             </View>
-            <IconWrapper icon={ChevronRight} size={20} color="#9CA3AF" />
+            <IconWrapper icon={ChevronRight} size={spacings.xl} color={colors.textTertiary} />
           </TouchableOpacity>
         </View>
         
@@ -191,7 +192,7 @@ export default function ProfileScreen() {
           style={styles.logoutButton} 
           onPress={handleLogout}
         >
-          <IconWrapper icon={LogOut} size={20} color={colors.danger} />
+          <IconWrapper icon={LogOut} size={spacings.xl} color={colors.danger} />
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
         
@@ -207,113 +208,100 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    padding: 16,
-    paddingTop: 20,
+    padding: spacings.screenPadding,
+    paddingTop: spacings.xl,
   },
   profileHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacings.lg,
   },
   profileImageContainer: {
     position: 'relative',
-    marginRight: 16,
+    marginRight: spacings.lg,
   },
   profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#E5E7EB',
+    width: spacings.xxxxl + spacings.xxxxl,
+    height: spacings.xxxxl + spacings.xxxxl,
+    borderRadius: spacings.xxxxl,
+    backgroundColor: colors.backgroundTertiary,
   },
   profileImagePlaceholder: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: spacings.xxxxl + spacings.xxxxl,
+    height: spacings.xxxxl + spacings.xxxxl,
+    borderRadius: spacings.xxxxl,
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   profileImagePlaceholderText: {
-    fontSize: 32,
+    fontSize: spacings.fontSize.xxxl,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.textInverse,
   },
   cameraButton: {
     position: 'absolute',
     bottom: 0,
     right: 0,
     backgroundColor: colors.primary,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: spacings.sectionSpacing + spacings.xs,
+    height: spacings.sectionSpacing + spacings.xs,
+    borderRadius: spacings.fontSize.sm,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: colors.card,
   },
   profileInfo: {
     flex: 1,
   },
   profileName: {
-    fontSize: 20,
+    fontSize: spacings.fontSize.xl,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 4,
+    marginBottom: spacings.xs,
   },
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacings.xs,
   },
   locationText: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginLeft: 4,
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
+    marginLeft: spacings.xs,
   },
   editProfileButton: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   editProfileText: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.primary,
     fontWeight: '500',
-    marginLeft: 4,
+    marginLeft: spacings.xs,
   },
   section: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-      web: {
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      },
-    }),
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    padding: spacings.cardPadding,
+    marginBottom: spacings.lg,
+    ...spacings.lightShadow,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 16,
+    marginBottom: spacings.lg,
   },
   seeAll: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.primary,
     fontWeight: '500',
   },
@@ -321,40 +309,40 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 12,
+    paddingVertical: spacings.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: colors.backgroundSecondary,
   },
   menuItemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   menuItemText: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
-    marginLeft: 12,
+    marginLeft: spacings.md,
   },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FEE2E2',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
+    backgroundColor: colors.dangerBackground,
+    borderRadius: spacings.borderRadius.xs,
+    padding: spacings.cardPadding,
+    marginBottom: spacings.lg,
   },
   logoutText: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '600',
     color: colors.danger,
-    marginLeft: 8,
+    marginLeft: spacings.xs,
   },
   versionContainer: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: spacings.sectionSpacing,
   },
   versionText: {
-    fontSize: 12,
-    color: '#9CA3AF',
+    fontSize: spacings.fontSize.xs,
+    color: colors.textTertiary,
   },
 });

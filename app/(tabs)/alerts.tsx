@@ -3,8 +3,9 @@ import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAlertsStore } from '@/store/alerts-store';
-import { Alert as AlertIcon, SearchX } from 'lucide-react-native';
+import { SearchX } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import AlertCard from '@/components/AlertCard';
 import EmptyState from '@/components/EmptyState';
 import CategoryFilter from '@/components/CategoryFilter';
@@ -63,7 +64,7 @@ export default function AlertsScreen() {
               ? `There are no active ${selectedCategory} priority alerts at this time.`
               : "There are no active alerts in your area at this time."
           }
-          icon={<SearchX size={48} color="#9CA3AF" />}
+          icon={<SearchX size={spacings.xxxxxl} color={colors.textTertiary} />}
         />
       )}
     </SafeAreaView>
@@ -76,6 +77,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   listContent: {
-    padding: 16,
+    padding: spacings.screenPadding,
   },
 });
