@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginBottom: spacings.screenPadding,
     lineHeight: spacings.xl + spacings.xs / 2,
+    textAlign: 'center',
   },
   listContent: {
     paddingBottom: spacings.screenPadding,
