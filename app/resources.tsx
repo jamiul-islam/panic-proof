@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import { useResourcesStore } from '@/store/resources-store';
 import { Search, X } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import ResourceCard from '@/components/ResourceCard';
 import CategoryFilter from '@/components/CategoryFilter';
 
@@ -47,11 +48,11 @@ export default function ResourcesScreen() {
         options={{
           title: "Resources",
           headerStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: colors.card,
           },
           headerTitleStyle: {
             fontWeight: "600",
-            fontSize: 18,
+            fontSize: spacings.fontSize.lg,
           },
           headerShadowVisible: false,
         }} 
@@ -60,18 +61,18 @@ export default function ResourcesScreen() {
       <SafeAreaView style={styles.container} edges={['bottom']}>
         <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
-          <Search size={20} color="#9CA3AF" style={styles.searchIcon} />
+          <Search size={spacings.xl} color={colors.textTertiary} style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search resources..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textTertiary}
           />
           {searchQuery.length > 0 && (
             <X
-              size={20}
-              color="#9CA3AF"
+              size={spacings.xl}
+              color={colors.textTertiary}
               style={styles.clearIcon}
               onPress={clearSearch}
             />
@@ -103,30 +104,30 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   searchContainer: {
-    padding: 16,
-    backgroundColor: '#fff',
+    padding: spacings.screenPadding,
+    backgroundColor: colors.card,
   },
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    backgroundColor: colors.backgroundSecondary,
+    borderRadius: spacings.borderRadius.sm,
+    paddingHorizontal: spacings.md,
   },
   searchIcon: {
-    marginRight: 8,
+    marginRight: spacings.sm,
   },
   searchInput: {
     flex: 1,
-    height: 44,
-    fontSize: 16,
+    height: spacings.heights.input,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   clearIcon: {
-    padding: 4,
+    padding: spacings.xs,
   },
   listContent: {
-    padding: 16,
-    paddingTop: 8,
+    padding: spacings.screenPadding,
+    paddingTop: spacings.sm,
   },
 });

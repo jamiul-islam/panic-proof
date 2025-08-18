@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useUserStore } from '@/store/user-store';
 import { useAuthStore } from '@/store/auth-store';
-import { useAuth } from '@clerk/clerk-expo';
+import { useUser } from '@clerk/clerk-expo';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import Button from '@/components/Button';
 import { Shield, MapPin, Users, PawPrint, Baby, Heart } from 'lucide-react-native';
 import IconWrapper from '@/components/IconWrapper';
@@ -14,10 +15,10 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const { setProfile } = useUserStore();
   const { setOnboardingCompleted } = useAuthStore();
-  const { user } = useAuth();
+  const { user } = useUser();
   
   const [step, setStep] = useState(1);
-  const [name, setName] = useState(user?.fullName || '');
+  const [name, setName] = useState(user?.fullName || user?.firstName || '');
   const [location, setLocation] = useState('');
   const [householdSize, setHouseholdSize] = useState(1);
   const [hasPets, setHasPets] = useState(false);
@@ -25,6 +26,16 @@ export default function OnboardingScreen() {
   const [hasElderly, setHasElderly] = useState(false);
   const [hasDisabled, setHasDisabled] = useState(false);
   const [medicalConditions, setMedicalConditions] = useState<string[]>([]);
+  
+  // Update name when user data becomes available
+  useEffect(() => {
+    console.log('User data:', { id: user?.id, fullName: user?.fullName, firstName: user?.firstName });
+    if (user?.fullName) {
+      setName(user.fullName);
+    } else if (user?.firstName) {
+      setName(user.firstName);
+    }
+  }, [user?.fullName, user?.firstName]);
   
   const handleNext = () => {
     if (step < 3) {
@@ -41,8 +52,12 @@ export default function OnboardingScreen() {
   };
   
   const completeOnboarding = () => {
+    const profileId = user?.id || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    console.log('Creating profile for user:', profileId);
+    
     setProfile({
-      id: user?.id || "user1",
+      id: profileId,
       name,
       location,
       householdSize,
@@ -56,7 +71,8 @@ export default function OnboardingScreen() {
       points: 0,
       level: 1,
       badges: [],
-      customKit: []
+      customKit: [],
+      customChecklists: []
     });
     
     setOnboardingCompleted(true);
@@ -69,6 +85,11 @@ export default function OnboardingScreen() {
         <IconWrapper icon={Shield} size={48} color={colors.primary} />
       </View>
       <Text style={styles.stepTitle}>Welcome to Disaster Ready</Text>
+      {user?.emailAddresses?.[0]?.emailAddress && (
+        <Text style={styles.userEmail}>
+          Signed in as {user.emailAddresses[0].emailAddress}
+        </Text>
+      )}
       <Text style={styles.stepDescription}>
         Let's set up your profile to personalize your disaster preparedness experience.
       </Text>
@@ -79,21 +100,21 @@ export default function OnboardingScreen() {
           style={styles.input}
           value={name}
           onChangeText={setName}
-          placeholder="Enter your name"
-          placeholderTextColor="#9CA3AF"
+          placeholder={user?.fullName || user?.firstName ? "Confirm your name" : "Enter your name"}
+          placeholderTextColor={colors.textTertiary}
         />
       </View>
       
       <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Your Location</Text>
         <View style={styles.locationInputContainer}>
-          <IconWrapper icon={MapPin} size={20} color="#9CA3AF" style={styles.locationIcon} />
+          <IconWrapper icon={MapPin} size={spacings.xl} color={colors.textTertiary} style={styles.locationIcon} />
           <TextInput
             style={styles.locationInput}
             value={location}
             onChangeText={setLocation}
             placeholder="City, Country"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textTertiary}
           />
         </View>
       </View>
@@ -141,7 +162,7 @@ export default function OnboardingScreen() {
             variant={hasPets ? "primary" : "outline"}
             size="small"
             style={styles.optionButton}
-            icon={<IconWrapper icon={PawPrint} size={16} color={hasPets ? "#fff" : colors.primary} />}
+            icon={<IconWrapper icon={PawPrint} size={spacings.screenPadding} color={hasPets ? colors.textInverse : colors.primary} />}
             iconPosition="left"
           />
           
@@ -151,7 +172,7 @@ export default function OnboardingScreen() {
             variant={hasChildren ? "primary" : "outline"}
             size="small"
             style={styles.optionButton}
-            icon={<IconWrapper icon={Baby} size={16} color={hasChildren ? "#fff" : colors.primary} />}
+            icon={<IconWrapper icon={Baby} size={spacings.screenPadding} color={hasChildren ? colors.textInverse : colors.primary} />}
             iconPosition="left"
           />
         </View>
@@ -194,7 +215,7 @@ export default function OnboardingScreen() {
           value={medicalConditions.join(", ")}
           onChangeText={(text) => setMedicalConditions(text.split(",").map(item => item.trim()))}
           placeholder="E.g., diabetes, asthma, allergies"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.textTertiary}
           multiline
           numberOfLines={4}
           textAlignVertical="top"
@@ -279,98 +300,104 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   scrollContent: {
-    padding: 16,
+    padding: spacings.screenPadding,
   },
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 24,
+    marginVertical: spacings.sectionSpacing,
   },
   progressDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#E5E7EB',
+    width: spacings.md,
+    height: spacings.md,
+    borderRadius: spacings.xs * 1.5,
+    backgroundColor: colors.backgroundTertiary,
   },
   activeProgressDot: {
     backgroundColor: colors.primary,
   },
   progressLine: {
-    height: 2,
-    width: 40,
-    backgroundColor: '#E5E7EB',
-    marginHorizontal: 4,
+    height: spacings.xs / 2,
+    width: spacings.xxxxl,
+    backgroundColor: colors.backgroundTertiary,
+    marginHorizontal: spacings.xs,
   },
   activeProgressLine: {
     backgroundColor: colors.primary,
   },
   stepContainer: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: spacings.sectionSpacing,
   },
   iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#EFF6FF',
+    width: spacings.xxxxl * 2,
+    height: spacings.xxxxl * 2,
+    borderRadius: spacings.xxxxl,
+    backgroundColor: colors.primaryBadge,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacings.screenPadding,
   },
   stepTitle: {
-    fontSize: 24,
+    fontSize: spacings.fontSize.xxl,
     fontWeight: '700',
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: spacings.sm,
     textAlign: 'center',
   },
-  stepDescription: {
-    fontSize: 16,
-    color: '#6B7280',
+  userEmail: {
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: spacings.sm,
+  },
+  stepDescription: {
+    fontSize: spacings.fontSize.md,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: spacings.sectionSpacing,
     maxWidth: '90%',
   },
   inputContainer: {
     width: '100%',
-    marginBottom: 16,
+    marginBottom: spacings.screenPadding,
   },
   inputLabel: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '500',
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   input: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    borderColor: colors.border,
+    borderRadius: spacings.borderRadius.sm,
+    padding: spacings.md,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   textArea: {
-    minHeight: 100,
+    minHeight: spacings.xxxxl * 2.5,
     textAlignVertical: 'top',
   },
   locationInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderColor: colors.border,
+    borderRadius: spacings.borderRadius.sm,
+    paddingHorizontal: spacings.md,
   },
   locationIcon: {
-    marginRight: 8,
+    marginRight: spacings.sm,
   },
   locationInput: {
     flex: 1,
-    padding: 12,
-    fontSize: 16,
+    padding: spacings.md,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   counterContainer: {
@@ -378,49 +405,49 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   counterButton: {
-    width: 40,
-    height: 40,
+    width: spacings.xxxxl,
+    height: spacings.xxxxl,
   },
   counterValue: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
-    marginHorizontal: 16,
-    minWidth: 30,
+    marginHorizontal: spacings.screenPadding,
+    minWidth: spacings.xxxl - spacings.xs,
     textAlign: 'center',
   },
   optionsContainer: {
     width: '100%',
-    marginBottom: 16,
+    marginBottom: spacings.screenPadding,
   },
   optionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   optionButton: {
     flex: 1,
-    marginHorizontal: 4,
+    marginHorizontal: spacings.xs,
   },
   privacyNote: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
     textAlign: 'center',
-    marginTop: 16,
+    marginTop: spacings.screenPadding,
     fontStyle: 'italic',
   },
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 16,
+    marginTop: spacings.screenPadding,
   },
   backButton: {
     flex: 1,
-    marginRight: 8,
+    marginRight: spacings.sm,
   },
   nextButton: {
     flex: 1,
-    marginLeft: 8,
+    marginLeft: spacings.sm,
   },
   fullWidthButton: {
     flex: 1,

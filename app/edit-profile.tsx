@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { useUserStore } from '@/store/user-store';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import Button from '@/components/Button';
 import { MapPin, Users, PawPrint, Baby, Heart } from 'lucide-react-native';
 
@@ -76,20 +77,20 @@ export default function EditProfileScreen() {
                 value={name}
                 onChangeText={setName}
                 placeholder="Enter your name"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
               />
             </View>
             
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Your Location</Text>
               <View style={styles.locationInputContainer}>
-                <MapPin size={20} color="#9CA3AF" style={styles.locationIcon} />
+                <MapPin size={spacings.xl} color={colors.textTertiary} style={styles.locationIcon} />
                 <TextInput
                   style={styles.locationInput}
                   value={location}
                   onChangeText={setLocation}
                   placeholder="City, Country"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor={colors.textTertiary}
                 />
               </View>
             </View>
@@ -125,7 +126,7 @@ export default function EditProfileScreen() {
                   variant={hasPets ? "primary" : "outline"}
                   size="small"
                   style={styles.optionButton}
-                  icon={<PawPrint size={16} color={hasPets ? "#fff" : colors.primary} />}
+                  icon={<PawPrint size={spacings.screenPadding} color={hasPets ? colors.textInverse : colors.primary} />}
                   iconPosition="left"
                 />
                 
@@ -135,7 +136,7 @@ export default function EditProfileScreen() {
                   variant={hasChildren ? "primary" : "outline"}
                   size="small"
                   style={styles.optionButton}
-                  icon={<Baby size={16} color={hasChildren ? "#fff" : colors.primary} />}
+                  icon={<Baby size={spacings.screenPadding} color={hasChildren ? colors.textInverse : colors.primary} />}
                   iconPosition="left"
                 />
               </View>
@@ -166,7 +167,7 @@ export default function EditProfileScreen() {
                 value={medicalConditions.join(", ")}
                 onChangeText={(text) => setMedicalConditions(text.split(",").map(item => item.trim()))}
                 placeholder="E.g., diabetes, asthma, allergies"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
                 multiline
                 numberOfLines={4}
                 textAlignVertical="top"
@@ -205,52 +206,52 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollContent: {
-    padding: 16,
+    padding: spacings.screenPadding,
   },
   formContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    padding: spacings.screenPadding,
+    marginBottom: spacings.screenPadding,
   },
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: spacings.screenPadding,
   },
   label: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '500',
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   input: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    borderColor: colors.border,
+    borderRadius: spacings.borderRadius.sm,
+    padding: spacings.md,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   textArea: {
-    minHeight: 100,
+    minHeight: spacings.xxxxl * 2.5,
     textAlignVertical: 'top',
   },
   locationInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderColor: colors.border,
+    borderRadius: spacings.borderRadius.sm,
+    paddingHorizontal: spacings.md,
   },
   locationIcon: {
-    marginRight: 8,
+    marginRight: spacings.sm,
   },
   locationInput: {
     flex: 1,
-    padding: 12,
-    fontSize: 16,
+    padding: spacings.md,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   counterContainer: {
@@ -258,28 +259,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   counterButton: {
-    width: 40,
-    height: 40,
+    width: spacings.xxxxl,
+    height: spacings.xxxxl,
   },
   counterValue: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
-    marginHorizontal: 16,
-    minWidth: 30,
+    marginHorizontal: spacings.screenPadding,
+    minWidth: spacings.xxxl - spacings.xs,
     textAlign: 'center',
   },
   optionsContainer: {
-    marginBottom: 16,
+    marginBottom: spacings.screenPadding,
   },
   optionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   optionButton: {
     flex: 1,
-    marginHorizontal: 4,
+    marginHorizontal: spacings.xs,
   },
   buttonsContainer: {
     flexDirection: 'row',
@@ -287,6 +288,6 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    marginHorizontal: 4,
+    marginHorizontal: spacings.xs,
   },
 });

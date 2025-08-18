@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList } from 'react
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import { MapPin, Edit, Trash2, Plus } from 'lucide-react-native';
 import IconWrapper from '@/components/IconWrapper';
 import Button from '@/components/Button';
@@ -85,7 +86,7 @@ export default function SavedLocationsScreen() {
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={() => (
               <View style={styles.emptyState}>
-                <IconWrapper icon={MapPin} size={48} color="#9CA3AF" />
+                <IconWrapper icon={MapPin} size={spacings.xxxxl + spacings.sm} color={colors.textTertiary} />
                 <Text style={styles.emptyStateTitle}>No Saved Locations</Text>
                 <Text style={styles.emptyStateText}>
                   Add your first location to get started with personalized alerts and recommendations.
@@ -98,7 +99,7 @@ export default function SavedLocationsScreen() {
             title="Add New Location"
             onPress={handleAddLocation}
             variant="primary"
-            icon={<IconWrapper icon={Plus} size={20} color="#fff" />}
+            icon={<IconWrapper icon={Plus} size={spacings.xl} color={colors.textInverse} />}
             iconPosition="left"
             style={styles.addButton}
           />
@@ -115,37 +116,37 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: spacings.screenPadding,
   },
   description: {
-    fontSize: 16,
-    color: '#6B7280',
-    marginBottom: 16,
-    lineHeight: 22,
+    fontSize: spacings.fontSize.md,
+    color: colors.textSecondary,
+    marginBottom: spacings.screenPadding,
+    lineHeight: spacings.xl + spacings.xs / 2,
   },
   listContent: {
-    paddingBottom: 16,
+    paddingBottom: spacings.screenPadding,
   },
   addButton: {
-    marginTop: 8,
+    marginTop: spacings.sm,
   },
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 48,
-    paddingHorizontal: 32,
+    paddingVertical: spacings.xxxxl + spacings.sm,
+    paddingHorizontal: spacings.xxxl,
   },
   emptyStateTitle: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
-    marginTop: 16,
-    marginBottom: 8,
+    marginTop: spacings.screenPadding,
+    marginBottom: spacings.sm,
   },
   emptyStateText: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: spacings.xl,
   },
 });

@@ -5,6 +5,7 @@ import { Stack, useRouter } from 'expo-router';
 import { useUserStore } from '@/store/user-store';
 import { EmergencyContact } from '@/types';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import { Plus, Search, X, UserPlus } from 'lucide-react-native';
 import EmergencyContactCard from '@/components/EmergencyContactCard';
 import EmptyState from '@/components/EmptyState';
@@ -48,7 +49,7 @@ export default function EmergencyContactsScreen() {
           headerBackTitle: "",
           headerRight: () => (
             <TouchableOpacity onPress={handleAddContact}>
-              <Plus size={24} color="#000" style={{ marginRight: 16 }} />
+              <Plus size={spacings.sectionSpacing} color={colors.text} style={{ marginRight: spacings.screenPadding }} />
             </TouchableOpacity>
           ),
         }} 
@@ -58,18 +59,18 @@ export default function EmergencyContactsScreen() {
         {contacts.length > 0 && (
           <View style={styles.searchContainer}>
             <View style={styles.searchInputContainer}>
-              <Search size={20} color="#9CA3AF" style={styles.searchIcon} />
+              <Search size={spacings.xl} color={colors.textTertiary} style={styles.searchIcon} />
               <TextInput
                 style={styles.searchInput}
                 placeholder="Search contacts..."
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
               />
               {searchQuery.length > 0 && (
                 <X
-                  size={20}
-                  color="#9CA3AF"
+                  size={spacings.xl}
+                  color={colors.textTertiary}
                   style={styles.clearIcon}
                   onPress={clearSearch}
                 />
@@ -97,13 +98,13 @@ export default function EmergencyContactsScreen() {
             <EmptyState
               title="No Emergency Contacts"
               message="Add emergency contacts to quickly reach out to your loved ones during emergencies."
-              icon={<UserPlus size={48} color="#9CA3AF" />}
+              icon={<UserPlus size={spacings.xxxxl + spacings.sm} color={colors.textTertiary} />}
             />
             <Button
               title="Add Contact"
               onPress={handleAddContact}
               variant="primary"
-              icon={<Plus size={20} color="#fff" />}
+              icon={<Plus size={spacings.xl} color={colors.textInverse} />}
               iconPosition="left"
               style={styles.addButton}
             />
@@ -120,39 +121,39 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   searchContainer: {
-    padding: 16,
-    backgroundColor: '#fff',
+    padding: spacings.screenPadding,
+    backgroundColor: colors.card,
   },
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    backgroundColor: colors.backgroundSecondary,
+    borderRadius: spacings.borderRadius.sm,
+    paddingHorizontal: spacings.md,
   },
   searchIcon: {
-    marginRight: 8,
+    marginRight: spacings.sm,
   },
   searchInput: {
     flex: 1,
-    height: 44,
-    fontSize: 16,
+    height: spacings.heights.input,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   clearIcon: {
-    padding: 4,
+    padding: spacings.xs,
   },
   listContent: {
-    padding: 16,
+    padding: spacings.screenPadding,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: spacings.screenPadding,
   },
   addButton: {
-    marginTop: 24,
+    marginTop: spacings.sectionSpacing,
     width: '80%',
   },
 });

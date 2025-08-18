@@ -13,9 +13,10 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useUserStore } from '@/store/user-store';
+import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import { CustomChecklist, ChecklistItem } from '@/types';
 import { X, Plus, Trash2 } from 'lucide-react-native';
-import { colors } from '@/constants/colors';
 import Button from '@/components/Button';
 import IconWrapper from '@/components/IconWrapper';
 
@@ -48,10 +49,10 @@ export default function ModalScreen() {
   }, [checklistId, profile]);
   
   const categories = [
-    { id: 'supplies', name: 'Supplies', color: '#EF4444' },
-    { id: 'planning', name: 'Planning', color: '#3B82F6' },
-    { id: 'skills', name: 'Skills', color: '#10B981' },
-    { id: 'home', name: 'Home', color: '#F59E0B' },
+    { id: 'supplies', name: 'Supplies', color: colors.danger },
+    { id: 'planning', name: 'Planning', color: colors.primary },
+    { id: 'skills', name: 'Skills', color: colors.success },
+    { id: 'home', name: 'Home', color: colors.warning },
     { id: 'personal', name: 'Personal', color: '#8B5CF6' },
   ] as const;
   
@@ -148,7 +149,7 @@ export default function ModalScreen() {
         <Text style={styles.headerTitle}>
           {isEditing ? 'Edit Checklist' : 'New Checklist'}
         </Text>
-        <View style={{ width: 24 }} />
+        <View style={{ width: spacings.sectionSpacing }} />
       </View>
       
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -159,7 +160,7 @@ export default function ModalScreen() {
             value={title}
             onChangeText={setTitle}
             placeholder="Enter checklist title"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textTertiary}
           />
         </View>
         
@@ -170,7 +171,7 @@ export default function ModalScreen() {
             value={description}
             onChangeText={setDescription}
             placeholder="Enter description (optional)"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textTertiary}
             multiline
             numberOfLines={3}
             textAlignVertical="top"
@@ -200,7 +201,7 @@ export default function ModalScreen() {
             value={points}
             onChangeText={setPoints}
             placeholder="Enter points value or leave empty for auto-calculation"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textTertiary}
             keyboardType="numeric"
           />
           <Text style={styles.helperText}>
@@ -247,14 +248,14 @@ export default function ModalScreen() {
                 value={item.text}
                 onChangeText={(text) => updateItem(item.id, text)}
                 placeholder={`Item ${index + 1}`}
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
               />
               {items.length > 1 && (
                 <TouchableOpacity
                   style={styles.removeButton}
                   onPress={() => removeItem(item.id)}
                 >
-                  <IconWrapper icon={Trash2} size={16} color="#EF4444" />
+                  <IconWrapper icon={Trash2} size={spacings.screenPadding} color={colors.danger} />
                 </TouchableOpacity>
               )}
             </View>
@@ -282,112 +283,112 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    backgroundColor: '#fff',
+    paddingHorizontal: spacings.screenPadding,
+    paddingVertical: spacings.screenPadding,
+    backgroundColor: colors.card,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: spacings.fontSize.lg,
     fontWeight: '600',
     color: colors.text,
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: spacings.screenPadding,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: spacings.sectionSpacing,
   },
   label: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
     borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    borderColor: colors.borderMedium,
+    borderRadius: spacings.borderRadius.sm,
+    padding: spacings.md,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   helperText: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginTop: 4,
+    fontSize: spacings.fontSize.xs,
+    color: colors.textSecondary,
+    marginTop: spacings.xs,
   },
   textArea: {
-    height: 80,
+    height: spacings.xxxxl * 2,
   },
   categoryContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: spacings.sm,
   },
   categoryChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: spacings.screenPadding,
+    paddingVertical: spacings.sm,
+    borderRadius: spacings.xl,
     borderWidth: 1,
-    borderColor: '#D1D5DB',
-    backgroundColor: '#fff',
+    borderColor: colors.borderMedium,
+    backgroundColor: colors.card,
   },
   categoryText: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.text,
   },
   selectedCategoryText: {
-    color: '#fff',
+    color: colors.textInverse,
     fontWeight: '500',
   },
   itemsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacings.md,
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    backgroundColor: '#EFF6FF',
+    paddingHorizontal: spacings.md,
+    paddingVertical: spacings.xs * 1.5,
+    borderRadius: spacings.xs * 1.5,
+    backgroundColor: colors.primaryBadge,
   },
   addButtonText: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.primary,
-    marginLeft: 4,
+    marginLeft: spacings.xs,
     fontWeight: '500',
   },
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   itemInput: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
     borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    borderColor: colors.borderMedium,
+    borderRadius: spacings.borderRadius.sm,
+    padding: spacings.md,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   removeButton: {
-    marginLeft: 8,
-    padding: 8,
+    marginLeft: spacings.sm,
+    padding: spacings.sm,
   },
   footer: {
-    padding: 16,
-    backgroundColor: '#fff',
+    padding: spacings.screenPadding,
+    backgroundColor: colors.card,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: colors.border,
   },
   saveButton: {
     width: '100%',

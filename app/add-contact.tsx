@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { useUserStore } from '@/store/user-store';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import Button from '@/components/Button';
 
 export default function AddContactScreen() {
@@ -75,7 +76,7 @@ export default function AddContactScreen() {
                 value={name}
                 onChangeText={setName}
                 placeholder="Enter contact name"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
               />
               {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
             </View>
@@ -87,7 +88,7 @@ export default function AddContactScreen() {
                 value={relationship}
                 onChangeText={setRelationship}
                 placeholder="E.g., Family, Friend, Neighbor"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
               />
             </View>
             
@@ -98,7 +99,7 @@ export default function AddContactScreen() {
                 value={phone}
                 onChangeText={setPhone}
                 placeholder="Enter phone number"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
                 keyboardType="phone-pad"
               />
               {phoneError ? <Text style={styles.errorText}>{phoneError}</Text> : null}
@@ -111,7 +112,7 @@ export default function AddContactScreen() {
                 value={email}
                 onChangeText={setEmail}
                 placeholder="Enter email address"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
@@ -127,8 +128,8 @@ export default function AddContactScreen() {
               <Switch
                 value={isLocal}
                 onValueChange={setIsLocal}
-                trackColor={{ false: '#E5E7EB', true: colors.primary }}
-                thumbColor="#fff"
+                trackColor={{ false: colors.backgroundTertiary, true: colors.primary }}
+                thumbColor={colors.textInverse}
               />
             </View>
           </View>
@@ -159,30 +160,30 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   scrollContent: {
-    padding: 16,
+    padding: spacings.screenPadding,
   },
   formContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    padding: spacings.screenPadding,
+    marginBottom: spacings.screenPadding,
   },
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: spacings.screenPadding,
   },
   label: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '500',
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   input: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    borderColor: colors.border,
+    borderRadius: spacings.borderRadius.sm,
+    padding: spacings.md,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   inputError: {
@@ -190,19 +191,19 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.danger,
-    fontSize: 14,
-    marginTop: 4,
+    fontSize: spacings.fontSize.sm,
+    marginTop: spacings.xs,
   },
   switchContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacings.screenPadding,
   },
   switchDescription: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginTop: 4,
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
+    marginTop: spacings.xs,
     maxWidth: '80%',
   },
   buttonsContainer: {
@@ -211,6 +212,6 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    marginHorizontal: 4,
+    marginHorizontal: spacings.xs,
   },
 });

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Search, X } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import DisasterCard from '@/components/DisasterCard';
 import CategoryFilter from '@/components/CategoryFilter';
 import IconWrapper from '@/components/IconWrapper';
@@ -44,17 +45,17 @@ export default function DisastersScreen() {
     <SafeAreaView style={styles.container} edges={[]}>
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
-          <IconWrapper icon={Search} size={20} color="#9CA3AF" />
+          <IconWrapper icon={Search} size={spacings.xl} color={colors.textTertiary} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search disasters..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textTertiary}
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
-              <IconWrapper icon={X} size={20} color="#9CA3AF" />
+              <IconWrapper icon={X} size={spacings.xl} color={colors.textTertiary} />
             </TouchableOpacity>
           )}
         </View>
@@ -92,39 +93,39 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   searchContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+    paddingHorizontal: spacings.screenPadding,
+    paddingTop: spacings.screenPadding,
+    paddingBottom: spacings.sm,
   },
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    paddingHorizontal: spacings.screenPadding,
+    paddingVertical: spacings.md,
   },
   searchInput: {
     flex: 1,
-    marginLeft: 12,
-    fontSize: 16,
+    marginLeft: spacings.md,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   clearButton: {
-    padding: 4,
+    padding: spacings.xs,
   },
   categoryStyle:{
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   resultsText: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.text,
   },
   listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 20,
+    paddingHorizontal: spacings.screenPadding,
+    paddingBottom: spacings.xl,
   },
   separator: {
-    height: 12,
+    height: spacings.md,
   },
 });

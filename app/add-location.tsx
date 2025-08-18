@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 import { MapPin, Home, Briefcase, Heart, Search } from 'lucide-react-native';
 import Button from '@/components/Button';
 import IconWrapper from '@/components/IconWrapper';
@@ -70,20 +71,20 @@ export default function AddLocationScreen() {
                 value={name}
                 onChangeText={setName}
                 placeholder="E.g., Home, Work, Parents' House"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
               />
             </View>
             
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Address</Text>
               <View style={styles.addressInputContainer}>
-                <IconWrapper icon={Search} size={20} color="#9CA3AF" style={styles.searchIcon} />
+                <IconWrapper icon={Search} size={spacings.xl} color={colors.textTertiary} style={styles.searchIcon} />
                 <TextInput
                   style={styles.addressInput}
                   value={address}
                   onChangeText={setAddress}
                   placeholder="Search for an address"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor={colors.textTertiary}
                 />
               </View>
             </View>
@@ -100,8 +101,8 @@ export default function AddLocationScreen() {
                 >
                   <IconWrapper 
                     icon={Home} 
-                    size={20} 
-                    color={locationType === 'home' ? '#fff' : colors.text} 
+                    size={spacings.xl} 
+                    color={locationType === 'home' ? colors.textInverse : colors.text} 
                   />
                   <Text 
                     style={[
@@ -123,8 +124,8 @@ export default function AddLocationScreen() {
                 >
                   <IconWrapper 
                     icon={Briefcase} 
-                    size={20} 
-                    color={locationType === 'work' ? '#fff' : colors.text} 
+                    size={spacings.xl} 
+                    color={locationType === 'work' ? colors.textInverse : colors.text} 
                   />
                   <Text 
                     style={[
@@ -146,8 +147,8 @@ export default function AddLocationScreen() {
                 >
                   <IconWrapper 
                     icon={Heart} 
-                    size={20} 
-                    color={locationType === 'favorite' ? '#fff' : colors.text} 
+                    size={spacings.xl} 
+                    color={locationType === 'favorite' ? colors.textInverse : colors.text} 
                   />
                   <Text 
                     style={[
@@ -169,8 +170,8 @@ export default function AddLocationScreen() {
                 >
                   <IconWrapper 
                     icon={MapPin} 
-                    size={20} 
-                    color={locationType === 'other' ? '#fff' : colors.text} 
+                    size={spacings.xl} 
+                    color={locationType === 'other' ? colors.textInverse : colors.text} 
                   />
                   <Text 
                     style={[
@@ -204,7 +205,7 @@ export default function AddLocationScreen() {
           </View>
           
           <View style={styles.mapPlaceholder}>
-            <IconWrapper icon={MapPin} size={32} color="#9CA3AF" />
+            <IconWrapper icon={MapPin} size={spacings.xxxl} color={colors.textTertiary} />
             <Text style={styles.mapPlaceholderText}>Map View</Text>
             <Text style={styles.mapPlaceholderSubtext}>
               In a real app, a map would be displayed here to select a location.
@@ -238,133 +239,133 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   scrollContent: {
-    padding: 16,
+    padding: spacings.screenPadding,
   },
   formContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    backgroundColor: colors.card,
+    borderRadius: spacings.borderRadius.md,
+    padding: spacings.screenPadding,
+    marginBottom: spacings.screenPadding,
   },
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: spacings.screenPadding,
   },
   label: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '500',
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   input: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    borderColor: colors.border,
+    borderRadius: spacings.borderRadius.sm,
+    padding: spacings.md,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   addressInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderColor: colors.border,
+    borderRadius: spacings.borderRadius.sm,
+    paddingHorizontal: spacings.md,
   },
   searchIcon: {
-    marginRight: 8,
+    marginRight: spacings.sm,
   },
   addressInput: {
     flex: 1,
-    height: 44,
-    fontSize: 16,
+    height: spacings.heights.input,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   locationTypeContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: spacings.sm,
   },
   locationTypeButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    marginRight: 8,
-    marginBottom: 8,
+    backgroundColor: colors.backgroundSecondary,
+    paddingVertical: spacings.sm,
+    paddingHorizontal: spacings.md,
+    borderRadius: spacings.borderRadius.sm,
+    marginRight: spacings.sm,
+    marginBottom: spacings.sm,
   },
   selectedLocationType: {
     backgroundColor: colors.primary,
   },
   locationTypeText: {
-    fontSize: 14,
+    fontSize: spacings.fontSize.sm,
     color: colors.text,
-    marginLeft: 4,
+    marginLeft: spacings.xs,
   },
   selectedLocationTypeText: {
-    color: '#fff',
+    color: colors.textInverse,
   },
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 8,
+    marginTop: spacings.sm,
   },
   switchLabel: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     color: colors.text,
   },
   switchButton: {
-    width: 50,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#E5E7EB',
-    padding: 2,
+    width: spacings.xxxxxl + spacings.xs,
+    height: spacings.xxl + spacings.xs,
+    borderRadius: (spacings.xxl + spacings.xs) / 2,
+    backgroundColor: colors.backgroundTertiary,
+    padding: spacings.xs / 2,
   },
   switchButtonActive: {
     backgroundColor: colors.primary,
   },
   switchThumb: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#fff',
+    width: spacings.sectionSpacing,
+    height: spacings.sectionSpacing,
+    borderRadius: spacings.borderRadius.md,
+    backgroundColor: colors.card,
   },
   switchThumbActive: {
-    transform: [{ translateX: 22 }],
+    transform: [{ translateX: spacings.xl + spacings.xs / 2 }],
   },
   mapPlaceholder: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 12,
-    height: 200,
+    backgroundColor: colors.backgroundSecondary,
+    borderRadius: spacings.borderRadius.md,
+    height: spacings.xxxxl * 5,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacings.screenPadding,
   },
   mapPlaceholderText: {
-    fontSize: 16,
+    fontSize: spacings.fontSize.md,
     fontWeight: '500',
-    color: '#9CA3AF',
-    marginTop: 8,
+    color: colors.textTertiary,
+    marginTop: spacings.sm,
   },
   mapPlaceholderSubtext: {
-    fontSize: 14,
-    color: '#9CA3AF',
+    fontSize: spacings.fontSize.sm,
+    color: colors.textTertiary,
     textAlign: 'center',
-    marginTop: 4,
-    paddingHorizontal: 32,
+    marginTop: spacings.xs,
+    paddingHorizontal: spacings.xxxl,
   },
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 24,
+    marginBottom: spacings.sectionSpacing,
   },
   button: {
     flex: 1,
-    marginHorizontal: 4,
+    marginHorizontal: spacings.xs,
   },
 });

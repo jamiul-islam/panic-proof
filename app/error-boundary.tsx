@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
+import { colors } from '@/constants/colors';
+import { spacings } from '@/constants/spacings';
 
 interface Props {
   children: React.ReactNode;
@@ -113,31 +115,31 @@ export class ErrorBoundary extends React.Component<Props, State> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
   },
   content: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: spacings.xl,
   },
   title: {
-    fontSize: 36,
+    fontSize: spacings.fontSize.xxxl + spacings.xs,
     textAlign: 'center',
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: spacings.sm,
   },
   subtitle: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 12,
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
+    marginBottom: spacings.md,
     textAlign: 'center',
   },
   description: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: spacings.sm,
   },
 }); 
 
