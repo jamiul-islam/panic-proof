@@ -16,12 +16,14 @@ import {
   MapPin,
   Camera,
   Edit,
-  BookOpen
+  BookOpen,
+  Lock
 } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
 import { spacings } from '@/constants/spacings';
 import ProfileHeader from '@/components/ProfileHeader';
 import IconWrapper from '@/components/IconWrapper';
+import ChangePasswordModal from '@/components/ChangePasswordModal';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -31,6 +33,7 @@ export default function ProfileScreen() {
   const { signOut } = useAuth();
   const { clearPersistedState: clearAuthData } = useAuthStore();
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   
   useEffect(() => {
     fetchTasks();
@@ -50,6 +53,15 @@ export default function ProfileScreen() {
   
   const handleResources = () => {
     router.push('/resources');
+  };
+  
+  const handleChangePassword = () => {
+    setShowChangePasswordModal(true);
+  };
+  
+  const handleChangePasswordSuccess = () => {
+    // Password was successfully changed
+    Alert.alert('Success', 'Your password has been successfully changed.');
   };
   
   const handleLogout = async () => {
@@ -198,6 +210,21 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
         
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Account Settings</Text>
+          
+          <TouchableOpacity 
+            style={styles.menuItem} 
+            onPress={handleChangePassword}
+          >
+            <View style={styles.menuItemLeft}>
+              <IconWrapper icon={Lock} size={spacings.xl} color={colors.text} />
+              <Text style={styles.menuItemText}>Change Password</Text>
+            </View>
+            <IconWrapper icon={ChevronRight} size={spacings.xl} color={colors.textTertiary} />
+          </TouchableOpacity>
+        </View>
+        
         <TouchableOpacity 
           style={styles.logoutButton} 
           onPress={handleLogout}
@@ -210,6 +237,12 @@ export default function ProfileScreen() {
           <Text style={styles.versionText}>Version 1.0.0</Text>
         </View>
       </ScrollView>
+      
+      <ChangePasswordModal
+        visible={showChangePasswordModal}
+        onClose={() => setShowChangePasswordModal(false)}
+        onSuccess={handleChangePasswordSuccess}
+      />
     </SafeAreaView>
   );
 }
