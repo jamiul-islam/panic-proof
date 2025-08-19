@@ -1,4 +1,7 @@
 import { useAuthStore } from '@/store/auth-store';
+import { useUserStore } from '@/store/user-store';
+import { useTasksStore } from '@/store/tasks-store';
+import { useAlertsStore } from '@/store/alerts-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
@@ -13,12 +16,25 @@ export const DevAuthHelpers = {
    */
   clearAuthState: async () => {
     try {
-      await AsyncStorage.removeItem('auth-storage');
-      // Reset the auth store to initial state
-      useAuthStore.getState().reset();
+      await useAuthStore.getState().clearPersistedState();
       console.log('Auth state cleared successfully');
     } catch (error) {
       console.error('Error clearing auth state:', error);
+    }
+  },
+
+  /**
+   * Clear all persisted data from all stores
+   */
+  clearAllStoreData: async () => {
+    try {
+      await useAuthStore.getState().clearPersistedState();
+      await useUserStore.getState().clearPersistedState();
+      await useTasksStore.getState().clearPersistedState();
+      await useAlertsStore.getState().clearPersistedState();
+      console.log('All store data cleared successfully');
+    } catch (error) {
+      console.error('Error clearing store data:', error);
     }
   },
 

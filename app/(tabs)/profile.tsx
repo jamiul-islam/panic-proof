@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useUserStore } from '@/store/user-store';
 import { useTasksStore } from '@/store/tasks-store';
+import { useAlertsStore } from '@/store/alerts-store';
 import { useAuth } from '@clerk/clerk-expo';
 import { useAuthStore } from '@/store/auth-store';
 import * as ImagePicker from 'expo-image-picker';
@@ -24,10 +25,11 @@ import IconWrapper from '@/components/IconWrapper';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { profile, updateProfile } = useUserStore();
-  const { fetchTasks } = useTasksStore();
+  const { profile, updateProfile, clearPersistedState: clearUserData } = useUserStore();
+  const { fetchTasks, clearPersistedState: clearTasksData } = useTasksStore();
+  const { clearPersistedState: clearAlertsData } = useAlertsStore();
   const { signOut } = useAuth();
-  const { reset } = useAuthStore();
+  const { clearPersistedState: clearAuthData } = useAuthStore();
   const [profileImage, setProfileImage] = useState<string | null>(null);
   
   useEffect(() => {
@@ -64,8 +66,16 @@ export default function ProfileScreen() {
           style: "destructive",
           onPress: async () => {
             try {
+              // Clear all persisted data from all stores
+              await clearAuthData();
+              await clearUserData(); 
+              await clearTasksData();
+              await clearAlertsData();
+              
+              // Sign out from Clerk
               await signOut();
-              reset();
+              
+              // Navigate to sign-in screen
               router.replace('/(auth)/sign-in');
             } catch (error) {
               console.error('Error signing out:', error);

@@ -26,6 +26,7 @@ interface UserState {
   toggleChecklistItem: (checklistId: string, itemId: string) => void;
   setOnboarded: (value: boolean) => void;
   reset: () => void;
+  clearPersistedState: () => Promise<void>;
 }
 
 const initialProfile: UserProfile = {
@@ -39,7 +40,6 @@ const initialProfile: UserProfile = {
   hasDisabled: false,
   medicalConditions: [],
   emergencyContacts: [],
-  completedTasks: [],
   points: 0,
   level: 1,
   badges: [],
@@ -156,18 +156,12 @@ export const useUserStore = create<UserState>()(
       completeTask: (taskId, points) => set((state) => {
         if (!state.profile) return { profile: null };
         
-        // Don't add if already completed
-        if (state.profile.completedTasks.includes(taskId)) {
-          return { profile: state.profile };
-        }
-        
         const newPoints = state.profile.points + points;
         const newLevel = Math.floor(newPoints / 100) + 1;
         
         return {
           profile: {
             ...state.profile,
-            completedTasks: [...state.profile.completedTasks, taskId],
             points: newPoints,
             level: newLevel
           }
@@ -177,18 +171,12 @@ export const useUserStore = create<UserState>()(
       uncompleteTask: (taskId, points) => set((state) => {
         if (!state.profile) return { profile: null };
         
-        // Only subtract if task was completed
-        if (!state.profile.completedTasks.includes(taskId)) {
-          return { profile: state.profile };
-        }
-        
         const newPoints = Math.max(0, state.profile.points - points);
         const newLevel = Math.floor(newPoints / 100) + 1;
         
         return {
           profile: {
             ...state.profile,
-            completedTasks: state.profile.completedTasks.filter(id => id !== taskId),
             points: newPoints,
             level: newLevel
           }
@@ -355,7 +343,12 @@ export const useUserStore = create<UserState>()(
       
       setOnboarded: (value) => set({ isOnboarded: value }),
       
-      reset: () => set({ profile: null, isOnboarded: false })
+      reset: () => set({ profile: null, isOnboarded: false }),
+      
+      clearPersistedState: async () => {
+        await AsyncStorage.removeItem('user-storage');
+        set({ profile: null, isOnboarded: false });
+      }
     }),
     {
       name: 'user-storage',

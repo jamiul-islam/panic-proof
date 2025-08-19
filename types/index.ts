@@ -63,7 +63,6 @@ export interface UserProfile {
   hasDisabled: boolean;
   medicalConditions: string[];
   emergencyContacts: EmergencyContact[];
-  completedTasks: string[];
   points: number;
   level: number;
   badges: Badge[];

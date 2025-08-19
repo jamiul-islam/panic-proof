@@ -67,7 +67,6 @@ export default function OnboardingScreen() {
       hasDisabled,
       medicalConditions,
       emergencyContacts: [],
-      completedTasks: [],
       points: 0,
       level: 1,
       badges: [],

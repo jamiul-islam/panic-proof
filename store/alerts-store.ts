@@ -12,6 +12,7 @@ interface AlertsState {
   dismissAlert: (alertId: string) => void;
   getActiveAlerts: () => Alert[];
   getUnviewedAlerts: () => Alert[];
+  clearPersistedState: () => Promise<void>;
 }
 
 export const useAlertsStore = create<AlertsState>()(
@@ -50,6 +51,11 @@ export const useAlertsStore = create<AlertsState>()(
         return alerts.filter(
           alert => alert.isActive && !viewedAlerts.includes(alert.id)
         );
+      },
+      
+      clearPersistedState: async () => {
+        await AsyncStorage.removeItem('alerts-storage');
+        set({ alerts: [], viewedAlerts: [] });
       }
     }),
     {
