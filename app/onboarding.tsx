@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useUserStore } from '@/store/user-store';
 import { useAuthStore } from '@/store/auth-store';
-import { useUser } from '@clerk/clerk-expo';
+import { useUser, useAuth, useClerk } from '@clerk/clerk-expo';
+import { createUser, mapSupabaseUserToProfile } from '@/services/user-service';
 import { colors } from '@/constants/colors';
 import { spacings } from '@/constants/spacings';
 import Button from '@/components/Button';
@@ -15,7 +16,9 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const { setProfile } = useUserStore();
   const { setOnboardingCompleted } = useAuthStore();
-  const { user } = useUser();
+  const { user, isLoaded: userLoaded } = useUser();
+  const { isSignedIn, userId } = useAuth();
+  const clerk = useClerk();
   
   const [step, setStep] = useState(1);
   const [name, setName] = useState(user?.fullName || user?.firstName || '');
@@ -26,16 +29,32 @@ export default function OnboardingScreen() {
   const [hasElderly, setHasElderly] = useState(false);
   const [hasDisabled, setHasDisabled] = useState(false);
   const [medicalConditions, setMedicalConditions] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  
+  // Auto-refresh user data when authentication state changes
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
+    if (userLoaded && !user?.id && retryCount < 3) {
+      timeoutId = setTimeout(() => {
+        setRetryCount(prev => prev + 1);
+      }, 2000); // Wait 2 seconds then trigger a refresh
+    }
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [userLoaded, user?.id, retryCount]);
   
   // Update name when user data becomes available
   useEffect(() => {
-    console.log('User data:', { id: user?.id, fullName: user?.fullName, firstName: user?.firstName });
     if (user?.fullName) {
       setName(user.fullName);
     } else if (user?.firstName) {
       setName(user.firstName);
     }
-  }, [user?.fullName, user?.firstName]);
+  }, [user?.fullName, user?.firstName, userLoaded, isSignedIn, userId, user?.id, retryCount, clerk.session, clerk.user]);
   
   const handleNext = () => {
     if (step < 3) {
@@ -51,31 +70,138 @@ export default function OnboardingScreen() {
     }
   };
   
-  const completeOnboarding = () => {
-    const profileId = user?.id || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  const handleRefreshUser = async () => {
+    setRetryCount(prev => prev + 1);
     
-    console.log('Creating profile for user:', profileId);
+    // Try to reload user data from Clerk
+    try {
+      if (clerk.user) {
+        await clerk.user.reload();
+      }
+      
+      // Force a re-render
+      setRetryCount(prev => prev + 1);
+    } catch (error) {
+      // Silent error handling
+    }
+  };
+  
+  // Function to manually retrieve user data from Clerk session
+  const getCurrentUserFromClerk = async () => {
+    try {
+      // Get the current session
+      const session = clerk.session;
+      
+      if (session?.user) {
+        return {
+          id: session.user.id,
+          email: session.user.emailAddresses?.[0]?.emailAddress,
+          firstName: session.user.firstName,
+          fullName: session.user.fullName,
+        };
+      }
+      
+      // Fallback: try to reload user
+      await clerk.user?.reload();
+      
+      if (clerk.user) {
+        return {
+          id: clerk.user.id,
+          email: clerk.user.emailAddresses?.[0]?.emailAddress,
+          firstName: clerk.user.firstName,
+          fullName: clerk.user.fullName,
+        };
+      }
+      return null;
+    } catch (error) {
+      return null;
+    }
+  };
+  
+  const completeOnboarding = async () => {
+    if (!userLoaded) {
+      Alert.alert('Please Wait', 'Loading user information. Please wait and try again.');
+      return;
+    }
     
-    setProfile({
-      id: profileId,
-      name,
-      location,
-      householdSize,
-      hasPets,
-      hasChildren,
-      hasElderly,
-      hasDisabled,
-      medicalConditions,
-      emergencyContacts: [],
-      points: 0,
-      level: 1,
-      badges: [],
-      customKit: [],
-      customChecklists: []
-    });
+    // Try to get user ID from multiple sources
+    let profileId = user?.id || userId;
+    let userEmail = user?.emailAddresses?.[0]?.emailAddress;
+    let userName = user?.fullName || user?.firstName;
     
-    setOnboardingCompleted(true);
-    router.replace('/(tabs)');
+    // If hooks don't provide user data, try direct Clerk access
+    if (!profileId) {
+      const clerkUser = await getCurrentUserFromClerk();
+      
+      if (clerkUser) {
+        profileId = clerkUser.id;
+        userEmail = clerkUser.email;
+        userName = clerkUser.fullName || clerkUser.firstName;
+      }
+    }
+    
+    if (!profileId) {
+      
+      Alert.alert(
+        'User Information Missing',
+        'Unable to retrieve your user information from Clerk. This might be a temporary issue.\n\nOptions:',
+        [
+          { text: 'Try Again', onPress: completeOnboarding },
+          { text: 'Use Test Mode', onPress: () => proceedWithoutUserId() },
+          { text: 'Cancel', style: 'cancel' }
+        ]
+      );
+      return;
+    }
+    
+    // Update local name if we got it from Clerk
+    if (userName && !name) {
+      setName(userName);
+    }
+    
+    await proceedWithUserData(profileId, userEmail);
+  };
+  
+  const proceedWithoutUserId = async () => {
+    // Fallback: generate a temporary ID and proceed
+    // This is not ideal but allows testing to continue
+    const fallbackId = `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    await proceedWithUserData(fallbackId, undefined);
+  };
+  
+  const proceedWithUserData = async (profileId: string, userEmail?: string) => {
+    setIsLoading(true);
+    
+    try {
+      // Create user in Supabase database
+      const supabaseUser = await createUser({
+        clerk_user_id: profileId,
+        email: userEmail,
+        name,
+        location,
+        household_size: householdSize,
+        has_pets: hasPets,
+        has_children: hasChildren,
+        has_elderly: hasElderly,
+        has_disabled: hasDisabled,
+        medical_conditions: medicalConditions,
+      });
+      
+      // Convert to local profile format and save to store
+      const localProfile = mapSupabaseUserToProfile(supabaseUser);
+      setProfile(localProfile);
+      
+      setOnboardingCompleted(true);
+      router.replace('/(tabs)');
+    } catch (error) {
+      Alert.alert(
+        'Error', 
+        'Failed to create your profile. Please check your internet connection and try again.\n\nError: ' + (error as Error).message,
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   const renderStep1 = () => (
@@ -285,8 +411,29 @@ export default function OnboardingScreen() {
             onPress={handleNext}
             variant="primary"
             style={step === 1 ? styles.fullWidthButton : styles.nextButton}
-            disabled={step === 1 && (!name || !location)}
+            disabled={
+              (step === 1 && (!name || !location)) || 
+              isLoading ||
+              !userLoaded  // Only require that Clerk is loaded, not that all user data is perfect
+            }
+            isLoading={step === 3 && isLoading}
           />
+          
+          {/* Debug info for development */}
+          {step === 3 && !user?.id && !userId && (
+            <View style={styles.debugContainer}>
+              <Text style={styles.debugText}>
+                Debug: User ID not loaded yet ({retryCount}/3 auto-retries). You can still try to complete onboarding.
+              </Text>
+              <Button
+                title="Refresh User Data"
+                onPress={handleRefreshUser}
+                variant="outline"
+                size="small"
+                style={styles.debugButton}
+              />
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -450,5 +597,23 @@ const styles = StyleSheet.create({
   },
   fullWidthButton: {
     flex: 1,
+  },
+  debugText: {
+    fontSize: spacings.fontSize.sm,
+    color: colors.text + '80', // Semi-transparent
+    textAlign: 'center',
+    marginTop: spacings.xs,
+    fontStyle: 'italic',
+  },
+  debugContainer: {
+    alignItems: 'center',
+    marginTop: spacings.xs,
+    padding: spacings.sm,
+    backgroundColor: colors.background + '50',
+    borderRadius: spacings.xs,
+  },
+  debugButton: {
+    marginTop: spacings.xs,
+    minWidth: 120,
   },
 });

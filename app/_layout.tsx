@@ -2,13 +2,14 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import { Stack, Slot, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { ErrorBoundary } from "./error-boundary";
-import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
+import { ClerkProvider, useAuth, useUser } from "@clerk/clerk-expo";
 import Constants from "expo-constants";
 import { useAuthStore } from "@/store/auth-store";
 import { useUserStore } from "@/store/user-store";
+import { getUserByClerkId, mapSupabaseUserToProfile } from "@/services/user-service";
 import "@/utils/dev-helpers"; // Import dev helpers for development
 
 export const unstable_settings = {
@@ -22,37 +23,78 @@ SplashScreen.preventAutoHideAsync();
 function InitialLayout() {
   const segments = useSegments();
   const router = useRouter();
-  const { isSignedIn } = useAuth();
-  const { isAuthenticated, hasCompletedOnboarding, setAuthenticated } = useAuthStore();
-  const { profile } = useUserStore();
+  const { isSignedIn, userId } = useAuth();
+  const { user, isLoaded: userLoaded } = useUser();
+  const { isAuthenticated, hasCompletedOnboarding, setAuthenticated, setOnboardingCompleted } = useAuthStore();
+  const { profile, setProfile } = useUserStore();
+  const [isCheckingUserProfile, setIsCheckingUserProfile] = useState(false);
   
   useEffect(() => {
     // Update auth store based on Clerk auth state
     setAuthenticated(!!isSignedIn);
   }, [isSignedIn, setAuthenticated]);
+
+  // Check if user exists in Supabase when they authenticate (sign in)
+  useEffect(() => {
+    const checkUserProfile = async () => {
+      // Only check if:
+      // 1. User is signed in
+      // 2. Clerk data is loaded  
+      // 3. We have a userId
+      // 4. We're not already checking
+      // 5. We don't have a profile loaded
+      // 6. Onboarding is marked as not completed (default state for sign-ins)
+      if (!isSignedIn || !userLoaded || !userId || isCheckingUserProfile || profile || hasCompletedOnboarding) {
+        return;
+      }
+
+      setIsCheckingUserProfile(true);
+
+      try {
+        // Check if user exists in Supabase database
+        const supabaseUser = await getUserByClerkId(userId);
+        
+        if (supabaseUser) {
+          // User exists in Supabase = they completed onboarding during signup
+          const localProfile = mapSupabaseUserToProfile(supabaseUser);
+          setProfile(localProfile);
+          setOnboardingCompleted(true);
+        }
+        // If user doesn't exist in Supabase, hasCompletedOnboarding stays false
+        // and they'll be redirected to onboarding
+      } catch (error) {
+        // If there's an error checking, keep hasCompletedOnboarding as false
+        // This ensures they go through onboarding if there's any doubt
+      } finally {
+        setIsCheckingUserProfile(false);
+      }
+    };
+
+    checkUserProfile();
+  }, [isSignedIn, userLoaded, userId, isCheckingUserProfile, profile, hasCompletedOnboarding, setProfile, setOnboardingCompleted]);
   
   useEffect(() => {
     const inAuthGroup = segments[0] === "(auth)";
     const inOnboardingGroup = segments[0] === "onboarding";
     
-    console.log("Auth state:", { isAuthenticated, hasCompletedOnboarding, segments });
+    // Wait for Clerk to load and user profile check to complete before navigation
+    if (!userLoaded || isCheckingUserProfile) {
+      return;
+    }
     
     if (!isAuthenticated && !inAuthGroup) {
       // If not authenticated and not in auth group, redirect to sign-in
-      console.log("Redirecting to sign-in");
       router.replace("/(auth)/sign-in");
     } else if (isAuthenticated) {
       if (!hasCompletedOnboarding && !inOnboardingGroup) {
         // If authenticated but not onboarded, redirect to onboarding
-        console.log("Redirecting to onboarding");
         router.replace("/onboarding");
       } else if (hasCompletedOnboarding && (inAuthGroup || inOnboardingGroup)) {
         // If authenticated and onboarded but in auth or onboarding group, redirect to home
-        console.log("Redirecting to tabs");
         router.replace("/(tabs)");
       }
     }
-  }, [isAuthenticated, hasCompletedOnboarding, segments, router]);
+  }, [isAuthenticated, hasCompletedOnboarding, userLoaded, isCheckingUserProfile, segments, router]);
   
   return (
     <Stack>

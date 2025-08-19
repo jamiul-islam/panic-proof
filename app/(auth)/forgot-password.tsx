@@ -33,7 +33,6 @@ export default function ForgotPasswordScreen() {
       
       setIsSuccess(true);
     } catch (err: any) {
-      console.error('Error resetting password:', err);
       setError(err.errors?.[0]?.message || 'Failed to send reset email. Please try again.');
     } finally {
       setIsLoading(false);

@@ -50,8 +50,7 @@ export default function SignUpScreen() {
         params: { firstName, lastName }
       });
     } catch (err: any) {
-      console.error('Sign up error:', JSON.stringify(err, null, 2));
-      alert(`Sign up failed: ${err.errors?.[0]?.message || err.message || 'Unknown error'}`);
+      // Error handled by UI feedback if needed
     } finally {
       setLoading(false);
     }

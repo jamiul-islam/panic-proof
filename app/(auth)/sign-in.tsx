@@ -43,7 +43,6 @@ export default function SignInScreen() {
       // Set the user as active
       await setActive({ session: result.createdSessionId });
     } catch (err: any) {
-      console.error('Error signing in:', err);
       setError(err.errors?.[0]?.message || 'Failed to sign in. Please try again.');
     } finally {
       setIsLoading(false);

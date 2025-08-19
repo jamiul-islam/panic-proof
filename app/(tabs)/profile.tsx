@@ -78,7 +78,7 @@ export default function ProfileScreen() {
               // Navigate to sign-in screen
               router.replace('/(auth)/sign-in');
             } catch (error) {
-              console.error('Error signing out:', error);
+              // Silent error handling for sign out
             }
           }
         }

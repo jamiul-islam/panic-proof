@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
-import { useSignIn, useSignUp } from '@clerk/clerk-expo';
+import { useSignIn, useSignUp, useClerk } from '@clerk/clerk-expo';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { colors } from '@/constants/colors';
 import { spacings } from '@/constants/spacings';
@@ -12,6 +12,7 @@ import { useAuthStore } from '@/store/auth-store';
 export default function VerifyScreen() {
   const { signIn, isLoaded: isSignInLoaded } = useSignIn();
   const { signUp, isLoaded: isSignUpLoaded } = useSignUp();
+  const { setActive } = useClerk();
   const router = useRouter();
   const { setAuthenticated } = useAuthStore();
   const { firstName, lastName } = useLocalSearchParams<{ firstName?: string; lastName?: string }>();
@@ -113,6 +114,9 @@ export default function VerifyScreen() {
         });
         
         if (result.status === 'complete') {
+          // Set the session as active
+          await setActive({ session: result.createdSessionId });
+          
           setAuthenticated(true);
           router.replace('/(tabs)');
         }
@@ -123,8 +127,12 @@ export default function VerifyScreen() {
         });
         
         if (result.status === 'complete') {
-          // Set the user as active
-          await result.createdSessionId;
+          // Set the session as active - this is critical for proper auth state
+          await setActive({ session: result.createdSessionId });
+          
+          // Small delay to ensure session is fully established
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
           setAuthenticated(true);
           
           // Navigate to onboarding with user data if available
@@ -139,7 +147,6 @@ export default function VerifyScreen() {
         }
       }
     } catch (err: any) {
-      console.error('Verification error:', err);
       setError(err.errors?.[0]?.message || 'Failed to verify code. Please try again.');
     } finally {
       setIsLoading(false);
@@ -160,7 +167,6 @@ export default function VerifyScreen() {
       
       setError('');
     } catch (err: any) {
-      console.error('Error resending code:', err);
       setError(err.errors?.[0]?.message || 'Failed to resend code. Please try again.');
     }
   };
