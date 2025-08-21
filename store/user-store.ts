@@ -3,6 +3,18 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserProfile, EmergencyContact, Badge, KitItem, SavedLocation, CustomChecklist, ChecklistItem } from '@/types';
 import { UserService } from '@/services/user-service';
+import { 
+  createEmergencyContact, 
+  getEmergencyContacts, 
+  updateEmergencyContact, 
+  deleteEmergencyContact,
+  createSavedLocation,
+  getSavedLocations,
+  updateSavedLocation,
+  deleteSavedLocation,
+  setPrimaryLocation,
+  supabase 
+} from '@/lib/supabase';
 
 interface UserState {
   profile: UserProfile | null;
@@ -11,18 +23,24 @@ interface UserState {
   setProfile: (profile: UserProfile) => void;
   updateProfile: (updates: Partial<UserProfile>) => void;
   loadUserProfile: (clerkUserId: string) => Promise<void>;
-  addEmergencyContact: (contact: EmergencyContact) => void;
-  removeEmergencyContact: (contactId: string) => void;
-  updateEmergencyContact: (contactId: string, updates: Partial<EmergencyContact>) => void;
+  // Emergency Contacts - now integrated with Supabase
+  addEmergencyContact: (contact: Omit<EmergencyContact, 'id'>) => Promise<void>;
+  removeEmergencyContact: (contactId: string) => Promise<void>;
+  updateEmergencyContact: (contactId: string, updates: Partial<EmergencyContact>) => Promise<void>;
+  loadEmergencyContacts: () => Promise<void>;
+  // Saved Locations - now integrated with Supabase
+  addSavedLocation: (location: Omit<SavedLocation, 'id'>) => Promise<void>;
+  updateSavedLocation: (locationId: string, updates: Partial<SavedLocation>) => Promise<void>;
+  removeSavedLocation: (locationId: string) => Promise<void>;
+  setPrimaryLocation: (locationId: string) => Promise<void>;
+  loadSavedLocations: () => Promise<void>;
+  // Other methods remain the same
   completeTask: (taskId: string, points: number) => void;
   uncompleteTask: (taskId: string, points: number) => void;
   addBadge: (badge: Badge) => void;
   addKitItem: (item: KitItem) => void;
   updateKitItem: (itemId: string, updates: Partial<KitItem>) => void;
   removeKitItem: (itemId: string) => void;
-  addSavedLocation: (location: SavedLocation) => void;
-  updateSavedLocation: (locationId: string, updates: Partial<SavedLocation>) => void;
-  removeSavedLocation: (locationId: string) => void;
   addCustomChecklist: (checklist: CustomChecklist) => void;
   updateCustomChecklist: (checklistId: string, updates: Partial<CustomChecklist>) => void;
   removeCustomChecklist: (checklistId: string) => void;
@@ -48,6 +66,13 @@ export const useUserStore = create<UserState>()(
           const userProfile = await UserService.getUserProfile(clerkUserId);
           if (userProfile) {
             console.log('✅ User profile loaded from Supabase:', userProfile.name);
+            
+            // Load emergency contacts and saved locations from Supabase
+            const [emergencyContacts, savedLocations] = await Promise.all([
+              getEmergencyContacts(userProfile.id).catch(() => []),
+              getSavedLocations(userProfile.id).catch(() => [])
+            ]);
+            
             // Convert Supabase user data to UserProfile format
             const profile: UserProfile = {
               id: userProfile.id,
@@ -59,7 +84,45 @@ export const useUserStore = create<UserState>()(
               hasElderly: userProfile.has_elderly || false,
               hasDisabled: userProfile.has_disabled || false,
               medicalConditions: Array.isArray(userProfile.medical_conditions) ? userProfile.medical_conditions as string[] : [],
-              emergencyContacts: [],
+              
+              // Load real emergency contacts from Supabase
+              emergencyContacts: emergencyContacts.map(contact => ({
+                id: contact.id,
+                name: contact.name,
+                phone: contact.phone,
+                email: contact.email || undefined,
+                relationship: contact.relationship,
+                isLocal: contact.is_local || false,
+              })),
+              
+              // Load real saved locations from Supabase
+              savedLocations: savedLocations.length > 0 
+                ? savedLocations.map(location => ({
+                    id: location.id,
+                    name: location.name,
+                    address: location.address,
+                    type: location.type as "home" | "work" | "favorite" | "other",
+                    isPrimary: location.is_primary || false,
+                    coordinates: location.coordinates as { latitude: number; longitude: number } | undefined,
+                  }))
+                : [
+                    // Default locations if none exist
+                    {
+                      id: 'default-1',
+                      name: 'Home',
+                      address: userProfile.location || '123 Main Street, London, UK',
+                      type: 'home' as const,
+                      isPrimary: true,
+                    },
+                    {
+                      id: 'default-2',
+                      name: 'Work',
+                      address: '456 Business Avenue, London, UK',
+                      type: 'work' as const,
+                      isPrimary: false,
+                    },
+                  ],
+              
               points: 0,
               level: 1,
               badges: [],
@@ -102,22 +165,6 @@ export const useUserStore = create<UserState>()(
                   updatedAt: new Date().toISOString(),
                 },
               ],
-              savedLocations: [
-                {
-                  id: '1',
-                  name: 'Home',
-                  address: userProfile.location || '123 Main Street, London, UK',
-                  type: 'home',
-                  isPrimary: true,
-                },
-                {
-                  id: '2',
-                  name: 'Work',
-                  address: '456 Business Avenue, London, UK',
-                  type: 'work',
-                  isPrimary: false,
-                },
-              ],
               notificationPreferences: userProfile.notification_preferences ? {
                 alertNotifications: (userProfile.notification_preferences as any).alerts || true,
                 taskReminders: (userProfile.notification_preferences as any).reminders || true,
@@ -129,7 +176,7 @@ export const useUserStore = create<UserState>()(
               } : undefined,
             };
             set({ profile, isOnboarded: true, isLoading: false });
-            console.log('✅ Profile set in store:', profile.name, 'at location:', profile.location);
+            console.log('✅ Profile set in store with', emergencyContacts.length, 'contacts and', savedLocations.length, 'locations');
           } else {
             console.log('❌ No user profile found in Supabase');
             set({ profile: null, isOnboarded: false, isLoading: false });
@@ -144,39 +191,159 @@ export const useUserStore = create<UserState>()(
         profile: state.profile ? { ...state.profile, ...updates } : null
       })),
       
-      addEmergencyContact: (contact) => set((state) => {
-        if (!state.profile) return { profile: null };
-        return {
-          profile: {
-            ...state.profile,
-            emergencyContacts: [...state.profile.emergencyContacts, contact]
-          }
-        };
-      }),
       
-      removeEmergencyContact: (contactId) => set((state) => {
-        if (!state.profile) return { profile: null };
-        return {
-          profile: {
-            ...state.profile,
-            emergencyContacts: state.profile.emergencyContacts.filter(
-              (contact) => contact.id !== contactId
-            )
-          }
-        };
-      }),
+      addEmergencyContact: async (contact) => {
+        const { profile } = get();
+        if (!profile) {
+          throw new Error('No user profile found. Please load user profile first.');
+        }
+
+        try {
+          set({ isLoading: true });
+          const newContact = await createEmergencyContact(profile.id, {
+            name: contact.name,
+            phone: contact.phone,
+            email: contact.email || null,
+            relationship: contact.relationship,
+            is_local: contact.isLocal || false,
+          });
+          
+          // Update local state
+          set((state) => {
+            if (!state.profile) return { profile: null, isLoading: false };
+            return {
+              profile: {
+                ...state.profile,
+                emergencyContacts: [...state.profile.emergencyContacts, {
+                  id: newContact.id,
+                  name: newContact.name,
+                  phone: newContact.phone,
+                  email: newContact.email || undefined,
+                  relationship: newContact.relationship,
+                  isLocal: newContact.is_local || false,
+                }]
+              },
+              isLoading: false
+            };
+          });
+          console.log('✅ Emergency contact added successfully');
+        } catch (error) {
+          console.error('Error adding emergency contact:', error);
+          set({ isLoading: false });
+          throw error;
+        }
+      },
       
-      updateEmergencyContact: (contactId, updates) => set((state) => {
-        if (!state.profile) return { profile: null };
-        return {
-          profile: {
-            ...state.profile,
-            emergencyContacts: state.profile.emergencyContacts.map((contact) =>
-              contact.id === contactId ? { ...contact, ...updates } : contact
-            )
-          }
-        };
-      }),
+      removeEmergencyContact: async (contactId) => {
+        const { profile } = get();
+        if (!profile) {
+          throw new Error('No user profile found. Please load user profile first.');
+        }
+
+        try {
+          set({ isLoading: true });
+          await deleteEmergencyContact(profile.id, contactId);
+          
+          // Update local state
+          set((state) => {
+            if (!state.profile) return { profile: null, isLoading: false };
+            return {
+              profile: {
+                ...state.profile,
+                emergencyContacts: state.profile.emergencyContacts.filter(
+                  (contact) => contact.id !== contactId
+                )
+              },
+              isLoading: false
+            };
+          });
+          console.log('✅ Emergency contact removed successfully');
+        } catch (error) {
+          console.error('Error removing emergency contact:', error);
+          set({ isLoading: false });
+          throw error;
+        }
+      },
+      
+      updateEmergencyContact: async (contactId, updates) => {
+        const { profile } = get();
+        if (!profile) {
+          throw new Error('No user profile found. Please load user profile first.');
+        }
+
+        try {
+          set({ isLoading: true });
+          const updatedContact = await updateEmergencyContact(profile.id, contactId, {
+            name: updates.name,
+            phone: updates.phone,
+            email: updates.email || null,
+            relationship: updates.relationship,
+            is_local: updates.isLocal,
+          });
+          
+          // Update local state
+          set((state) => {
+            if (!state.profile) return { profile: null, isLoading: false };
+            return {
+              profile: {
+                ...state.profile,
+                emergencyContacts: state.profile.emergencyContacts.map((contact) =>
+                  contact.id === contactId ? {
+                    id: updatedContact.id,
+                    name: updatedContact.name,
+                    phone: updatedContact.phone,
+                    email: updatedContact.email || undefined,
+                    relationship: updatedContact.relationship,
+                    isLocal: updatedContact.is_local || false,
+                  } : contact
+                )
+              },
+              isLoading: false
+            };
+          });
+          console.log('✅ Emergency contact updated successfully');
+        } catch (error) {
+          console.error('Error updating emergency contact:', error);
+          set({ isLoading: false });
+          throw error;
+        }
+      },
+
+      loadEmergencyContacts: async () => {
+        const { profile } = get();
+        if (!profile) {
+          throw new Error('No user profile found. Please load user profile first.');
+        }
+
+        try {
+          set({ isLoading: true });
+          const contacts = await getEmergencyContacts(profile.id);
+          
+          // Update local state
+          set((state) => {
+            if (!state.profile) return { profile: null, isLoading: false };
+            return {
+              profile: {
+                ...state.profile,
+                emergencyContacts: contacts.map(contact => ({
+                  id: contact.id,
+                  name: contact.name,
+                  phone: contact.phone,
+                  email: contact.email || undefined,
+                  relationship: contact.relationship,
+                  isLocal: contact.is_local || false,
+                }))
+              },
+              isLoading: false
+            };
+          });
+          console.log('✅ Emergency contacts loaded successfully');
+        } catch (error) {
+          console.error('Error loading emergency contacts:', error);
+          set({ isLoading: false });
+          throw error;
+        }
+      },
       
       completeTask: (taskId, points) => set((state) => {
         if (!state.profile) return { profile: null };
@@ -250,37 +417,188 @@ export const useUserStore = create<UserState>()(
         };
       }),
       
-      addSavedLocation: (location) => set((state) => {
-        if (!state.profile) return { profile: null };
-        return {
-          profile: {
-            ...state.profile,
-            savedLocations: [...(state.profile.savedLocations || []), location]
-          }
-        };
-      }),
+      addSavedLocation: async (location) => {
+        const { profile } = get();
+        if (!profile) {
+          throw new Error('No user profile found. Please load user profile first.');
+        }
+
+        try {
+          set({ isLoading: true });
+          const newLocation = await createSavedLocation(profile.id, {
+            name: location.name,
+            address: location.address,
+            type: location.type,
+            is_primary: location.isPrimary || false,
+            coordinates: location.coordinates ? JSON.parse(JSON.stringify(location.coordinates)) : null,
+          });
+          
+          // Update local state
+          set((state) => {
+            if (!state.profile) return { profile: null, isLoading: false };
+            return {
+              profile: {
+                ...state.profile,
+                savedLocations: [...(state.profile.savedLocations || []), {
+                  id: newLocation.id,
+                  name: newLocation.name,
+                  address: newLocation.address,
+                  type: newLocation.type as "home" | "work" | "favorite" | "other",
+                  isPrimary: newLocation.is_primary || false,
+                  coordinates: newLocation.coordinates as { latitude: number; longitude: number } | undefined,
+                }]
+              },
+              isLoading: false
+            };
+          });
+          console.log('✅ Saved location added successfully');
+        } catch (error) {
+          console.error('Error adding saved location:', error);
+          set({ isLoading: false });
+          throw error;
+        }
+      },
       
-      updateSavedLocation: (locationId, updates) => set((state) => {
-        if (!state.profile) return { profile: null };
-        return {
-          profile: {
-            ...state.profile,
-            savedLocations: (state.profile.savedLocations || []).map((location) =>
-              location.id === locationId ? { ...location, ...updates } : location
-            )
-          }
-        };
-      }),
+      updateSavedLocation: async (locationId, updates) => {
+        const { profile } = get();
+        if (!profile) {
+          throw new Error('No user profile found. Please load user profile first.');
+        }
+
+        try {
+          set({ isLoading: true });
+          const updatedLocation = await updateSavedLocation(profile.id, locationId, {
+            name: updates.name,
+            address: updates.address,
+            type: updates.type,
+            is_primary: updates.isPrimary,
+            coordinates: updates.coordinates ? JSON.parse(JSON.stringify(updates.coordinates)) : undefined,
+          });
+          
+          // Update local state
+          set((state) => {
+            if (!state.profile) return { profile: null, isLoading: false };
+            return {
+              profile: {
+                ...state.profile,
+                savedLocations: (state.profile.savedLocations || []).map((location) =>
+                  location.id === locationId ? {
+                    id: updatedLocation.id,
+                    name: updatedLocation.name,
+                    address: updatedLocation.address,
+                    type: updatedLocation.type as "home" | "work" | "favorite" | "other",
+                    isPrimary: updatedLocation.is_primary || false,
+                    coordinates: updatedLocation.coordinates as { latitude: number; longitude: number } | undefined,
+                  } : location
+                )
+              },
+              isLoading: false
+            };
+          });
+          console.log('✅ Saved location updated successfully');
+        } catch (error) {
+          console.error('Error updating saved location:', error);
+          set({ isLoading: false });
+          throw error;
+        }
+      },
       
-      removeSavedLocation: (locationId) => set((state) => {
-        if (!state.profile) return { profile: null };
-        return {
-          profile: {
-            ...state.profile,
-            savedLocations: (state.profile.savedLocations || []).filter((location) => location.id !== locationId)
-          }
-        };
-      }),
+      removeSavedLocation: async (locationId) => {
+        const { profile } = get();
+        if (!profile) {
+          throw new Error('No user profile found. Please load user profile first.');
+        }
+
+        try {
+          set({ isLoading: true });
+          await deleteSavedLocation(profile.id, locationId);
+          
+          // Update local state
+          set((state) => {
+            if (!state.profile) return { profile: null, isLoading: false };
+            return {
+              profile: {
+                ...state.profile,
+                savedLocations: (state.profile.savedLocations || []).filter((location) => location.id !== locationId)
+              },
+              isLoading: false
+            };
+          });
+          console.log('✅ Saved location removed successfully');
+        } catch (error) {
+          console.error('Error removing saved location:', error);
+          set({ isLoading: false });
+          throw error;
+        }
+      },
+
+      setPrimaryLocation: async (locationId) => {
+        const { profile } = get();
+        if (!profile) {
+          throw new Error('No user profile found. Please load user profile first.');
+        }
+
+        try {
+          set({ isLoading: true });
+          const updatedLocation = await setPrimaryLocation(profile.id, locationId);
+          
+          // Update local state
+          set((state) => {
+            if (!state.profile) return { profile: null, isLoading: false };
+            return {
+              profile: {
+                ...state.profile,
+                savedLocations: (state.profile.savedLocations || []).map((location) => ({
+                  ...location,
+                  isPrimary: location.id === locationId
+                }))
+              },
+              isLoading: false
+            };
+          });
+          console.log('✅ Primary location set successfully');
+        } catch (error) {
+          console.error('Error setting primary location:', error);
+          set({ isLoading: false });
+          throw error;
+        }
+      },
+
+      loadSavedLocations: async () => {
+        const { profile } = get();
+        if (!profile) {
+          throw new Error('No user profile found. Please load user profile first.');
+        }
+
+        try {
+          set({ isLoading: true });
+          const locations = await getSavedLocations(profile.id);
+          
+          // Update local state
+          set((state) => {
+            if (!state.profile) return { profile: null, isLoading: false };
+            return {
+              profile: {
+                ...state.profile,
+                savedLocations: locations.map(location => ({
+                  id: location.id,
+                  name: location.name,
+                  address: location.address,
+                  type: location.type as "home" | "work" | "favorite" | "other",
+                  isPrimary: location.is_primary || false,
+                  coordinates: location.coordinates as { latitude: number; longitude: number } | undefined,
+                }))
+              },
+              isLoading: false
+            };
+          });
+          console.log('✅ Saved locations loaded successfully');
+        } catch (error) {
+          console.error('Error loading saved locations:', error);
+          set({ isLoading: false });
+          throw error;
+        }
+      },
       
       addCustomChecklist: (checklist) => set((state) => {
         if (!state.profile) return { profile: null };
@@ -373,7 +691,7 @@ export const useUserStore = create<UserState>()(
       clearPersistedState: async () => {
         await AsyncStorage.removeItem('user-storage');
         set({ profile: null, isOnboarded: false });
-      }
+      },
     }),
     {
       name: 'user-storage',

@@ -59,6 +59,50 @@ export type Database = {
         }
         Relationships: []
       }
+      emergency_contacts: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          is_local: boolean | null
+          name: string
+          phone: string
+          relationship: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          is_local?: boolean | null
+          name: string
+          phone: string
+          relationship: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          is_local?: boolean | null
+          name?: string
+          phone?: string
+          relationship?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emergency_contacts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resources: {
         Row: {
           address: string | null
@@ -103,6 +147,50 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      saved_locations: {
+        Row: {
+          address: string
+          coordinates: Json | null
+          created_at: string | null
+          id: string
+          is_primary: boolean | null
+          name: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          address: string
+          coordinates?: Json | null
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          name: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          address?: string
+          coordinates?: Json | null
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          name?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_locations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
@@ -258,6 +346,8 @@ export type TablesUpdate<
 export type AlertRow = Tables<'alerts'>;
 export type ResourceRow = Tables<'resources'>;
 export type UserProfile = Tables<'users'>;
+export type EmergencyContactRow = Tables<'emergency_contacts'>;
+export type SavedLocationRow = Tables<'saved_locations'>;
 
 // OnboardingData interface for user creation
 export interface OnboardingData {
