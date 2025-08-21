@@ -13,6 +13,7 @@ import {
   updateSavedLocation,
   deleteSavedLocation,
   setPrimaryLocation,
+  updateUserProfile as updateUserProfileInSupabase,
   supabase 
 } from '@/lib/supabase';
 
@@ -21,7 +22,7 @@ interface UserState {
   isOnboarded: boolean;
   isLoading: boolean;
   setProfile: (profile: UserProfile) => void;
-  updateProfile: (updates: Partial<UserProfile>) => void;
+  updateProfile: (clerkUserId: string, updates: Partial<UserProfile>) => Promise<void>;
   loadUserProfile: (clerkUserId: string) => Promise<void>;
   // Emergency Contacts - now integrated with Supabase
   addEmergencyContact: (contact: Omit<EmergencyContact, 'id'>) => Promise<void>;
@@ -187,9 +188,54 @@ export const useUserStore = create<UserState>()(
         }
       },
       
-      updateProfile: (updates) => set((state) => ({
-        profile: state.profile ? { ...state.profile, ...updates } : null
-      })),
+      updateProfile: async (clerkUserId: string, updates: Partial<UserProfile>) => {
+        const { profile } = get();
+        if (!profile) {
+          throw new Error('No user profile found. Please load user profile first.');
+        }
+
+        try {
+          set({ isLoading: true });
+          console.log('🔄 Updating user profile with:', updates);
+
+          // Prepare updates for Supabase (convert frontend format to database format)
+          const supabaseUpdates: Record<string, any> = {};
+          if (updates.name !== undefined) supabaseUpdates.name = updates.name;
+          if (updates.location !== undefined) supabaseUpdates.location = updates.location;
+          if (updates.householdSize !== undefined) supabaseUpdates.household_size = updates.householdSize;
+          if (updates.hasPets !== undefined) supabaseUpdates.has_pets = updates.hasPets;
+          if (updates.hasChildren !== undefined) supabaseUpdates.has_children = updates.hasChildren;
+          if (updates.hasElderly !== undefined) supabaseUpdates.has_elderly = updates.hasElderly;
+          if (updates.hasDisabled !== undefined) supabaseUpdates.has_disabled = updates.hasDisabled;
+          if (updates.medicalConditions !== undefined) supabaseUpdates.medical_conditions = updates.medicalConditions;
+
+          // Update in Supabase
+          const updatedUserProfile = await updateUserProfileInSupabase(clerkUserId, supabaseUpdates);
+          console.log('✅ User profile updated in Supabase:', updatedUserProfile.name);
+
+          // Update local state with the response from Supabase
+          const updatedProfile: UserProfile = {
+            ...profile,
+            name: updatedUserProfile.name || profile.name,
+            location: updatedUserProfile.location || profile.location,
+            householdSize: updatedUserProfile.household_size || profile.householdSize,
+            hasPets: updatedUserProfile.has_pets || profile.hasPets,
+            hasChildren: updatedUserProfile.has_children || profile.hasChildren,
+            hasElderly: updatedUserProfile.has_elderly || profile.hasElderly,
+            hasDisabled: updatedUserProfile.has_disabled || profile.hasDisabled,
+            medicalConditions: Array.isArray(updatedUserProfile.medical_conditions) 
+              ? updatedUserProfile.medical_conditions as string[] 
+              : profile.medicalConditions,
+          };
+
+          set({ profile: updatedProfile, isLoading: false });
+          console.log('✅ Local profile state updated successfully');
+        } catch (error) {
+          console.error('Error updating user profile:', error);
+          set({ isLoading: false });
+          throw error;
+        }
+      },
       
       
       addEmergencyContact: async (contact) => {

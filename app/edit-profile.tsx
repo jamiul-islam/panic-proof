@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, Switch, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Switch, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
+import { useAuth } from '@clerk/clerk-expo';
 import { useUserStore } from '@/store/user-store';
 import { colors } from '@/constants/colors';
 import { spacings } from '@/constants/spacings';
@@ -10,6 +11,7 @@ import { MapPin, Users, PawPrint, Baby, Heart } from 'lucide-react-native';
 
 export default function EditProfileScreen() {
   const router = useRouter();
+  const { userId } = useAuth();
   const { profile, updateProfile } = useUserStore();
   
   const [name, setName] = useState('');
@@ -20,6 +22,7 @@ export default function EditProfileScreen() {
   const [hasElderly, setHasElderly] = useState(false);
   const [hasDisabled, setHasDisabled] = useState(false);
   const [medicalConditions, setMedicalConditions] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   
   useEffect(() => {
     if (profile) {
@@ -34,19 +37,37 @@ export default function EditProfileScreen() {
     }
   }, [profile]);
   
-  const handleSave = () => {
-    updateProfile({
-      name,
-      location,
-      householdSize,
-      hasPets,
-      hasChildren,
-      hasElderly,
-      hasDisabled,
-      medicalConditions,
-    });
-    
-    router.back();
+  const handleSave = async () => {
+    if (!userId) {
+      Alert.alert('Error', 'No authenticated user found. Please try logging in again.');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await updateProfile(userId, {
+        name,
+        location,
+        householdSize,
+        hasPets,
+        hasChildren,
+        hasElderly,
+        hasDisabled,
+        medicalConditions,
+      });
+      
+      Alert.alert('Success', 'Your profile has been updated successfully!', [
+        {
+          text: 'OK',
+          onPress: () => router.back()
+        }
+      ]);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      Alert.alert('Error', 'Failed to update your profile. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   if (!profile) {
@@ -187,6 +208,8 @@ export default function EditProfileScreen() {
               onPress={handleSave}
               variant="primary"
               style={styles.button}
+              disabled={isLoading}
+              isLoading={isLoading}
             />
           </View>
         </ScrollView>

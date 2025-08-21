@@ -95,12 +95,24 @@ export async function createUserAfterOnboarding(
 // Helper function to update user profile
 export async function updateUserProfile(
   clerkUserId: string,
-  updates: Partial<Omit<OnboardingData, 'name'>> & { name?: string }
+  updates: {
+    name?: string;
+    location?: string;
+    household_size?: number;
+    has_pets?: boolean;
+    has_children?: boolean;
+    has_elderly?: boolean;
+    has_disabled?: boolean;
+    medical_conditions?: string[];
+  }
 ): Promise<UserProfile> {
   try {
     const { data, error } = await supabase
       .from('users')
-      .update(updates)
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString(),
+      })
       .eq('clerk_user_id', clerkUserId)
       .select()
       .single();

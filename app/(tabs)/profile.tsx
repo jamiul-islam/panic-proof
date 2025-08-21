@@ -126,14 +126,17 @@ export default function ProfileScreen() {
     
     if (!result.canceled) {
       setProfileImage(result.assets[0].uri);
-      // In a real app, you would upload this image to a server
+      // TODO: Add profile_image column to users table to persist this
       // For now, we'll just update the local state
-      if (profile) {
-        updateProfile({
-          ...profile,
-          profileImage: result.assets[0].uri
-        });
-      }
+      // if (profile && userId) {
+      //   try {
+      //     await updateProfile(userId, {
+      //       profileImage: result.assets[0].uri
+      //     });
+      //   } catch (error) {
+      //     console.error('Error updating profile image:', error);
+      //   }
+      // }
     }
   };
   
