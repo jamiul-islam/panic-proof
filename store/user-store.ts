@@ -687,45 +687,53 @@ export const useUserStore = create<UserState>()(
         
         const wasCompleted = currentChecklist.isCompleted;
         
+        // Create updated checklists
+        const updatedChecklists = (state.profile.customChecklists || []).map((checklist) => {
+          if (checklist.id === checklistId) {
+            const updatedItems = checklist.items.map((item) =>
+              item.id === itemId ? { ...item, isCompleted: !item.isCompleted } : item
+            );
+            const isCompleted = updatedItems.every((item) => item.isCompleted);
+            
+            return {
+              ...checklist,
+              items: updatedItems,
+              isCompleted,
+              updatedAt: new Date().toISOString()
+            };
+          }
+          return checklist;
+        });
+        
+        // Find the updated checklist to check completion status
+        const updatedChecklist = updatedChecklists.find(c => c.id === checklistId);
+        if (!updatedChecklist) return { profile: state.profile };
+        
+        const isNowCompleted = updatedChecklist.isCompleted;
+        
+        // Calculate points change
+        const checklistPoints = currentChecklist.points || (currentChecklist.items.length * 10); // Default: 10 points per item
+        let newPoints = state.profile.points;
+        
+        // Award points when checklist becomes completed
+        if (!wasCompleted && isNowCompleted) {
+          newPoints += checklistPoints;
+          console.log(`✅ Checklist "${currentChecklist.title}" completed! Awarded ${checklistPoints} points`);
+        }
+        // Remove points when checklist becomes uncompleted
+        else if (wasCompleted && !isNowCompleted) {
+          newPoints = Math.max(0, newPoints - checklistPoints);
+          console.log(`❌ Checklist "${currentChecklist.title}" uncompleted! Removed ${checklistPoints} points`);
+        }
+        
+        const newLevel = Math.floor(newPoints / 100) + 1;
+        
         return {
           profile: {
             ...state.profile,
-            customChecklists: (state.profile.customChecklists || []).map((checklist) => {
-              if (checklist.id === checklistId) {
-                const updatedItems = checklist.items.map((item) =>
-                  item.id === itemId ? { ...item, isCompleted: !item.isCompleted } : item
-                );
-                const isCompleted = updatedItems.every((item) => item.isCompleted);
-                
-                // Calculate points based on checklist completion
-                const checklistPoints = checklist.points || (checklist.items.length * 10); // Default: 10 points per item
-                let newPoints = state.profile!.points;
-                
-                // Award points when checklist becomes completed
-                if (!wasCompleted && isCompleted) {
-                  newPoints += checklistPoints;
-                }
-                // Remove points when checklist becomes uncompleted
-                else if (wasCompleted && !isCompleted) {
-                  newPoints = Math.max(0, newPoints - checklistPoints);
-                }
-                
-                // Update user points and level if this checklist's completion status changed
-                if (wasCompleted !== isCompleted) {
-                  const newLevel = Math.floor(newPoints / 100) + 1;
-                  state.profile!.points = newPoints;
-                  state.profile!.level = newLevel;
-                }
-                
-                return {
-                  ...checklist,
-                  items: updatedItems,
-                  isCompleted,
-                  updatedAt: new Date().toISOString()
-                };
-              }
-              return checklist;
-            })
+            customChecklists: updatedChecklists,
+            points: newPoints,
+            level: newLevel
           }
         };
       }),

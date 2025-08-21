@@ -23,6 +23,23 @@ export default function ProfileHeader() {
   // Calculate total completed items (tasks + checklists)
   const totalCompletedItems = completedTasksCount + completedChecklistsCount;
   
+  // Debug logging for points and checklists
+  React.useEffect(() => {
+    console.log('🎯 ProfileHeader Debug:');
+    console.log('   Points:', profile.points);
+    console.log('   Level:', profile.level);
+    console.log('   Completed tasks:', completedTasksCount);
+    console.log('   Total checklists:', (profile.customChecklists || []).length);
+    console.log('   Completed checklists:', completedChecklistsCount);
+    console.log('   Checklist details:', (profile.customChecklists || []).map(c => ({
+      title: c.title,
+      points: c.points,
+      isCompleted: c.isCompleted,
+      completedItems: c.items.filter(item => item.isCompleted).length,
+      totalItems: c.items.length
+    })));
+  }, [profile.points, profile.level, completedTasksCount, completedChecklistsCount, profile.customChecklists]);
+  
   // Calculate XP progress to next level (every 100 points = 1 level)
   const currentLevelPoints = (profile.level - 1) * 100;
   const nextLevelPoints = profile.level * 100;
