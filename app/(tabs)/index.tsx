@@ -21,17 +21,28 @@ export default function HomeScreen() {
   const router = useRouter();
   const { userId } = useAuth();
   const { profile, loadUserProfile } = useUserStore((state) => state);
-  const { alerts, fetchAlerts, getActiveAlerts, getUnviewedAlerts } = useAlertsStore();
+  const { 
+    alerts, 
+    fetchAlerts, 
+    subscribeToAlerts, 
+    getActiveAlerts, 
+    getUnviewedAlerts,
+    isSubscribed 
+  } = useAlertsStore();
   const { tasks, fetchTasks, getTaskProgress, getIncompleteTasks } = useTasksStore();
   const { disasters, fetchDisasters } = useDisastersStore();
-  const [unviewedAlertsCount, setUnviewedAlertsCount] = React.useState(0);
   
   useEffect(() => {
     // Fetch data when component mounts
     fetchAlerts();
     fetchTasks();
     fetchDisasters();
-  }, []);
+    
+    // Subscribe to real-time alerts if not already subscribed
+    if (!isSubscribed) {
+      subscribeToAlerts();
+    }
+  }, [fetchAlerts, fetchTasks, fetchDisasters, subscribeToAlerts, isSubscribed]);
 
   // Load user profile if not already loaded
   useEffect(() => {
@@ -40,10 +51,14 @@ export default function HomeScreen() {
     }
   }, [profile, userId, loadUserProfile]);
   
+  // Get real-time unviewed alerts count directly from store
+  const unviewedAlerts = getUnviewedAlerts();
+  const unviewedAlertsCount = unviewedAlerts.length;
+  
+  // Debug log for unviewed alerts count changes
   useEffect(() => {
-    const unviewedAlerts = getUnviewedAlerts();
-    setUnviewedAlertsCount(unviewedAlerts.length);
-  }, [alerts]);
+    console.log('📊 Home screen - Unviewed alerts count:', unviewedAlertsCount);
+  }, [unviewedAlertsCount]);
   
   const activeAlerts = getActiveAlerts();
   const taskProgress = getTaskProgress();

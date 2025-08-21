@@ -13,9 +13,10 @@ import { AuthFlowHelper } from "@/utils/auth-flow";
 import { clearAllPersistedStores } from "@/utils/storage-reset";
 import "@/utils/dev-helpers"; // Import dev helpers for development
 
-export const unstable_settings = {
-  initialRouteName: "(auth)/sign-in",
-};
+// Remove this - let Expo Router handle initial route based on auth state
+// export const unstable_settings = {
+//   initialRouteName: "(auth)/sign-in",
+// };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -31,17 +32,19 @@ function InitialLayout() {
   const [isCheckingUserProfile, setIsCheckingUserProfile] = useState(false);
   const [hasReset, setHasReset] = useState(false);
   
-  // Clear storage on first load to fix migration issues
+  // Only clear storage in development when needed - not on every launch
   useEffect(() => {
     const resetStorageOnce = async () => {
-      if (!hasReset) {
+      // Only clear storage if there's a specific development need
+      // Comment this out for normal operation
+      if (__DEV__ && false) { // Set to true only when you need to reset
         await clearAllPersistedStores();
-        setHasReset(true);
-        console.log('Storage cleared to fix migration issues');
+        console.log('Storage cleared for development reset');
       }
+      setHasReset(true);
     };
     resetStorageOnce();
-  }, [hasReset]);
+  }, []);
   
   useEffect(() => {
     // Update auth store based on Clerk auth state
@@ -52,13 +55,13 @@ function InitialLayout() {
   useEffect(() => {
     const checkUserProfile = async () => {
       // Only check if:
-      // 1. User is signed in
+      // 1. User is signed in with Clerk
       // 2. Clerk data is loaded  
       // 3. We have a userId
       // 4. We're not already checking
-      // 5. We don't have a profile loaded
-      // 6. Onboarding is marked as not completed (default state for sign-ins)
-      if (!isSignedIn || !userLoaded || !userId || isCheckingUserProfile || profile || hasCompletedOnboarding || !hasReset) {
+      // 5. We don't have a profile loaded yet
+      // 6. Storage reset is complete (for development)
+      if (!isSignedIn || !userLoaded || !userId || isCheckingUserProfile || profile || !hasReset) {
         return;
       }
 
@@ -97,22 +100,33 @@ function InitialLayout() {
     const inAuthGroup = segments[0] === "(auth)";
     const inOnboardingGroup = segments[0] === "onboarding";
     
-    // Wait for Clerk to load and user profile check to complete before navigation
+    // Wait for all required data to be loaded before making navigation decisions
     if (!userLoaded || isCheckingUserProfile) {
       return;
     }
     
+    console.log('Navigation check:', { 
+      isAuthenticated, 
+      hasCompletedOnboarding, 
+      currentSegment: segments[0],
+      isSignedIn 
+    });
+    
     if (!isAuthenticated && !inAuthGroup) {
-      // If not authenticated and not in auth group, redirect to sign-in
+      // Not authenticated and not in auth group - go to sign in
+      console.log('Redirecting to sign-in: not authenticated');
       router.replace("/(auth)/sign-in");
     } else if (isAuthenticated) {
       if (!hasCompletedOnboarding && !inOnboardingGroup) {
-        // If authenticated but not onboarded, redirect to onboarding
+        // Authenticated but needs onboarding
+        console.log('Redirecting to onboarding: authenticated but not onboarded');
         router.replace("/onboarding");
       } else if (hasCompletedOnboarding && (inAuthGroup || inOnboardingGroup)) {
-        // If authenticated and onboarded but in auth or onboarding group, redirect to home
+        // Authenticated and onboarded but in wrong group - go to home
+        console.log('Redirecting to home: authenticated and onboarded');
         router.replace("/(tabs)");
       }
+      // If authenticated and in the right place, do nothing (let user stay)
     }
   }, [isAuthenticated, hasCompletedOnboarding, userLoaded, isCheckingUserProfile, segments, router]);
   
