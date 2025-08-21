@@ -14,7 +14,7 @@ import IconWrapper from '@/components/IconWrapper';
 
 export default function OnboardingScreen() {
   const router = useRouter();
-  const { setProfile } = useUserStore();
+  const { setProfile, loadUserProfile } = useUserStore();
   const { setOnboardingCompleted } = useAuthStore();
   const { user, isLoaded: userLoaded } = useUser();
   const { isSignedIn, userId } = useAuth();
@@ -199,6 +199,9 @@ export default function OnboardingScreen() {
       );
       
       console.log('User created in Supabase:', supabaseUser.id);
+      
+      // Load the user profile into the store
+      await loadUserProfile(profileId);
       
       setOnboardingCompleted(true);
       router.replace('/(tabs)');

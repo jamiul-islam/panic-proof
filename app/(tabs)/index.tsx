@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@clerk/clerk-expo';
 import { useUserStore } from '@/store/user-store';
 import { useAlertsStore } from '@/store/alerts-store';
 import { useTasksStore } from '@/store/tasks-store';
@@ -18,7 +19,8 @@ import IconWrapper from '@/components/IconWrapper';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const profile = useUserStore((state) => state.profile);
+  const { userId } = useAuth();
+  const { profile, loadUserProfile } = useUserStore((state) => state);
   const { alerts, fetchAlerts, getActiveAlerts, getUnviewedAlerts } = useAlertsStore();
   const { tasks, fetchTasks, getTaskProgress, getIncompleteTasks } = useTasksStore();
   const { disasters, fetchDisasters } = useDisastersStore();
@@ -30,6 +32,13 @@ export default function HomeScreen() {
     fetchTasks();
     fetchDisasters();
   }, []);
+
+  // Load user profile if not already loaded
+  useEffect(() => {
+    if (!profile && userId) {
+      loadUserProfile(userId);
+    }
+  }, [profile, userId, loadUserProfile]);
   
   useEffect(() => {
     const unviewedAlerts = getUnviewedAlerts();

@@ -27,7 +27,8 @@ import ChangePasswordModal from '@/components/ChangePasswordModal';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { profile, updateProfile, clearPersistedState: clearUserData } = useUserStore();
+  const { userId } = useAuth();
+  const { profile, updateProfile, clearPersistedState: clearUserData, loadUserProfile } = useUserStore();
   const { fetchTasks, clearPersistedState: clearTasksData } = useTasksStore();
   const { clearPersistedState: clearAlertsData } = useAlertsStore();
   const { signOut } = useAuth();
@@ -38,6 +39,13 @@ export default function ProfileScreen() {
   useEffect(() => {
     fetchTasks();
   }, []);
+  
+  // Load user profile if not already loaded
+  useEffect(() => {
+    if (!profile && userId) {
+      loadUserProfile(userId);
+    }
+  }, [profile, userId, loadUserProfile]);
   
   const handleEditProfile = () => {
     router.push('/edit-profile');

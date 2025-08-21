@@ -2,12 +2,15 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserProfile, EmergencyContact, Badge, KitItem, SavedLocation, CustomChecklist, ChecklistItem } from '@/types';
+import { UserService } from '@/services/user-service';
 
 interface UserState {
   profile: UserProfile | null;
   isOnboarded: boolean;
+  isLoading: boolean;
   setProfile: (profile: UserProfile) => void;
   updateProfile: (updates: Partial<UserProfile>) => void;
+  loadUserProfile: (clerkUserId: string) => Promise<void>;
   addEmergencyContact: (contact: EmergencyContact) => void;
   removeEmergencyContact: (contactId: string) => void;
   updateEmergencyContact: (contactId: string, updates: Partial<EmergencyContact>) => void;
@@ -29,94 +32,116 @@ interface UserState {
   clearPersistedState: () => Promise<void>;
 }
 
-const initialProfile: UserProfile = {
-  id: "user1",
-  name: "",
-  location: "",
-  householdSize: 1,
-  hasPets: false,
-  hasChildren: false,
-  hasElderly: false,
-  hasDisabled: false,
-  medicalConditions: [],
-  emergencyContacts: [],
-  points: 0,
-  level: 1,
-  badges: [],
-  customKit: [],
-  customChecklists: [
-    {
-      id: 'demo-1',
-      title: 'Emergency Supply Kit',
-      description: 'Essential items to keep ready for any emergency',
-      category: 'supplies',
-      points: 80,
-      items: [
-        { id: '1', text: 'Water - 1 gallon per person per day (3-day supply)', isCompleted: true },
-        { id: '2', text: 'Non-perishable food (3-day supply)', isCompleted: true },
-        { id: '3', text: 'Battery-powered or hand crank radio', isCompleted: false },
-        { id: '4', text: 'Flashlight', isCompleted: false },
-        { id: '5', text: 'First aid kit', isCompleted: true },
-        { id: '6', text: 'Extra batteries', isCompleted: false },
-      ],
-      isCompleted: false,
-      imageUrl: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=400',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: 'demo-2',
-      title: 'Family Communication Plan',
-      description: 'Plan for staying connected with family during emergencies',
-      category: 'planning',
-      points: 60,
-      items: [
-        { id: '1', text: 'Create contact list with phone numbers', isCompleted: true },
-        { id: '2', text: 'Choose out-of-state contact person', isCompleted: true },
-        { id: '3', text: 'Identify meeting locations', isCompleted: false },
-        { id: '4', text: 'Make copies of important documents', isCompleted: false },
-      ],
-      isCompleted: false,
-      imageUrl: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=400',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  ],
-  savedLocations: [
-    {
-      id: '1',
-      name: 'Home',
-      address: '123 Main Street, London, UK',
-      type: 'home',
-      isPrimary: true,
-    },
-    {
-      id: '2',
-      name: 'Work',
-      address: '456 Business Avenue, London, UK',
-      type: 'work',
-      isPrimary: false,
-    },
-    {
-      id: '3',
-      name: 'Parents',
-      address: '789 Family Road, Manchester, UK',
-      type: 'favorite',
-      isPrimary: false,
-    },
-  ]
-};
-
 export const useUserStore = create<UserState>()(
   persist(
     (set, get) => ({
-      profile: initialProfile, // Initialize with demo data
-      isOnboarded: true, // Set to true for testing
+      profile: null, // Start with null, will be loaded from Supabase
+      isOnboarded: false,
+      isLoading: false,
       
-      setProfile: (profile) => set({ profile }),
+      setProfile: (profile) => set({ profile, isOnboarded: true }),
+      
+      loadUserProfile: async (clerkUserId: string) => {
+        console.log('🔄 Loading user profile for Clerk ID:', clerkUserId);
+        set({ isLoading: true });
+        try {
+          const userProfile = await UserService.getUserProfile(clerkUserId);
+          if (userProfile) {
+            console.log('✅ User profile loaded from Supabase:', userProfile.name);
+            // Convert Supabase user data to UserProfile format
+            const profile: UserProfile = {
+              id: userProfile.id,
+              name: userProfile.name || '',
+              location: userProfile.location || '',
+              householdSize: userProfile.household_size || 1,
+              hasPets: userProfile.has_pets || false,
+              hasChildren: userProfile.has_children || false,
+              hasElderly: userProfile.has_elderly || false,
+              hasDisabled: userProfile.has_disabled || false,
+              medicalConditions: Array.isArray(userProfile.medical_conditions) ? userProfile.medical_conditions as string[] : [],
+              emergencyContacts: [],
+              points: 0,
+              level: 1,
+              badges: [],
+              customKit: [],
+              customChecklists: [
+                {
+                  id: 'demo-1',
+                  title: 'Emergency Supply Kit',
+                  description: 'Essential items to keep ready for any emergency',
+                  category: 'supplies',
+                  points: 80,
+                  items: [
+                    { id: '1', text: 'Water - 1 gallon per person per day (3-day supply)', isCompleted: true },
+                    { id: '2', text: 'Non-perishable food (3-day supply)', isCompleted: true },
+                    { id: '3', text: 'Battery-powered or hand crank radio', isCompleted: false },
+                    { id: '4', text: 'Flashlight', isCompleted: false },
+                    { id: '5', text: 'First aid kit', isCompleted: true },
+                    { id: '6', text: 'Extra batteries', isCompleted: false },
+                  ],
+                  isCompleted: false,
+                  imageUrl: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=400',
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                },
+                {
+                  id: 'demo-2',
+                  title: 'Family Communication Plan',
+                  description: 'Plan for staying connected with family during emergencies',
+                  category: 'planning',
+                  points: 60,
+                  items: [
+                    { id: '1', text: 'Create contact list with phone numbers', isCompleted: true },
+                    { id: '2', text: 'Choose out-of-state contact person', isCompleted: true },
+                    { id: '3', text: 'Identify meeting locations', isCompleted: false },
+                    { id: '4', text: 'Make copies of important documents', isCompleted: false },
+                  ],
+                  isCompleted: false,
+                  imageUrl: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=400',
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                },
+              ],
+              savedLocations: [
+                {
+                  id: '1',
+                  name: 'Home',
+                  address: userProfile.location || '123 Main Street, London, UK',
+                  type: 'home',
+                  isPrimary: true,
+                },
+                {
+                  id: '2',
+                  name: 'Work',
+                  address: '456 Business Avenue, London, UK',
+                  type: 'work',
+                  isPrimary: false,
+                },
+              ],
+              notificationPreferences: userProfile.notification_preferences ? {
+                alertNotifications: (userProfile.notification_preferences as any).alerts || true,
+                taskReminders: (userProfile.notification_preferences as any).reminders || true,
+                weatherUpdates: (userProfile.notification_preferences as any).weather || true,
+                newsUpdates: (userProfile.notification_preferences as any).emergency || true,
+                locationAlerts: true,
+                pushNotifications: true,
+                emailNotifications: true,
+              } : undefined,
+            };
+            set({ profile, isOnboarded: true, isLoading: false });
+            console.log('✅ Profile set in store:', profile.name, 'at location:', profile.location);
+          } else {
+            console.log('❌ No user profile found in Supabase');
+            set({ profile: null, isOnboarded: false, isLoading: false });
+          }
+        } catch (error) {
+          console.error('Error loading user profile:', error);
+          set({ isLoading: false });
+        }
+      },
       
       updateProfile: (updates) => set((state) => ({
-        profile: state.profile ? { ...state.profile, ...updates } : initialProfile
+        profile: state.profile ? { ...state.profile, ...updates } : null
       })),
       
       addEmergencyContact: (contact) => set((state) => {

@@ -27,7 +27,7 @@ function InitialLayout() {
   const { isSignedIn, userId } = useAuth();
   const { user, isLoaded: userLoaded } = useUser();
   const { isAuthenticated, hasCompletedOnboarding, setAuthenticated, setOnboardingCompleted } = useAuthStore();
-  const { profile, setProfile } = useUserStore();
+  const { profile, setProfile, loadUserProfile } = useUserStore();
   const [isCheckingUserProfile, setIsCheckingUserProfile] = useState(false);
   const [hasReset, setHasReset] = useState(false);
   
@@ -71,6 +71,8 @@ function InitialLayout() {
         if (supabaseUser) {
           // User exists in Supabase = they completed onboarding during signup
           setOnboardingCompleted(true);
+          // Load the user profile into the store
+          await loadUserProfile(userId);
           console.log('User found in Supabase, onboarding completed');
         } else {
           // User doesn't exist in Supabase, they need onboarding
