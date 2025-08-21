@@ -12,12 +12,29 @@ import CategoryFilter from '@/components/CategoryFilter';
 
 export default function AlertsScreen() {
   const router = useRouter();
-  const { alerts, fetchAlerts, getActiveAlerts } = useAlertsStore();
+  const { 
+    alerts, 
+    fetchAlerts, 
+    subscribeToAlerts, 
+    unsubscribeFromAlerts, 
+    getActiveAlerts,
+    isLoading,
+    error 
+  } = useAlertsStore();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   
   useEffect(() => {
+    // Fetch initial data
     fetchAlerts();
-  }, []);
+    
+    // Set up real-time subscription
+    subscribeToAlerts();
+    
+    // Cleanup subscription on unmount
+    return () => {
+      unsubscribeFromAlerts();
+    };
+  }, [fetchAlerts, subscribeToAlerts, unsubscribeFromAlerts]);
   
   const activeAlerts = getActiveAlerts();
   
@@ -34,6 +51,29 @@ export default function AlertsScreen() {
   const handleAlertPress = (alertId: string) => {
     router.push(`/alert-details/${alertId}`);
   };
+
+  // Show loading state
+  if (isLoading && alerts.length === 0) {
+    return (
+      <SafeAreaView style={styles.container} edges={[]}>
+        <View style={styles.centerContent}>
+          <Text style={styles.loadingText}>Loading alerts...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container} edges={[]}>
+        <View style={styles.centerContent}>
+          <Text style={styles.errorText}>Failed to load alerts</Text>
+          <Text style={styles.errorSubtext}>{error}</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
   
   return (
     <SafeAreaView style={styles.container} edges={[]}>
@@ -78,5 +118,27 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: spacings.screenPadding,
+  },
+  centerContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacings.screenPadding,
+  },
+  loadingText: {
+    fontSize: spacings.fontSize.lg,
+    color: colors.text,
+    textAlign: 'center',
+  },
+  errorText: {
+    fontSize: spacings.fontSize.lg,
+    color: colors.danger,
+    textAlign: 'center',
+    marginBottom: spacings.sm,
+  },
+  errorSubtext: {
+    fontSize: spacings.fontSize.md,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
 });

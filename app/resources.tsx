@@ -10,13 +10,29 @@ import ResourceCard from '@/components/ResourceCard';
 import CategoryFilter from '@/components/CategoryFilter';
 
 export default function ResourcesScreen() {
-  const { resources, fetchResources } = useResourcesStore();
+  const { 
+    resources, 
+    fetchResources, 
+    subscribeToResources, 
+    unsubscribeFromResources,
+    isLoading,
+    error 
+  } = useResourcesStore();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   
   useEffect(() => {
+    // Fetch initial data
     fetchResources();
-  }, []);
+    
+    // Set up real-time subscription
+    subscribeToResources();
+    
+    // Cleanup subscription on unmount
+    return () => {
+      unsubscribeFromResources();
+    };
+  }, [fetchResources, subscribeToResources, unsubscribeFromResources]);
   
   const resourceCategories = [
     { id: 'emergency', name: 'Emergency' },
@@ -59,41 +75,54 @@ export default function ResourcesScreen() {
       />
       
       <SafeAreaView style={styles.container} edges={['bottom']}>
-        <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
-          <Search size={spacings.xl} color={colors.textTertiary} style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search resources..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholderTextColor={colors.textTertiary}
-          />
-          {searchQuery.length > 0 && (
-            <X
-              size={spacings.xl}
-              color={colors.textTertiary}
-              style={styles.clearIcon}
-              onPress={clearSearch}
+        {isLoading && resources.length === 0 ? (
+          <View style={styles.centerContent}>
+            <Text style={styles.loadingText}>Loading resources...</Text>
+          </View>
+        ) : error ? (
+          <View style={styles.centerContent}>
+            <Text style={styles.errorText}>Failed to load resources</Text>
+            <Text style={styles.errorSubtext}>{error}</Text>
+          </View>
+        ) : (
+          <>
+            <View style={styles.searchContainer}>
+              <View style={styles.searchInputContainer}>
+                <Search size={spacings.xl} color={colors.textTertiary} style={styles.searchIcon} />
+                <TextInput
+                  style={styles.searchInput}
+                  placeholder="Search resources..."
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  placeholderTextColor={colors.textTertiary}
+                />
+                {searchQuery.length > 0 && (
+                  <X
+                    size={spacings.xl}
+                    color={colors.textTertiary}
+                    style={styles.clearIcon}
+                    onPress={clearSearch}
+                  />
+                )}
+              </View>
+            </View>
+            
+            <CategoryFilter
+              categories={resourceCategories}
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
             />
-          )}
-        </View>
-      </View>
-      
-      <CategoryFilter
-        categories={resourceCategories}
-        selectedCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
-      />
-      
-      <FlatList
-        data={filteredResources}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ResourceCard resource={item} />}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
-    </SafeAreaView>
+            
+            <FlatList
+              data={filteredResources}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => <ResourceCard resource={item} />}
+              contentContainerStyle={styles.listContent}
+              showsVerticalScrollIndicator={false}
+            />
+          </>
+        )}
+      </SafeAreaView>
     </>
   );
 }
@@ -129,5 +158,28 @@ const styles = StyleSheet.create({
   listContent: {
     padding: spacings.screenPadding,
     paddingTop: spacings.sm,
+  },
+  centerContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacings.screenPadding,
+  },
+  loadingText: {
+    fontSize: spacings.fontSize.md,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  errorText: {
+    fontSize: spacings.fontSize.md,
+    color: colors.danger,
+    textAlign: 'center',
+    fontWeight: '600',
+    marginBottom: spacings.xs,
+  },
+  errorSubtext: {
+    fontSize: spacings.fontSize.sm,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
 });

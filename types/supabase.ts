@@ -14,6 +14,96 @@ export type Database = {
   }
   public: {
     Tables: {
+      alerts: {
+        Row: {
+          created_at: string | null
+          date: string
+          description: string
+          id: string
+          instructions: Json | null
+          is_active: boolean | null
+          level: string
+          location: string
+          source: string
+          title: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          description: string
+          id?: string
+          instructions?: Json | null
+          is_active?: boolean | null
+          level: string
+          location: string
+          source: string
+          title: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          description?: string
+          id?: string
+          instructions?: Json | null
+          is_active?: boolean | null
+          level?: string
+          location?: string
+          source?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      resources: {
+        Row: {
+          address: string | null
+          category: string
+          contact_email: string | null
+          contact_phone: string | null
+          coordinates: Json | null
+          created_at: string | null
+          description: string
+          disaster_types: Json
+          id: string
+          title: string
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          category: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          coordinates?: Json | null
+          created_at?: string | null
+          description: string
+          disaster_types: Json
+          id?: string
+          title: string
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          category?: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          coordinates?: Json | null
+          created_at?: string | null
+          description?: string
+          disaster_types?: Json
+          id?: string
+          title?: string
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           clerk_user_id: string
@@ -164,62 +254,25 @@ export type TablesUpdate<
       : never
     : never
 
-export type Enums<
-  DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+// Helper types for easier access to our specific tables
+export type AlertRow = Tables<'alerts'>;
+export type ResourceRow = Tables<'resources'>;
+export type UserProfile = Tables<'users'>;
 
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
-
-export const Constants = {
-  public: {
-    Enums: {},
-  },
-} as const
-
-// Type definitions for onboarding data
+// OnboardingData interface for user creation
 export interface OnboardingData {
   name: string;
-  location?: string;
-  household_size?: number;
-  has_pets?: boolean;
-  has_children?: boolean;
-  has_elderly?: boolean;
-  has_disabled?: boolean;
-  medical_conditions?: string[];
-  notification_preferences?: {
+  location: string;
+  household_size: number;
+  has_pets: boolean;
+  has_children: boolean;
+  has_elderly: boolean;
+  has_disabled: boolean;
+  medical_conditions: string[];
+  notification_preferences: {
     alerts: boolean;
     reminders: boolean;
     weather: boolean;
     emergency: boolean;
   };
 }
-
-export type UserProfile = Database['public']['Tables']['users']['Row'];
