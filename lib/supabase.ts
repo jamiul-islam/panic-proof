@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Database } from '../types/supabase';
+import { Database, OnboardingData, UserProfile } from '../types/supabase';
 
 // Supabase configuration
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL!;
@@ -25,59 +25,121 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
   },
 });
 
-// Helper function to get the current user's database record
-export async function getCurrentUserProfile() {
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  if (!user) {
-    return null;
-  }
+// Helper function to get user profile by Clerk user ID
+export async function getUserProfileByClerkId(clerkUserId: string): Promise<UserProfile | null> {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('clerk_user_id', clerkUserId)
+      .single();
 
-  const { data: userProfile, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('clerk_user_id', user.id)
-    .single();
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No user found, return null
+        return null;
+      }
+      console.error('Error fetching user profile:', error);
+      throw error;
+    }
 
-  if (error) {
-    console.error('Error fetching user profile:', error);
-    return null;
-  }
-
-  return userProfile;
-}
-
-// Helper function to create or update user profile
-export async function upsertUserProfile(clerkUserId: string, userData: {
-  name: string;
-  location?: string;
-  household_size?: number;
-  has_pets?: boolean;
-  has_children?: boolean;
-  has_elderly?: boolean;
-  has_disabled?: boolean;
-  medical_conditions?: any[];
-  notification_preferences?: any;
-  profile_image?: string;
-}) {
-  const { data, error } = await supabase
-    .from('users')
-    .upsert({
-      clerk_user_id: clerkUserId,
-      ...userData,
-    }, {
-      onConflict: 'clerk_user_id',
-      ignoreDuplicates: false
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Error upserting user profile:', error);
+    return data;
+  } catch (error) {
+    console.error('Error in getUserProfileByClerkId:', error);
     throw error;
   }
+}
 
-  return data;
+// Helper function to create user after onboarding
+export async function createUserAfterOnboarding(
+  clerkUserId: string,
+  email: string,
+  onboardingData: OnboardingData
+): Promise<UserProfile> {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .insert({
+        clerk_user_id: clerkUserId,
+        email,
+        name: onboardingData.name,
+        location: onboardingData.location,
+        household_size: onboardingData.household_size || 1,
+        has_pets: onboardingData.has_pets || false,
+        has_children: onboardingData.has_children || false,
+        has_elderly: onboardingData.has_elderly || false,
+        has_disabled: onboardingData.has_disabled || false,
+        medical_conditions: onboardingData.medical_conditions || [],
+        notification_preferences: onboardingData.notification_preferences || {
+          alerts: true,
+          reminders: true,
+          weather: true,
+          emergency: true
+        }
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error in createUserAfterOnboarding:', error);
+    throw error;
+  }
+}
+
+// Helper function to update user profile
+export async function updateUserProfile(
+  clerkUserId: string,
+  updates: Partial<Omit<OnboardingData, 'name'>> & { name?: string }
+): Promise<UserProfile> {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .update(updates)
+      .eq('clerk_user_id', clerkUserId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating user profile:', error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error in updateUserProfile:', error);
+    throw error;
+  }
+}
+
+// Helper function to check if user exists
+export async function checkUserExists(clerkUserId: string): Promise<boolean> {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('id')
+      .eq('clerk_user_id', clerkUserId)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No user found
+        return false;
+      }
+      console.error('Error checking user existence:', error);
+      throw error;
+    }
+
+    return !!data;
+  } catch (error) {
+    console.error('Error in checkUserExists:', error);
+    throw error;
+  }
 }
 
 export default supabase;

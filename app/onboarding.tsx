@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { useUserStore } from '@/store/user-store';
 import { useAuthStore } from '@/store/auth-store';
 import { useUser, useAuth, useClerk } from '@clerk/clerk-expo';
-import { createUser, mapSupabaseUserToProfile } from '@/services/user-service';
+import { AuthFlowHelper } from '@/utils/auth-flow';
 import { colors } from '@/constants/colors';
 import { spacings } from '@/constants/spacings';
 import Button from '@/components/Button';
@@ -173,10 +173,8 @@ export default function OnboardingScreen() {
     setIsLoading(true);
     
     try {
-      // Create user in Supabase database
-      const supabaseUser = await createUser({
-        clerk_user_id: profileId,
-        email: userEmail,
+      // Prepare onboarding data
+      const onboardingData = {
         name,
         location,
         household_size: householdSize,
@@ -185,15 +183,27 @@ export default function OnboardingScreen() {
         has_elderly: hasElderly,
         has_disabled: hasDisabled,
         medical_conditions: medicalConditions,
-      });
+        notification_preferences: {
+          alerts: true,
+          reminders: true,
+          weather: true,
+          emergency: true
+        }
+      };
+
+      // Create user in Supabase using AuthFlowHelper
+      const supabaseUser = await AuthFlowHelper.handleOnboardingComplete(
+        profileId,
+        userEmail || 'unknown@email.com', // Fallback email
+        onboardingData
+      );
       
-      // Convert to local profile format and save to store
-      const localProfile = mapSupabaseUserToProfile(supabaseUser);
-      setProfile(localProfile);
+      console.log('User created in Supabase:', supabaseUser.id);
       
       setOnboardingCompleted(true);
       router.replace('/(tabs)');
     } catch (error) {
+      console.error('Onboarding error:', error);
       Alert.alert(
         'Error', 
         'Failed to create your profile. Please check your internet connection and try again.\n\nError: ' + (error as Error).message,

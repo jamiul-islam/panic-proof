@@ -156,6 +156,19 @@ export const useChatStore = create<ChatStore>()(
     {
       name: 'chat-store',
       storage: createJSONStorage(() => AsyncStorage),
+      version: 1,
+      migrate: (persistedState: any, version: number) => {
+        // Handle migration from older versions
+        if (version === 0) {
+          // If migrating from version 0, reset to initial state
+          return {
+            currentSession: null,
+            chatSessions: [],
+            isTyping: false,
+          };
+        }
+        return persistedState;
+      },
       partialize: (state) => ({
         chatSessions: state.chatSessions,
         currentSession: state.currentSession,

@@ -61,6 +61,18 @@ export const useAlertsStore = create<AlertsState>()(
     {
       name: 'alerts-storage',
       storage: createJSONStorage(() => AsyncStorage),
+      version: 1,
+      migrate: (persistedState: any, version: number) => {
+        // Handle migration from older versions
+        if (version === 0) {
+          // If migrating from version 0, reset to initial state
+          return {
+            alerts: [],
+            viewedAlerts: [],
+          };
+        }
+        return persistedState;
+      },
       partialize: (state) => ({ viewedAlerts: state.viewedAlerts }),
     }
   )

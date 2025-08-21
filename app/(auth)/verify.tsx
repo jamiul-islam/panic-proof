@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
-import { useSignIn, useSignUp, useClerk } from '@clerk/clerk-expo';
+import { useSignIn, useSignUp, useClerk, useUser } from '@clerk/clerk-expo';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { colors } from '@/constants/colors';
 import { spacings } from '@/constants/spacings';
@@ -8,13 +8,15 @@ import { ArrowLeft } from 'lucide-react-native';
 import IconWrapper from '@/components/IconWrapper';
 import Button from '@/components/Button';
 import { useAuthStore } from '@/store/auth-store';
+import { AuthFlowHelper } from '@/utils/auth-flow';
 
 export default function VerifyScreen() {
   const { signIn, isLoaded: isSignInLoaded } = useSignIn();
   const { signUp, isLoaded: isSignUpLoaded } = useSignUp();
   const { setActive } = useClerk();
+  const { user } = useUser();
   const router = useRouter();
-  const { setAuthenticated } = useAuthStore();
+  const { setAuthenticated, setOnboardingCompleted } = useAuthStore();
   const { firstName, lastName } = useLocalSearchParams<{ firstName?: string; lastName?: string }>();
   
   const [code, setCode] = useState(['', '', '', '', '', '']);
@@ -118,7 +120,27 @@ export default function VerifyScreen() {
           await setActive({ session: result.createdSessionId });
           
           setAuthenticated(true);
-          router.replace('/(tabs)');
+          
+          // Check if user exists in Supabase for sign-in
+          try {
+            const clerkUserId = user?.id;
+            if (clerkUserId) {
+              const supabaseUser = await AuthFlowHelper.handleSignIn(clerkUserId);
+              if (supabaseUser) {
+                setOnboardingCompleted(true);
+                router.replace('/(tabs)');
+              } else {
+                // User doesn't exist in Supabase, needs onboarding
+                setOnboardingCompleted(false);
+                router.replace('/onboarding');
+              }
+            } else {
+              router.replace('/(tabs)');
+            }
+          } catch (error) {
+            console.error('Error checking user in Supabase during sign-in:', error);
+            router.replace('/(tabs)'); // Fallback to tabs
+          }
         }
       } else {
         // Handle email verification during sign-up
@@ -134,6 +156,9 @@ export default function VerifyScreen() {
           await new Promise(resolve => setTimeout(resolve, 100));
           
           setAuthenticated(true);
+          
+          // For signup, always go to onboarding as user doesn't exist in Supabase yet
+          setOnboardingCompleted(false);
           
           // Navigate to onboarding with user data if available
           if (firstName && lastName) {

@@ -132,6 +132,18 @@ export const useTasksStore = create<TasksState>()(
     {
       name: 'tasks-storage',
       storage: createJSONStorage(() => AsyncStorage),
+      version: 1,
+      migrate: (persistedState: any, version: number) => {
+        // Handle migration from older versions
+        if (version === 0) {
+          // If migrating from version 0, reset to initial state
+          return {
+            tasks: [],
+            completedTaskIds: [],
+          };
+        }
+        return persistedState;
+      },
       partialize: (state) => ({ 
         completedTaskIds: state.completedTaskIds 
       }),

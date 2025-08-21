@@ -352,7 +352,19 @@ export const useUserStore = create<UserState>()(
     }),
     {
       name: 'user-storage',
-      storage: createJSONStorage(() => AsyncStorage)
+      storage: createJSONStorage(() => AsyncStorage),
+      version: 1,
+      migrate: (persistedState: any, version: number) => {
+        // Handle migration from older versions
+        if (version === 0) {
+          // If migrating from version 0, reset to initial state
+          return {
+            profile: null,
+            isOnboarded: false,
+          };
+        }
+        return persistedState;
+      },
     }
   )
 );

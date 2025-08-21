@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { useSignIn } from '@clerk/clerk-expo';
+import { useSignIn, useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '@/constants/colors';
@@ -8,10 +8,14 @@ import { spacings } from '@/constants/spacings';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react-native';
 import IconWrapper from '@/components/IconWrapper';
 import Button from '@/components/Button';
+import { useAuthStore } from '@/store/auth-store';
+import { AuthFlowHelper } from '@/utils/auth-flow';
 
 export default function SignInScreen() {
   const { signIn, setActive, isLoaded } = useSignIn();
+  const { user } = useUser();
   const router = useRouter();
+  const { setAuthenticated, setOnboardingCompleted } = useAuthStore();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -42,6 +46,34 @@ export default function SignInScreen() {
       
       // Set the user as active
       await setActive({ session: result.createdSessionId });
+      
+      // Small delay to ensure session is fully established
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      setAuthenticated(true);
+      
+      // Check if user exists in Supabase
+      try {
+        const clerkUserId = user?.id;
+        if (clerkUserId) {
+          const supabaseUser = await AuthFlowHelper.handleSignIn(clerkUserId);
+          if (supabaseUser) {
+            setOnboardingCompleted(true);
+            router.replace('/(tabs)');
+          } else {
+            // User doesn't exist in Supabase, needs onboarding
+            setOnboardingCompleted(false);
+            router.replace('/onboarding');
+          }
+        } else {
+          // Fallback if no user ID available
+          router.replace('/(tabs)');
+        }
+      } catch (error) {
+        console.error('Error checking user in Supabase during sign-in:', error);
+        // Fallback to tabs if there's an error
+        router.replace('/(tabs)');
+      }
     } catch (err: any) {
       setError(err.errors?.[0]?.message || 'Failed to sign in. Please try again.');
     } finally {

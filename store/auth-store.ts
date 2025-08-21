@@ -27,7 +27,19 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
-      storage: createJSONStorage(() => AsyncStorage)
+      storage: createJSONStorage(() => AsyncStorage),
+      version: 1,
+      migrate: (persistedState: any, version: number) => {
+        // Handle migration from older versions
+        if (version === 0) {
+          // If migrating from version 0, reset state
+          return {
+            isAuthenticated: false,
+            hasCompletedOnboarding: false,
+          };
+        }
+        return persistedState;
+      },
     }
   )
 );

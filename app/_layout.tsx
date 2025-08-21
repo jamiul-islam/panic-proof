@@ -9,7 +9,8 @@ import { ClerkProvider, useAuth, useUser } from "@clerk/clerk-expo";
 import Constants from "expo-constants";
 import { useAuthStore } from "@/store/auth-store";
 import { useUserStore } from "@/store/user-store";
-import { getUserByClerkId, mapSupabaseUserToProfile } from "@/services/user-service";
+import { AuthFlowHelper } from "@/utils/auth-flow";
+import { clearAllPersistedStores } from "@/utils/storage-reset";
 import "@/utils/dev-helpers"; // Import dev helpers for development
 
 export const unstable_settings = {
@@ -28,6 +29,19 @@ function InitialLayout() {
   const { isAuthenticated, hasCompletedOnboarding, setAuthenticated, setOnboardingCompleted } = useAuthStore();
   const { profile, setProfile } = useUserStore();
   const [isCheckingUserProfile, setIsCheckingUserProfile] = useState(false);
+  const [hasReset, setHasReset] = useState(false);
+  
+  // Clear storage on first load to fix migration issues
+  useEffect(() => {
+    const resetStorageOnce = async () => {
+      if (!hasReset) {
+        await clearAllPersistedStores();
+        setHasReset(true);
+        console.log('Storage cleared to fix migration issues');
+      }
+    };
+    resetStorageOnce();
+  }, [hasReset]);
   
   useEffect(() => {
     // Update auth store based on Clerk auth state
@@ -44,7 +58,7 @@ function InitialLayout() {
       // 4. We're not already checking
       // 5. We don't have a profile loaded
       // 6. Onboarding is marked as not completed (default state for sign-ins)
-      if (!isSignedIn || !userLoaded || !userId || isCheckingUserProfile || profile || hasCompletedOnboarding) {
+      if (!isSignedIn || !userLoaded || !userId || isCheckingUserProfile || profile || hasCompletedOnboarding || !hasReset) {
         return;
       }
 
@@ -52,17 +66,21 @@ function InitialLayout() {
 
       try {
         // Check if user exists in Supabase database
-        const supabaseUser = await getUserByClerkId(userId);
+        const supabaseUser = await AuthFlowHelper.getUserForProfile(userId);
         
         if (supabaseUser) {
           // User exists in Supabase = they completed onboarding during signup
-          const localProfile = mapSupabaseUserToProfile(supabaseUser);
-          setProfile(localProfile);
           setOnboardingCompleted(true);
+          console.log('User found in Supabase, onboarding completed');
+        } else {
+          // User doesn't exist in Supabase, they need onboarding
+          setOnboardingCompleted(false);
+          console.log('User not found in Supabase, needs onboarding');
         }
         // If user doesn't exist in Supabase, hasCompletedOnboarding stays false
         // and they'll be redirected to onboarding
       } catch (error) {
+        console.error('Error checking user profile:', error);
         // If there's an error checking, keep hasCompletedOnboarding as false
         // This ensures they go through onboarding if there's any doubt
       } finally {
@@ -71,7 +89,7 @@ function InitialLayout() {
     };
 
     checkUserProfile();
-  }, [isSignedIn, userLoaded, userId, isCheckingUserProfile, profile, hasCompletedOnboarding, setProfile, setOnboardingCompleted]);
+  }, [isSignedIn, userLoaded, userId, isCheckingUserProfile, profile, hasCompletedOnboarding, setOnboardingCompleted, hasReset]);
   
   useEffect(() => {
     const inAuthGroup = segments[0] === "(auth)";
