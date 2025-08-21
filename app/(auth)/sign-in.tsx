@@ -15,7 +15,7 @@ export default function SignInScreen() {
   const { signIn, setActive, isLoaded } = useSignIn();
   const { user } = useUser();
   const router = useRouter();
-  const { setAuthenticated, setOnboardingCompleted } = useAuthStore();
+  const { setAuthenticated, setOnboardingCompleted, setUserData } = useAuthStore();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -55,7 +55,12 @@ export default function SignInScreen() {
       // Check if user exists in Supabase
       try {
         const clerkUserId = user?.id;
-        if (clerkUserId) {
+        const clerkEmail = user?.emailAddresses?.[0]?.emailAddress;
+        
+        if (clerkUserId && clerkEmail) {
+          // Store user data in auth store
+          setUserData(clerkUserId, clerkEmail);
+          
           const supabaseUser = await AuthFlowHelper.handleSignIn(clerkUserId);
           if (supabaseUser) {
             setOnboardingCompleted(true);

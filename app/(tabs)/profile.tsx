@@ -31,8 +31,8 @@ export default function ProfileScreen() {
   const { profile, updateProfile, clearPersistedState: clearUserData, loadUserProfile } = useUserStore();
   const { fetchTasks, clearPersistedState: clearTasksData } = useTasksStore();
   const { clearPersistedState: clearAlertsData } = useAlertsStore();
-  const { signOut } = useAuth();
-  const { clearPersistedState: clearAuthData } = useAuthStore();
+  const { signOut: clerkSignOut } = useAuth();
+  const { signOut: authStoreSignOut, clearPersistedState: clearAuthData } = useAuthStore();
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   
@@ -86,14 +86,16 @@ export default function ProfileScreen() {
           style: "destructive",
           onPress: async () => {
             try {
+              // Clear local auth state first
+              authStoreSignOut();
+              
               // Clear all persisted data from all stores
-              await clearAuthData();
               await clearUserData(); 
               await clearTasksData();
               await clearAlertsData();
               
-              // Sign out from Clerk
-              await signOut();
+              // Sign out from Clerk last
+              await clerkSignOut();
               
               // Navigate to sign-in screen
               router.replace('/(auth)/sign-in');
