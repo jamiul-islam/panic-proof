@@ -29,7 +29,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { userId } = useAuth();
   const { profile, updateProfile, clearPersistedState: clearUserData, loadUserProfile } = useUserStore();
-  const { fetchTasks, clearPersistedState: clearTasksData } = useTasksStore();
+  const { loadTasks, clearPersistedState: clearTasksData } = useTasksStore();
   const { clearPersistedState: clearAlertsData } = useAlertsStore();
   const { signOut: clerkSignOut } = useAuth();
   const { signOut: authStoreSignOut, clearPersistedState: clearAuthData } = useAuthStore();
@@ -37,7 +37,7 @@ export default function ProfileScreen() {
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   
   useEffect(() => {
-    fetchTasks();
+    loadTasks();
   }, []);
   
   // Load user profile if not already loaded

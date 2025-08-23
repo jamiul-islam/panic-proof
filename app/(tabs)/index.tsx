@@ -20,7 +20,7 @@ import IconWrapper from '@/components/IconWrapper';
 export default function HomeScreen() {
   const router = useRouter();
   const { userId } = useAuth();
-  const { profile, loadUserProfile } = useUserStore((state) => state);
+  const { profile, loadUserProfile, loadCustomChecklists } = useUserStore((state) => state);
   const { 
     alerts, 
     fetchAlerts, 
@@ -29,20 +29,20 @@ export default function HomeScreen() {
     getUnviewedAlerts,
     isSubscribed 
   } = useAlertsStore();
-  const { tasks, fetchTasks, getTaskProgress, getIncompleteTasks } = useTasksStore();
+  const { tasks, loadTasks, getTaskProgress, getIncompleteTasks } = useTasksStore();
   const { disasters, fetchDisasters } = useDisastersStore();
   
   useEffect(() => {
     // Fetch data when component mounts
     fetchAlerts();
-    fetchTasks();
+    loadTasks();
     fetchDisasters();
     
     // Subscribe to real-time alerts if not already subscribed
     if (!isSubscribed) {
       subscribeToAlerts();
     }
-  }, [fetchAlerts, fetchTasks, fetchDisasters, subscribeToAlerts, isSubscribed]);
+  }, [fetchAlerts, loadTasks, fetchDisasters, subscribeToAlerts, isSubscribed]);
 
   // Load user profile if not already loaded
   useEffect(() => {
@@ -50,6 +50,14 @@ export default function HomeScreen() {
       loadUserProfile(userId);
     }
   }, [profile, userId, loadUserProfile]);
+
+  // Load custom checklists from Supabase when profile is first loaded
+  useEffect(() => {
+    if (profile && profile.customChecklists?.length === 0) {
+      console.log('🧪 [HomeScreen] Loading custom checklists from Supabase...');
+      loadCustomChecklists();
+    }
+  }, [profile?.id]); // Removed loadCustomChecklists to prevent infinite loop
   
   // Get real-time unviewed alerts count directly from store
   const unviewedAlerts = getUnviewedAlerts();

@@ -14,14 +14,10 @@ interface TaskCardProps {
 }
 
 export default function TaskCard({ task, onPress }: TaskCardProps) {
-  const { completeTask, uncompleteTask } = useTasksStore();
+  const { toggleTaskCompletion } = useTasksStore();
   
-  const toggleCompletion = () => {
-    if (task.isCompleted) {
-      uncompleteTask(task.id);
-    } else {
-      completeTask(task.id);
-    }
+  const handleToggleCompletion = () => {
+    toggleTaskCompletion(task.id);
   };
   
   return (
@@ -44,7 +40,7 @@ export default function TaskCard({ task, onPress }: TaskCardProps) {
           <TouchableOpacity 
             onPress={(e) => {
               e.stopPropagation();
-              toggleCompletion();
+              handleToggleCompletion();
             }}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >

@@ -15,13 +15,13 @@ import { Plus } from 'lucide-react-native';
 
 export default function PrepareScreen() {
   const router = useRouter();
-  const { tasks, fetchTasks, getTaskProgress } = useTasksStore();
+  const { tasks, loadTasks, getTaskProgress } = useTasksStore();
   const { profile } = useUserStore();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCustomChecklists, setShowCustomChecklists] = useState(false);
   
   useEffect(() => {
-    fetchTasks();
+    loadTasks();
   }, []);
   
   const taskProgress = getTaskProgress();
@@ -43,6 +43,28 @@ export default function PrepareScreen() {
   const filteredChecklists = selectedCategory
     ? customChecklists.filter(checklist => checklist.category === selectedCategory)
     : customChecklists;
+  
+  // Enhanced debugging for custom checklists on prepare screen
+  useEffect(() => {
+    console.log('📋 [PrepareScreen] Custom Checklists Debug:');
+    console.log('   Profile exists:', !!profile);
+    console.log('   Custom checklists count:', customChecklists.length);
+    console.log('   Raw custom checklists:', customChecklists.map(cl => ({
+      id: cl.id,
+      title: cl.title,
+      category: cl.category,
+      points: cl.points,
+      isCompleted: cl.isCompleted,
+      itemsCount: cl.items?.length || 0,
+      items: cl.items?.map(item => ({
+        text: item.text,
+        isCompleted: item.isCompleted
+      })) || []
+    })));
+    console.log('   Show custom checklists:', showCustomChecklists);
+    console.log('   Selected category:', selectedCategory);
+    console.log('   Filtered checklists count:', filteredChecklists.length);
+  }, [profile, customChecklists, showCustomChecklists, selectedCategory, filteredChecklists]);
   
   const handleTaskPress = (taskId: string) => {
     router.push(`/task-details/${taskId}`);

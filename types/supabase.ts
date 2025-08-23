@@ -192,6 +192,166 @@ export type Database = {
           },
         ]
       }
+      tasks: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string
+          disaster_types: Json
+          id: string
+          image_url: string | null
+          points: number
+          steps: Json | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description: string
+          disaster_types?: Json
+          id?: string
+          image_url?: string | null
+          points?: number
+          steps?: Json | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string
+          disaster_types?: Json
+          id?: string
+          image_url?: string | null
+          points?: number
+          steps?: Json | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      tasks_completions: {
+        Row: {
+          completed_at: string
+          points_awarded: number
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          points_awarded?: number
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          points_awarded?: number
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_completions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_completions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_checklist_items: {
+        Row: {
+          checklist_id: string
+          created_at: string | null
+          id: string
+          is_completed: boolean
+          item_order: number
+          text: string
+          updated_at: string | null
+        }
+        Insert: {
+          checklist_id: string
+          created_at?: string | null
+          id?: string
+          is_completed?: boolean
+          item_order?: number
+          text: string
+          updated_at?: string | null
+        }
+        Update: {
+          checklist_id?: string
+          created_at?: string | null
+          id?: string
+          is_completed?: boolean
+          item_order?: number
+          text?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_checklist_items_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "user_checklists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_checklists: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string
+          id: string
+          image_url: string | null
+          is_completed: boolean
+          points: number | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description: string
+          id?: string
+          image_url?: string | null
+          is_completed?: boolean
+          points?: number | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          image_url?: string | null
+          is_completed?: boolean
+          points?: number | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_checklists_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           clerk_user_id: string
@@ -348,6 +508,10 @@ export type ResourceRow = Tables<'resources'>;
 export type UserProfile = Tables<'users'>;
 export type EmergencyContactRow = Tables<'emergency_contacts'>;
 export type SavedLocationRow = Tables<'saved_locations'>;
+export type TaskRow = Tables<'tasks'>;
+export type TaskCompletionRow = Tables<'tasks_completions'>;
+export type UserChecklistRow = Tables<'user_checklists'>;
+export type UserChecklistItemRow = Tables<'user_checklist_items'>;
 
 // OnboardingData interface for user creation
 export interface OnboardingData {

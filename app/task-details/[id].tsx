@@ -23,7 +23,7 @@ import IconWrapper from '@/components/IconWrapper';
 export default function TaskDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { tasks, completeTask, uncompleteTask } = useTasksStore();
+  const { tasks, toggleTaskCompletion } = useTasksStore();
   const { profile, removeCustomChecklist, toggleChecklistItem } = useUserStore();
   const [task, setTask] = useState<PrepTask | null>(null);
   const [checklist, setChecklist] = useState<CustomChecklist | null>(null);
@@ -57,11 +57,7 @@ export default function TaskDetailsScreen() {
     
     if (!task) return;
     
-    if (task.isCompleted) {
-      uncompleteTask(task.id);
-    } else {
-      completeTask(task.id);
-    }
+    toggleTaskCompletion(task.id);
     
     // Update local state
     setTask({

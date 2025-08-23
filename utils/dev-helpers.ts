@@ -70,6 +70,49 @@ export const DevAuthHelpers = {
       hasCompletedOnboarding: state.hasCompletedOnboarding
     });
     return state;
+  },
+
+  /**
+   * Test loading custom checklists from Supabase
+   */
+  testLoadCustomChecklists: async () => {
+    console.log('🧪 Testing custom checklist loading...');
+    try {
+      const userStore = useUserStore.getState();
+      await userStore.loadCustomChecklists();
+      console.log('✅ Custom checklist test completed');
+      
+      // Show the current checklists
+      const profile = userStore.profile;
+      if (profile?.customChecklists) {
+        console.log(`📋 Current custom checklists: ${profile.customChecklists.length}`);
+        profile.customChecklists.forEach((checklist: any, index: number) => {
+          console.log(`  ${index + 1}. ${checklist.title} (${checklist.items.length} items)`);
+        });
+      } else {
+        console.log('❌ No profile or custom checklists found');
+      }
+    } catch (error) {
+      console.error('❌ Error testing custom checklists:', error);
+    }
+  }
+};
+
+// For easy access in development console
+if (__DEV__) {
+  (global as any).DevAuthHelpers = DevAuthHelpers;
+}
+
+  /**
+   * Get current auth state for debugging
+   */
+  getAuthState: () => {
+    const state = useAuthStore.getState();
+    console.log('Current auth state:', {
+      isAuthenticated: state.isAuthenticated,
+      hasCompletedOnboarding: state.hasCompletedOnboarding
+    });
+    return state;
   }
 };
 

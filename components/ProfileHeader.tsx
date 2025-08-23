@@ -8,7 +8,7 @@ import ProgressBar from './ProgressBar';
 
 export default function ProfileHeader() {
   const profile = useUserStore((state) => state.profile);
-  const { getCompletedTasks, getTaskProgress } = useTasksStore();
+  const { getCompletedTasks, getTaskProgress, getTotalPointsFromTasks } = useTasksStore();
   
   if (!profile) return null;
   
@@ -23,41 +23,52 @@ export default function ProfileHeader() {
   // Calculate total completed items (tasks + checklists)
   const totalCompletedItems = completedTasksCount + completedChecklistsCount;
   
-  // Debug logging for points and checklists
+  // Calculate total points from tasks and checklists
+  const taskPoints = getTotalPointsFromTasks();
+  const checklistPoints = completedChecklists.reduce((total, checklist) => total + (checklist.points || 0), 0);
+  const totalPoints = taskPoints + checklistPoints;
+  const calculatedLevel = Math.floor(totalPoints / 100) + 1;
+  
+  // Enhanced debug logging for updated checklist data
   React.useEffect(() => {
-    console.log('🎯 ProfileHeader Debug:');
-    console.log('   Points:', profile.points);
-    console.log('   Level:', profile.level);
+    console.log('🎯 ProfileHeader Debug (After Data Update):');
+    console.log('   Profile Points (stored):', profile.points);
+    console.log('   Task Points (calculated):', taskPoints);
+    console.log('   Checklist Points (calculated):', checklistPoints);
+    console.log('   Total Points (calculated):', totalPoints);
+    console.log('   Profile Level (stored):', profile.level);
+    console.log('   Calculated Level:', calculatedLevel);
     console.log('   Completed tasks:', completedTasksCount);
     console.log('   Total checklists:', (profile.customChecklists || []).length);
     console.log('   Completed checklists:', completedChecklistsCount);
-    console.log('   Checklist details:', (profile.customChecklists || []).map(c => ({
+    console.log('   📋 Updated Checklist Details:', (profile.customChecklists || []).map(c => ({
+      id: c.id,
       title: c.title,
       points: c.points,
       isCompleted: c.isCompleted,
       completedItems: c.items.filter(item => item.isCompleted).length,
-      totalItems: c.items.length
+      totalItems: c.items.length,
+      items: c.items.map(item => ({ text: item.text, isCompleted: item.isCompleted }))
     })));
-  }, [profile.points, profile.level, completedTasksCount, completedChecklistsCount, profile.customChecklists]);
+  }, [profile.points, taskPoints, checklistPoints, totalPoints, profile.level, calculatedLevel, completedTasksCount, completedChecklistsCount, profile.customChecklists]);
   
-  // Calculate XP progress to next level (every 100 points = 1 level)
-  const currentLevelPoints = (profile.level - 1) * 100;
-  const nextLevelPoints = profile.level * 100;
-  const pointsInCurrentLevel = profile.points - currentLevelPoints;
+  // Calculate XP progress to next level using calculated points
+  const currentLevelPoints = (calculatedLevel - 1) * 100;
+  const pointsInCurrentLevel = totalPoints - currentLevelPoints;
   const progressToNextLevel = Math.min((pointsInCurrentLevel / 100) * 100, 100);
   
   return (
     <View style={styles.container}>
       <View style={styles.levelContainer}>
         <View style={styles.levelBadge}>
-          <Text style={styles.levelText}>{profile.level}</Text>
+          <Text style={styles.levelText}>{calculatedLevel}</Text>
         </View>
-        <Text style={styles.levelLabel}>Level {profile.level}</Text>
+        <Text style={styles.levelLabel}>Level {calculatedLevel}</Text>
       </View>
       
       <View style={styles.statsContainer}>
         <View style={styles.stat}>
-          <Text style={styles.statValue}>{profile.points}</Text>
+          <Text style={styles.statValue}>{totalPoints}</Text>
           <Text style={styles.statLabel}>Points</Text>
         </View>
         <View style={styles.stat}>
@@ -72,7 +83,7 @@ export default function ProfileHeader() {
       
       <View style={styles.progressContainer}>
         <View style={styles.progressLabelContainer}>
-          <Text style={styles.progressLabel}>Progress to Level {profile.level + 1}</Text>
+          <Text style={styles.progressLabel}>Progress to Level {calculatedLevel + 1}</Text>
           <Text style={styles.progressValue}>
             {pointsInCurrentLevel}/100 XP
           </Text>

@@ -11,7 +11,6 @@ import { useAuthStore } from "@/store/auth-store";
 import { useUserStore } from "@/store/user-store";
 import { AuthFlowHelper } from "@/utils/auth-flow";
 import { clearAllPersistedStores } from "@/utils/storage-reset";
-import "@/utils/dev-helpers"; // Import dev helpers for development
 
 // Remove this - let Expo Router handle initial route based on auth state
 // export const unstable_settings = {
@@ -27,7 +26,7 @@ function InitialLayout() {
   const router = useRouter();
   const { isSignedIn, userId } = useAuth();
   const { user, isLoaded: userLoaded } = useUser();
-  const { isAuthenticated, hasCompletedOnboarding, setAuthenticated, setOnboardingCompleted } = useAuthStore();
+  const { isAuthenticated, hasCompletedOnboarding, setAuthenticated, setOnboardingCompleted, setUserData } = useAuthStore();
   const { profile, setProfile, loadUserProfile } = useUserStore();
   const [isCheckingUserProfile, setIsCheckingUserProfile] = useState(false);
   const [hasReset, setHasReset] = useState(false);
@@ -49,7 +48,16 @@ function InitialLayout() {
   useEffect(() => {
     // Update auth store based on Clerk auth state
     setAuthenticated(!!isSignedIn);
-  }, [isSignedIn, setAuthenticated]);
+    
+    // If user is signed in, also set their data
+    if (isSignedIn && userId && user?.emailAddresses?.[0]?.emailAddress) {
+      console.log('🔧 [Layout] Setting user data from Clerk:', {
+        userId,
+        email: user.emailAddresses[0].emailAddress
+      });
+      setUserData(userId, user.emailAddresses[0].emailAddress);
+    }
+  }, [isSignedIn, userId, user, setAuthenticated, setUserData]);
 
   // Check if user exists in Supabase when they authenticate (sign in)
   useEffect(() => {
