@@ -18,6 +18,7 @@ interface AlertsState {
   getActiveAlerts: () => Alert[];
   getUnviewedAlerts: () => Alert[];
   clearPersistedState: () => Promise<void>;
+  clearViewedAlerts: () => void;
 }
 
 // Helper function to convert Supabase alert to app Alert type
@@ -160,14 +161,24 @@ export const useAlertsStore = create<AlertsState>()(
       
       getActiveAlerts: () => {
         const { alerts } = get();
-        return alerts.filter(alert => alert.isActive);
+        const activeAlerts = alerts.filter(alert => alert.isActive);
+        console.log('🔍 [AlertsStore] Active alerts check:', { total: alerts.length, active: activeAlerts.length });
+        return activeAlerts;
       },
       
       getUnviewedAlerts: () => {
         const { alerts, viewedAlerts } = get();
-        return alerts.filter(
+        const unviewedAlerts = alerts.filter(
           alert => alert.isActive && !viewedAlerts.includes(alert.id)
         );
+        console.log('🔍 [AlertsStore] Unviewed alerts check:', { 
+          total: alerts.length, 
+          active: alerts.filter(alert => alert.isActive).length,
+          viewed: viewedAlerts.length,
+          unviewed: unviewedAlerts.length,
+          viewedIds: viewedAlerts
+        });
+        return unviewedAlerts;
       },
       
       clearPersistedState: async () => {
@@ -177,6 +188,12 @@ export const useAlertsStore = create<AlertsState>()(
         
         await AsyncStorage.removeItem('alerts-storage');
         set({ alerts: [], viewedAlerts: [], isLoading: false, error: null, isSubscribed: false });
+      },
+      
+      // Debug function to reset viewed alerts
+      clearViewedAlerts: () => {
+        console.log('🔄 [AlertsStore] Clearing viewed alerts for debugging');
+        set({ viewedAlerts: [] });
       }
     }),
     {

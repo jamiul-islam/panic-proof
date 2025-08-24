@@ -540,6 +540,27 @@ export const useUserStore = create<UserState>()(
 
         try {
           set({ isLoading: true });
+          
+          // Check if this is a default location (non-UUID ID)
+          if (locationId.startsWith('default-')) {
+            console.log('🗑️ [UserStore] Removing default location (local only):', locationId);
+            // For default locations, only remove from local state
+            set((state) => {
+              if (!state.profile) return { profile: null, isLoading: false };
+              return {
+                profile: {
+                  ...state.profile,
+                  savedLocations: (state.profile.savedLocations || []).filter((location) => location.id !== locationId)
+                },
+                isLoading: false
+              };
+            });
+            console.log('✅ Default location removed successfully (local only)');
+            return;
+          }
+          
+          // For real database locations, delete from Supabase
+          console.log('🗑️ [UserStore] Removing location from database:', locationId);
           await deleteSavedLocation(profile.id, locationId);
           
           // Update local state
@@ -654,12 +675,19 @@ export const useUserStore = create<UserState>()(
             .eq('clerk_user_id', clerkUserId)
             .single();
             
-          if (userError || !userData) {
-            console.error('❌ [UserStore] Error finding user for checklists:', userError);
-            return;
+        if (userError) {
+          if (userError.code === 'PGRST116') {
+            console.log('ℹ️ [UserStore] User not found for custom checklists, this is OK for new users');
+            return; // User doesn't have custom checklists yet, this is fine
           }
-          
-          const userUuid = userData.id;
+          console.error('❌ [UserStore] Error finding user for checklists:', userError);
+          return;
+        }
+        
+        if (!userData) {
+          console.log('ℹ️ [UserStore] No user data found for custom checklists, this is OK for new users');
+          return;
+        }          const userUuid = userData.id;
           console.log('🆔 [UserStore] Found user UUID for checklists:', userUuid);
           
           // Load user's custom checklists

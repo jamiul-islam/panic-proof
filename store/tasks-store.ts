@@ -97,14 +97,65 @@ export const useTasksStore = create<TasksState>()(
             .eq('clerk_user_id', clerkUserId)
             .single();
             
-          if (userError || !userData) {
-            console.error('❌ [TasksStore] Error finding user:', userError);
-            set({ error: `User not found: ${userError?.message || 'Unknown error'}`, loading: false });
+        if (userError) {
+          if (userError.code === 'PGRST116') {
+            console.log('ℹ️ [TasksStore] User not found, this is OK for new users. Continuing with tasks loading...');
+            // For new users, we still want to load the general tasks, just skip user-specific completions
+            const { data: tasksData, error: tasksError } = await supabase
+              .from('tasks')
+              .select('*')
+              .order('category', { ascending: true });
+              
+            if (tasksError) {
+              console.error('❌ [TasksStore] Error loading tasks:', tasksError);
+              set({ error: `Failed to load tasks: ${tasksError.message}`, loading: false });
+              return;
+            }
+            
+            const transformedTasks = (tasksData || []).map(task => ({
+              id: task.id,
+              title: task.title,
+              description: task.description,
+              points: task.points || 0,
+              category: task.category as "supplies" | "planning" | "skills" | "home",
+              disasterTypes: Array.isArray(task.disaster_types) ? task.disaster_types as DisasterType[] : [],
+              steps: Array.isArray(task.steps) ? task.steps as string[] : [],
+              imageUrl: task.image_url || undefined,
+              isCompleted: false, // New users haven't completed any tasks
+            }));
+            
+            console.log('✅ [TasksStore] Loaded tasks for new user:', transformedTasks.length);
+            
+            // Set tasks without completions
+            set({
+              tasks: transformedTasks,
+              completedTaskIds: new Set(),
+              error: null,
+              loading: false,
+            });
+            
+            console.log('📊 [TasksStore] Tasks summary for new user:', {
+              total: transformedTasks.length,
+              completed: 0,
+              categories: transformedTasks.reduce((acc, task) => {
+                acc[task.category] = (acc[task.category] || 0) + 1;
+                return acc;
+              }, {} as Record<string, number>)
+            });
             return;
           }
-          
-          const userUuid = userData.id;
-          console.log('🆔 [TasksStore] Found user UUID:', userUuid);
+          console.error('❌ [TasksStore] Error finding user:', userError);
+          set({ error: `User not found: ${userError?.message || 'Unknown error'}`, loading: false });
+          return;
+        }
+        
+        if (!userData) {
+          console.log('ℹ️ [TasksStore] No user data found, this is OK for new users');
+          return;
+        }
+
+        const userUuid = userData.id;
+        console.log('🆔 [TasksStore] Found user UUID:', userUuid);
           
           // Load tasks from Supabase
           const { data: tasksData, error: tasksError } = await supabase
