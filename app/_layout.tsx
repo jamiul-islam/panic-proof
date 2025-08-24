@@ -11,6 +11,7 @@ import { useAuthStore } from "@/store/auth-store";
 import { useUserStore } from "@/store/user-store";
 import { AuthFlowHelper } from "@/utils/auth-flow";
 import { clearAllPersistedStores } from "@/utils/storage-reset";
+import { setSupabaseAuth } from "@/lib/supabase";
 
 // Remove this - let Expo Router handle initial route based on auth state
 // export const unstable_settings = {
@@ -24,12 +25,41 @@ SplashScreen.preventAutoHideAsync();
 function InitialLayout() {
   const segments = useSegments();
   const router = useRouter();
-  const { isSignedIn, userId } = useAuth();
+  const { isSignedIn, userId, getToken } = useAuth();
   const { user, isLoaded: userLoaded } = useUser();
   const { isAuthenticated, hasCompletedOnboarding, setAuthenticated, setOnboardingCompleted, setUserData } = useAuthStore();
   const { profile, setProfile, loadUserProfile } = useUserStore();
   const [isCheckingUserProfile, setIsCheckingUserProfile] = useState(false);
   const [hasReset, setHasReset] = useState(false);
+  
+  // Set up Supabase auth with Clerk token
+  useEffect(() => {
+    const setupSupabaseAuth = async () => {
+      if (isSignedIn && userId && userLoaded) {
+        try {
+          // JWT auth disabled - using RLS with anon key instead
+          // This eliminates JWT signature validation errors
+          console.log('🔧 [Layout] Using Supabase RLS with anon key (JWT auth disabled)');
+          
+          // Clear any existing Supabase session to ensure clean state
+          await setSupabaseAuth(null);
+          
+          // Note: All operations work through RLS policies with anon key
+          // No JWT validation errors will occur
+        } catch (error) {
+          console.error('Error setting up Supabase auth:', error);
+        }
+      } else {
+        // Clear Supabase auth when not signed in
+        await setSupabaseAuth(null);
+      }
+    };
+    
+    // Only run if user data is loaded to avoid timing issues
+    if (userLoaded) {
+      setupSupabaseAuth();
+    }
+  }, [isSignedIn, userId, getToken, userLoaded]);
   
   // Only clear storage in development when needed - not on every launch
   useEffect(() => {

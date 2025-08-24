@@ -844,6 +844,7 @@ export const useUserStore = create<UserState>()(
       
       updateCustomChecklist: async (checklistId, updates) => {
         console.log('🔄 [UserStore] Updating custom checklist:', checklistId);
+        console.log('🔍 [UserStore] Updates provided:', updates);
         
         try {
           // Update the checklist in Supabase
@@ -867,6 +868,45 @@ export const useUserStore = create<UserState>()(
           }
           
           console.log('✅ [UserStore] Custom checklist updated successfully');
+          
+          // Handle items update if provided
+          if (updates.items !== undefined) {
+            console.log('📝 [UserStore] Updating checklist items:', updates.items.length, 'items provided');
+            
+            // First, delete all existing items for this checklist
+            const { error: deleteError } = await supabase
+              .from('user_checklist_items')
+              .delete()
+              .eq('checklist_id', checklistId);
+              
+            if (deleteError) {
+              console.error('❌ [UserStore] Error deleting existing checklist items:', deleteError);
+              return;
+            }
+            
+            console.log('🗑️ [UserStore] Existing checklist items deleted');
+            
+            // Insert all items (both existing and new)
+            if (updates.items.length > 0) {
+              const itemsToInsert = updates.items.map((item, index) => ({
+                checklist_id: checklistId,
+                text: item.text,
+                is_completed: item.isCompleted,
+                item_order: index
+              }));
+              
+              const { error: itemsError } = await supabase
+                .from('user_checklist_items')
+                .insert(itemsToInsert);
+                
+              if (itemsError) {
+                console.error('❌ [UserStore] Error inserting updated checklist items:', itemsError);
+                return;
+              }
+              
+              console.log('✅ [UserStore] Inserted', updates.items.length, 'checklist items');
+            }
+          }
           
           // Reload checklists to update the UI
           await get().loadCustomChecklists();

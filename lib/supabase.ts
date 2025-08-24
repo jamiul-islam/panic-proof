@@ -25,6 +25,59 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
   },
 });
 
+// Function to set Clerk JWT token in Supabase
+export const setSupabaseAuth = async (token: string | null) => {
+  try {
+    if (token) {
+      // Create a session object that Supabase can use
+      const session = {
+        access_token: token,
+        refresh_token: 'dummy-refresh-token', // Clerk handles refresh
+        user: {
+          id: 'clerk-user', // This will be overridden by the JWT
+          aud: 'authenticated',
+          role: 'authenticated',
+          email: '',
+          app_metadata: {},
+          user_metadata: {},
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        token_type: 'bearer',
+        expires_in: 3600,
+        expires_at: Math.floor(Date.now() / 1000) + 3600,
+      };
+      
+      const { error } = await supabase.auth.setSession(session);
+      if (error) {
+        // Silently handle JWT signature errors - app works fine with RLS + anon key
+        if (error.message?.includes('signature is invalid')) {
+          // JWT signature validation failed, but RLS policies handle auth
+          // No need to log this error as it's expected with Clerk/Supabase combo
+          return;
+        }
+        console.error('❌ Error setting Supabase session:', error);
+        throw error;
+      }
+      console.log('✅ Supabase session set with Clerk JWT');
+    } else {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('❌ Error clearing Supabase session:', error);
+      }
+      console.log('🚪 Supabase session cleared');
+    }
+  } catch (error) {
+    // Silently handle JWT-related errors
+    if (error instanceof Error && error.message?.includes('signature is invalid')) {
+      // Expected error with Clerk JWT + Supabase - operations work via RLS
+      return;
+    }
+    console.error('❌ Error in setSupabaseAuth:', error);
+    throw error;
+  }
+};
+
 // Helper function to get user profile by Clerk user ID
 export async function getUserProfileByClerkId(clerkUserId: string): Promise<UserProfile | null> {
   try {

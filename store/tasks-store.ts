@@ -233,20 +233,74 @@ export const useTasksStore = create<TasksState>()(
             return;
           }
           
-          // Get the user's UUID from their Clerk ID
-          const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('id')
-            .eq('clerk_user_id', clerkUserId)
-            .single();
+          // Try to get user UUID from the user store first (more reliable)
+          const userStore = useUserStore.getState();
+          let userUuid = userStore.profile?.id;
+          
+          if (!userUuid) {
+            console.log('🔄 [TasksStore] No profile in store, attempting to look up user...');
             
-          if (userError || !userData) {
-            console.error('❌ [TasksStore] Error finding user for task completion:', userError);
-            return;
+            // Try to get the user's UUID from their Clerk ID with retries for JWT auth
+            let userData;
+            let userError;
+            let retries = 3;
+            
+            while (retries > 0) {
+              const result = await supabase
+                .from('users')
+                .select('id')
+                .eq('clerk_user_id', clerkUserId)
+                .single();
+                
+              userData = result.data;
+              userError = result.error;
+              
+              if (!userError && userData) {
+                userUuid = userData.id;
+                console.log('✅ [TasksStore] Retrieved user UUID from database:', userUuid);
+                break; // Success, exit retry loop
+              }
+              
+              if (userError?.code === 'PGRST116' && retries > 1) {
+                console.warn(`🔄 [TasksStore] Retrying user lookup... (${retries - 1} attempts left)`);
+                // Wait a bit for JWT authentication to settle
+                await new Promise(resolve => setTimeout(resolve, 500));
+                retries--;
+                continue;
+              }
+              
+              // If still failing after retries, break out
+              break;
+            }
+            
+            if (userError || !userData) {
+              console.error('❌ [TasksStore] Error finding user for task completion:', userError);
+              console.error('❌ [TasksStore] This might be due to RLS policy timing. Attempting fallback...');
+              
+              // Fallback: Try to load the user profile first
+              try {
+                await userStore.loadUserProfile(clerkUserId);
+                const updatedProfile = useUserStore.getState().profile;
+                if (updatedProfile?.id) {
+                  userUuid = updatedProfile.id;
+                  console.log('✅ [TasksStore] Retrieved user UUID from profile fallback:', userUuid);
+                } else {
+                  console.error('❌ [TasksStore] Profile fallback also failed - user may not exist yet');
+                  return;
+                }
+              } catch (fallbackError) {
+                console.error('❌ [TasksStore] Fallback profile load failed:', fallbackError);
+                return;
+              }
+            }
+          } else {
+            console.log('✅ [TasksStore] Using user UUID from store:', userUuid);
           }
           
-          const userUuid = userData.id;
-          console.log('🆔 [TasksStore] Using user UUID for completion:', userUuid);
+          if (!userUuid) {
+            console.error('❌ [TasksStore] Could not determine user UUID for task completion');
+            return;
+          }
           
           const currentState = get();
           const task = currentState.tasks.find(t => t.id === taskId);
