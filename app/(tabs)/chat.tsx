@@ -209,7 +209,7 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: colors.background,
   },
   keyboardAvoidingView: {
     flex: 1,
