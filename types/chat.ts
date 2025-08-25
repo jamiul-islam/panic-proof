@@ -23,8 +23,8 @@ interface ChatMessage {
   id: string;
   content: string;
   role: 'user' | 'assistant';
-  checklistData?: SupabaseChecklistData;
-  itemsData?: SupabaseItemData[];
+  checklistData?: SupabaseChecklistData; // For assistant messages
+  itemsData?: SupabaseItemData[]; // For assistant messages
   timestamp: string;
 }
 

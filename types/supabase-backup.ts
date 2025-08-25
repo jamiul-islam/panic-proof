@@ -59,65 +59,6 @@ export type Database = {
         }
         Relationships: []
       }
-      chat_messages: {
-        Row: {
-          checklist_data: Json | null
-          content: string
-          created_at: string | null
-          id: string
-          role: string
-          session_id: string
-        }
-        Insert: {
-          checklist_data?: Json | null
-          content: string
-          created_at?: string | null
-          id?: string
-          role: string
-          session_id: string
-        }
-        Update: {
-          checklist_data?: Json | null
-          content?: string
-          created_at?: string | null
-          id?: string
-          role?: string
-          session_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chat_messages_session_id_fkey"
-            columns: ["session_id"]
-            isOneToOne: false
-            referencedRelation: "chat_sessions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      chat_sessions: {
-        Row: {
-          created_at: string | null
-          id: string
-          title: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          title?: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          title?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       emergency_contacts: {
         Row: {
           created_at: string | null
@@ -561,42 +502,31 @@ export type TablesUpdate<
       : never
     : never
 
-export type Enums<
-  DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+// Helper types for easier access to our specific tables
+export type AlertRow = Tables<'alerts'>;
+export type ResourceRow = Tables<'resources'>;
+export type UserProfile = Tables<'users'>;
+export type EmergencyContactRow = Tables<'emergency_contacts'>;
+export type SavedLocationRow = Tables<'saved_locations'>;
+export type TaskRow = Tables<'tasks'>;
+export type TaskCompletionRow = Tables<'tasks_completions'>;
+export type UserChecklistRow = Tables<'user_checklists'>;
+export type UserChecklistItemRow = Tables<'user_checklist_items'>;
 
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+// OnboardingData interface for user creation
+export interface OnboardingData {
+  name: string;
+  location: string;
+  household_size: number;
+  has_pets: boolean;
+  has_children: boolean;
+  has_elderly: boolean;
+  has_disabled: boolean;
+  medical_conditions: string[];
+  notification_preferences: {
+    alerts: boolean;
+    reminders: boolean;
+    weather: boolean;
+    emergency: boolean;
+  };
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
-
-export const Constants = {
-  public: {
-    Enums: {},
-  },
-} as const

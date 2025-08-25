@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, Stack } from 'expo-router';
+import { useRouter, Stack, useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
 import { useTasksStore } from '@/store/tasks-store';
 import { useUserStore } from '@/store/user-store';
 import { colors } from '@/constants/colors';
@@ -16,13 +17,22 @@ import { Plus } from 'lucide-react-native';
 export default function PrepareScreen() {
   const router = useRouter();
   const { tasks, loadTasks, getTaskProgress } = useTasksStore();
-  const { profile } = useUserStore();
+  const { profile, loadCustomChecklists } = useUserStore();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCustomChecklists, setShowCustomChecklists] = useState(false);
   
   useEffect(() => {
     loadTasks();
+    loadCustomChecklists(); // Ensure custom checklists are loaded
   }, []);
+
+  // Refresh custom checklists when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      console.log('📋 [PrepareScreen] Screen focused, refreshing custom checklists...');
+      loadCustomChecklists();
+    }, [loadCustomChecklists])
+  );
   
   const taskProgress = getTaskProgress();
   

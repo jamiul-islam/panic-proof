@@ -37,15 +37,20 @@ function InitialLayout() {
     const setupSupabaseAuth = async () => {
       if (isSignedIn && userId && userLoaded) {
         try {
-          // JWT auth disabled - using RLS with anon key instead
-          // This eliminates JWT signature validation errors
+          // Simplified auth setup - disable custom JWT for now to prevent loops
           console.log('🔧 [Layout] Using Supabase RLS with anon key (JWT auth disabled)');
           
           // Clear any existing Supabase session to ensure clean state
           await setSupabaseAuth(null);
           
-          // Note: All operations work through RLS policies with anon key
-          // No JWT validation errors will occur
+          // Set user data for the auth store
+          if (user?.emailAddresses?.[0]?.emailAddress) {
+            console.log('🔧 [Layout] Setting user data from Clerk:', {
+              userId,
+              email: user.emailAddresses[0].emailAddress
+            });
+            setUserData(userId, user.emailAddresses[0].emailAddress);
+          }
         } catch (error) {
           console.error('Error setting up Supabase auth:', error);
         }
@@ -59,7 +64,7 @@ function InitialLayout() {
     if (userLoaded) {
       setupSupabaseAuth();
     }
-  }, [isSignedIn, userId, getToken, userLoaded]);
+  }, [isSignedIn, userId, userLoaded]); // Removed user object and getToken to prevent loops
   
   // Only clear storage in development when needed - not on every launch
   useEffect(() => {
