@@ -114,7 +114,6 @@ if (__DEV__) {
     });
     return state;
   }
-};
 
 // For easy access in development console
 if (__DEV__) {
