@@ -25,7 +25,7 @@ import { spacings } from '@/constants/spacings';
 import ProfileHeader from '@/components/ProfileHeader';
 import IconWrapper from '@/components/IconWrapper';
 import ChangePasswordModal from '@/components/ChangePasswordModal';
-import LlmDownloadAlert from '@/components/LlmDownloadAlert';
+import LlmDownloadSheet from '@/components/LlmDownloadSheet';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export default function ProfileScreen() {
   const { signOut: authStoreSignOut, clearPersistedState: clearAuthData } = useAuthStore();
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
-  const [showDownloadAlert, setShowDownloadAlert] = useState(false);
+  const [showDownloadSheet, setShowDownloadSheet] = useState(false);
   
   useEffect(() => {
     loadTasks();
@@ -67,7 +67,7 @@ export default function ProfileScreen() {
   };
 
   const handleDownloadLLM = () => {
-    setShowDownloadAlert(true);
+    setShowDownloadSheet(true);
   };
   
   const handleChangePassword = () => {
@@ -235,7 +235,7 @@ export default function ProfileScreen() {
           >
             <View style={styles.menuItemLeft}>
               <IconWrapper icon={Download} size={spacings.xl} color={colors.text} />
-              <Text style={styles.menuItemText}>Download LLM Locally</Text>
+              <Text style={styles.menuItemText}>Offline AI Support</Text>
             </View>
             <IconWrapper icon={ChevronRight} size={spacings.xl} color={colors.textTertiary} />
           </TouchableOpacity>
@@ -276,9 +276,9 @@ export default function ProfileScreen() {
         onClose={() => setShowChangePasswordModal(false)}
         onSuccess={handleChangePasswordSuccess}
       />
-      <LlmDownloadAlert
-        visible={showDownloadAlert}
-        onClose={() => setShowDownloadAlert(false)}
+      <LlmDownloadSheet
+        visible={showDownloadSheet}
+        onClose={() => setShowDownloadSheet(false)}
       />
 
       
