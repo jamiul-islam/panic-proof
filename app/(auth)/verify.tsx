@@ -8,6 +8,7 @@ import { ArrowLeft } from 'lucide-react-native';
 import IconWrapper from '@/components/IconWrapper';
 import Button from '@/components/Button';
 import { useAuthStore } from '@/store/auth-store';
+import { useUserStore } from '@/store/user-store';
 import { AuthFlowHelper } from '@/utils/auth-flow';
 
 export default function VerifyScreen() {
@@ -17,6 +18,7 @@ export default function VerifyScreen() {
   const { user } = useUser();
   const router = useRouter();
   const { setAuthenticated, setOnboardingCompleted } = useAuthStore();
+  const { loadUserProfile } = useUserStore();
   const { firstName, lastName } = useLocalSearchParams<{ firstName?: string; lastName?: string }>();
   
   const [code, setCode] = useState(['', '', '', '', '', '']);
@@ -128,6 +130,9 @@ export default function VerifyScreen() {
               const supabaseUser = await AuthFlowHelper.handleSignIn(clerkUserId);
               if (supabaseUser) {
                 setOnboardingCompleted(true);
+                try {
+                  await loadUserProfile(clerkUserId);
+                } catch {}
                 router.replace('/(tabs)');
               } else {
                 // User doesn't exist in Supabase, needs onboarding

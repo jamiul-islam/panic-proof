@@ -6,6 +6,7 @@ import { spacings } from '@/constants/spacings';
 import ProgressBar from '@/components/ProgressBar';
 import Button from '@/components/Button';
 import IconWrapper from '@/components/IconWrapper';
+import { useLlmStore } from '@/store/llm-store';
 
 interface LlmDownloadSheetProps {
   visible: boolean;
@@ -15,10 +16,9 @@ interface LlmDownloadSheetProps {
 type Status = 'idle' | 'downloading' | 'ready';
 
 export default function LlmDownloadSheet({ visible, onClose }: LlmDownloadSheetProps) {
+  const { modelStatus, progress, init, downloadModel, cancelDownload, deleteModel, provider, setProvider } = useLlmStore();
   const [status, setStatus] = useState<Status>('idle');
-  const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [mode, setMode] = useState<'online' | 'offline'>('online');
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const clearTimer = () => {
@@ -31,41 +31,54 @@ export default function LlmDownloadSheet({ visible, onClose }: LlmDownloadSheetP
   const reset = () => {
     clearTimer();
     setStatus('idle');
-    setProgress(0);
     setIsPaused(false);
   };
 
+  useEffect(() => { if (visible) init(); }, [visible]);
+
+  // Keep mock animation smooth; use store progress as source of truth when available
+  const [visualProgress, setVisualProgress] = useState(0);
+
   useEffect(() => {
-    if (visible && status === 'downloading' && !isPaused && progress < 100) {
+    if (modelStatus === 'not_installed') setStatus('idle');
+    if (modelStatus === 'downloading') setStatus('downloading');
+    if (modelStatus === 'ready') setStatus('ready');
+  }, [modelStatus]);
+
+  useEffect(() => {
+    if (visible && status === 'downloading' && !isPaused && (visualProgress < 100)) {
       clearTimer();
       intervalRef.current = setInterval(() => {
-        setProgress((p) => Math.min(p + 2, 100));
+        setVisualProgress((p) => Math.min(p + 2, 100));
       }, 120);
     } else {
       clearTimer();
     }
     return () => clearTimer();
-  }, [visible, status, isPaused, progress]);
+  }, [visible, status, isPaused, visualProgress]);
 
   useEffect(() => {
     if (!visible) return;
-    if (status === 'downloading' && progress >= 100) {
+    const shownProgress = Math.max(progress || 0, visualProgress);
+    if (status === 'downloading' && shownProgress >= 100) {
       clearTimer();
       const t = setTimeout(() => {
         setStatus('ready');
       }, 250);
       return () => clearTimeout(t);
     }
-  }, [progress, status, visible]);
+  }, [progress, visualProgress, status, visible]);
 
   const startDownload = () => {
     setStatus('downloading');
-    setProgress(0);
     setIsPaused(false);
+    setVisualProgress(0);
+    // TODO: replace with real model URL and metadata
+    downloadModel('https://example.com/llm/llama-3_5-q4_k.gguf', 'llama-3_5-q4_k.gguf', { version: '0.1.0' });
   };
 
-  const handleDeleteModel = () => {
-    // Remove local model (mock) and reset state
+  const handleDeleteModel = async () => {
+    await deleteModel();
     reset();
   };
 
@@ -99,7 +112,7 @@ export default function LlmDownloadSheet({ visible, onClose }: LlmDownloadSheetP
             <IconWrapper icon={Download} size={spacings.xl} color={colors.text} />
             <Text style={styles.progressTitle}>Downloading model...</Text>
           </View>
-          <ProgressBar progress={progress} height={10} label="Progress" showPercentage />
+          <ProgressBar progress={Math.max(progress || 0, visualProgress)} height={10} label="Progress" showPercentage />
         </View>
       );
     }
@@ -130,7 +143,7 @@ export default function LlmDownloadSheet({ visible, onClose }: LlmDownloadSheetP
           />
           <Button
             title="Cancel"
-            onPress={reset}
+            onPress={async () => { await cancelDownload(); reset(); }}
             variant="danger"
             size="large"
             style={styles.action}
@@ -143,15 +156,15 @@ export default function LlmDownloadSheet({ visible, onClose }: LlmDownloadSheetP
       <View style={styles.actionsRow}>
         <Button
           title="Online"
-          onPress={() => setMode('online')}
-          variant={mode === 'online' ? 'primary' : 'outline'}
+          onPress={() => setProvider('online')}
+          variant={provider === 'online' ? 'primary' : 'outline'}
           size="large"
           style={styles.action}
         />
         <Button
           title="Offline"
-          onPress={() => setMode('offline')}
-          variant={mode === 'offline' ? 'primary' : 'outline'}
+          onPress={() => setProvider('local')}
+          variant={provider === 'local' ? 'primary' : 'outline'}
           size="large"
           style={styles.action}
         />
