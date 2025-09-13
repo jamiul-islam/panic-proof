@@ -15,12 +15,14 @@ export default {
     },
     ios: {
       supportsTablet: true,
+      bundleIdentifier: "com.anonymous.panicproof",
       infoPlist: {
         NSPhotoLibraryUsageDescription: "We use your photo library so you can select a profile picture.",
         NSLocationWhenInUseUsageDescription: "We use your location to save and display your saved locations for emergency preparedness.",
       }
     },
     android: {
+      package: "com.anonymous.panicproof",
       permissions: [
         "ACCESS_FINE_LOCATION"
       ],

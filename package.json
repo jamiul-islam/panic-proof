@@ -11,7 +11,8 @@
     "run:ios": "expo run:ios",
     "run:android": "expo run:android",
     "start-web": "expo start --web --tunnel",
-    "start-web-dev": "DEBUG=expo* expo start --web --tunnel"
+    "start-web-dev": "DEBUG=expo* expo start --web --tunnel",
+    "android": "expo run:android"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^2.9.11",
