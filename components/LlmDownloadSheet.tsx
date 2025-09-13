@@ -18,7 +18,7 @@ export default function LlmDownloadSheet({ visible, onClose }: LlmDownloadSheetP
   const [status, setStatus] = useState<Status>('idle');
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [mode, setMode] = useState<'online' | 'offline'>('offline');
+  const [mode, setMode] = useState<'online' | 'offline'>('online');
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const clearTimer = () => {
@@ -162,20 +162,23 @@ export default function LlmDownloadSheet({ visible, onClose }: LlmDownloadSheetP
   if (!visible) return null;
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <View style={styles.overlay}>
-        <View style={styles.sheet}>
-          <View style={styles.grabber} />
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle={Platform.OS === 'ios' ? 'pageSheet' : 'fullScreen'}
+      onRequestClose={onClose}
+    >
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Offline AI Support</Text>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <IconWrapper icon={X} size={22} color={colors.textTertiary} />
+            <IconWrapper icon={X} size={24} color={colors.text} />
           </TouchableOpacity>
-
+        </View>
+        <View style={styles.content}>
           {renderTopContent()}
           {renderMiddleContent()}
-
-          <View style={styles.bottomArea}>
-            {renderBottomActions()}
-          </View>
+          <View style={styles.bottomArea}>{renderBottomActions()}</View>
         </View>
       </View>
     </Modal>
@@ -183,32 +186,32 @@ export default function LlmDownloadSheet({ visible, onClose }: LlmDownloadSheetP
 }
 
 const styles = StyleSheet.create({
-  overlay: {
+  container: {
     flex: 1,
-    backgroundColor: 'transparent',
-    justifyContent: 'flex-end',
+    backgroundColor: colors.background,
   },
-  sheet: {
-    backgroundColor: colors.card,
-    borderTopLeftRadius: spacings.borderRadius.lg,
-    borderTopRightRadius: spacings.borderRadius.lg,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: spacings.screenPadding,
-    paddingTop: spacings.lg,
-    paddingBottom: spacings.xxxl,
+    paddingTop: spacings.xxl,
+    paddingBottom: spacings.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.backgroundSecondary,
+    backgroundColor: colors.card,
   },
-  grabber: {
-    alignSelf: 'center',
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.backgroundTertiary,
-    marginBottom: spacings.md,
+  title: {
+    fontSize: spacings.fontSize.xl,
+    fontWeight: '600',
+    color: colors.text,
   },
   closeButton: {
-    position: 'absolute',
-    right: spacings.screenPadding,
-    top: spacings.lg,
     padding: spacings.xs,
+  },
+  content: {
+    flex: 1,
+    padding: spacings.screenPadding,
   },
   topText: {
     textAlign: 'center',
