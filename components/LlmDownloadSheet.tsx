@@ -73,8 +73,8 @@ export default function LlmDownloadSheet({ visible, onClose }: LlmDownloadSheetP
     setStatus('downloading');
     setIsPaused(false);
     setVisualProgress(0);
-    // TODO: replace with real model URL and metadata
-    downloadModel('https://example.com/llm/llama-3_5-q4_k.gguf', 'llama-3_5-q4_k.gguf', { version: '0.1.0' });
+    // Download ExecuTorch example model (Llama 3.2 1B SpinQuant)
+    downloadModel('https://huggingface.co/software-mansion/react-native-executorch-llama-3.2/resolve/main/llama-3.2-1B/spinquant/llama3_2_spinquant.pte', 'llama3_2_spinquant.pte', { version: '0.1.0' });
   };
 
   const handleDeleteModel = async () => {
@@ -95,7 +95,7 @@ export default function LlmDownloadSheet({ visible, onClose }: LlmDownloadSheetP
           <View style={styles.modelBadge}>
             <Text style={styles.modelBadgeText}>LLM</Text>
           </View>
-          <Text style={styles.modelName}>llama-3.5</Text>
+          <Text style={styles.modelName}>Llama 3.2 1B (SpinQuant)</Text>
         </View>
         <TouchableOpacity onPress={handleDeleteModel} style={styles.trashButton}>
           <IconWrapper icon={Trash2} size={20} color={colors.danger} />

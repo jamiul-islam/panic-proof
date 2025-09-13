@@ -1,10 +1,4 @@
-import type { DownloadResumable } from 'expo-file-system';
-
-// Lazy import FileSystem to avoid requiring the module until needed
-async function getFS() {
-  const FileSystem = await import('expo-file-system');
-  return FileSystem;
-}
+import * as FileSystem from 'expo-file-system';
 
 export type ModelMetadata = {
   filename: string;
@@ -18,16 +12,14 @@ export const MODEL_DIR = 'llm';
 export const METADATA_FILE = 'metadata.json';
 
 export async function getModelDirUri() {
-  const FS = await getFS();
-  return FS.documentDirectory + MODEL_DIR + '/';
+  return (FileSystem.documentDirectory || FileSystem.cacheDirectory || '') + MODEL_DIR + '/';
 }
 
 export async function ensureModelDir() {
-  const FS = await getFS();
   const dir = await getModelDirUri();
-  const info = await FS.getInfoAsync(dir);
+  const info = await FileSystem.getInfoAsync(dir);
   if (!info.exists) {
-    await FS.makeDirectoryAsync(dir, { intermediates: true });
+    await FileSystem.makeDirectoryAsync(dir, { intermediates: true });
   }
   return dir;
 }
@@ -38,13 +30,12 @@ export async function getModelPath(filename: string) {
 }
 
 export async function getMetadata(): Promise<ModelMetadata | null> {
-  const FS = await getFS();
   const dir = await getModelDirUri();
   const path = dir + METADATA_FILE;
-  const info = await FS.getInfoAsync(path);
+  const info = await FileSystem.getInfoAsync(path);
   if (!info.exists) return null;
   try {
-    const txt = await FS.readAsStringAsync(path);
+    const txt = await FileSystem.readAsStringAsync(path);
     return JSON.parse(txt);
   } catch {
     return null;
@@ -52,28 +43,25 @@ export async function getMetadata(): Promise<ModelMetadata | null> {
 }
 
 export async function setMetadata(meta: ModelMetadata) {
-  const FS = await getFS();
   const dir = await ensureModelDir();
   const path = dir + METADATA_FILE;
-  await FS.writeAsStringAsync(path, JSON.stringify(meta));
+  await FileSystem.writeAsStringAsync(path, JSON.stringify(meta));
 }
 
 export async function clearMetadata() {
-  const FS = await getFS();
   const dir = await ensureModelDir();
   const path = dir + METADATA_FILE;
   try {
-    await FS.deleteAsync(path, { idempotent: true });
+    await FileSystem.deleteAsync(path, { idempotent: true });
   } catch {}
 }
 
 export type DownloadHandle = {
-  download: DownloadResumable;
+  download: FileSystem.DownloadResumable;
   cancel: () => Promise<void>;
 };
 
 export async function startDownload(url: string, targetFilename: string, onProgress?: (pct: number) => void): Promise<DownloadHandle> {
-  const FS = await getFS();
   await ensureModelDir();
   const dest = await getModelPath(targetFilename);
   const callback = onProgress
@@ -83,7 +71,7 @@ export async function startDownload(url: string, targetFilename: string, onProgr
         }
       }
     : undefined;
-  const download = FS.createDownloadResumable(url, dest, {}, callback as any);
+  const download = FileSystem.createDownloadResumable(url, dest, {}, callback as any);
   return {
     download,
     cancel: async () => {
@@ -91,7 +79,7 @@ export async function startDownload(url: string, targetFilename: string, onProgr
         await download.pauseAsync();
       } catch {}
       try {
-        await FS.deleteAsync(dest, { idempotent: true });
+        await FileSystem.deleteAsync(dest, { idempotent: true });
       } catch {}
     },
   };
@@ -99,9 +87,8 @@ export async function startDownload(url: string, targetFilename: string, onProgr
 
 export async function verifyModel(meta: ModelMetadata): Promise<boolean> {
   // Basic verification: file exists and (optionally) matches size
-  const FS = await getFS();
   const path = await getModelPath(meta.filename);
-  const info = await FS.getInfoAsync(path);
+  const info = await FileSystem.getInfoAsync(path);
   if (!info.exists) return false;
   if (meta.size && info.size != null && info.size !== meta.size) return false;
   // SHA-256 verification could be added with expo-crypto if desired
@@ -109,10 +96,9 @@ export async function verifyModel(meta: ModelMetadata): Promise<boolean> {
 }
 
 export async function removeModel(meta: ModelMetadata) {
-  const FS = await getFS();
   const path = await getModelPath(meta.filename);
   try {
-    await FS.deleteAsync(path, { idempotent: true });
+    await FileSystem.deleteAsync(path, { idempotent: true });
   } catch {}
   await clearMetadata();
 }
