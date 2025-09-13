@@ -36,8 +36,7 @@ export default function LlmDownloadSheet({ visible, onClose }: LlmDownloadSheetP
 
   useEffect(() => { if (visible) init(); }, [visible]);
 
-  // Keep mock animation smooth; use store progress as source of truth when available
-  const [visualProgress, setVisualProgress] = useState(0);
+  // Use real download progress from the store only (no mock animation)
 
   useEffect(() => {
     if (modelStatus === 'not_installed') setStatus('idle');
@@ -45,34 +44,12 @@ export default function LlmDownloadSheet({ visible, onClose }: LlmDownloadSheetP
     if (modelStatus === 'ready') setStatus('ready');
   }, [modelStatus]);
 
-  useEffect(() => {
-    if (visible && status === 'downloading' && !isPaused && (visualProgress < 100)) {
-      clearTimer();
-      intervalRef.current = setInterval(() => {
-        setVisualProgress((p) => Math.min(p + 2, 100));
-      }, 120);
-    } else {
-      clearTimer();
-    }
-    return () => clearTimer();
-  }, [visible, status, isPaused, visualProgress]);
-
-  useEffect(() => {
-    if (!visible) return;
-    const shownProgress = Math.max(progress || 0, visualProgress);
-    if (status === 'downloading' && shownProgress >= 100) {
-      clearTimer();
-      const t = setTimeout(() => {
-        setStatus('ready');
-      }, 250);
-      return () => clearTimeout(t);
-    }
-  }, [progress, visualProgress, status, visible]);
+  // No timer-based progress; rely on llm-store to set progress and status
 
   const startDownload = () => {
+    console.log('[LLM Download] start');
     setStatus('downloading');
     setIsPaused(false);
-    setVisualProgress(0);
     // Download ExecuTorch example model (Llama 3.2 1B SpinQuant)
     downloadModel('https://huggingface.co/software-mansion/react-native-executorch-llama-3.2/resolve/main/llama-3.2-1B/spinquant/llama3_2_spinquant.pte', 'llama3_2_spinquant.pte', { version: '0.1.0' });
   };
@@ -112,7 +89,7 @@ export default function LlmDownloadSheet({ visible, onClose }: LlmDownloadSheetP
             <IconWrapper icon={Download} size={spacings.xl} color={colors.text} />
             <Text style={styles.progressTitle}>Downloading model...</Text>
           </View>
-          <ProgressBar progress={Math.max(progress || 0, visualProgress)} height={10} label="Progress" showPercentage />
+          <ProgressBar progress={progress || 0} height={10} label="Progress" showPercentage />
         </View>
       );
     }
