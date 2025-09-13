@@ -15,7 +15,7 @@ import { spacings } from '@/constants/spacings';
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'success';
   size?: 'small' | 'medium' | 'large';
   isLoading?: boolean;
   disabled?: boolean;
@@ -46,6 +46,8 @@ export default function Button({
         return colors.primary;
       case 'secondary':
         return colors.secondary;
+      case 'success':
+        return colors.success;
       case 'outline':
         return 'transparent';
       case 'danger':
@@ -61,6 +63,7 @@ export default function Button({
     switch (variant) {
       case 'outline':
         return colors.primary;
+      case 'success':
       case 'primary':
       case 'secondary':
       case 'danger':

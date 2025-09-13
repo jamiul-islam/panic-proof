@@ -19,11 +19,13 @@ import {
   BookOpen,
   Lock
 } from 'lucide-react-native';
+import { Download } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
 import { spacings } from '@/constants/spacings';
 import ProfileHeader from '@/components/ProfileHeader';
 import IconWrapper from '@/components/IconWrapper';
 import ChangePasswordModal from '@/components/ChangePasswordModal';
+import LlmDownloadAlert from '@/components/LlmDownloadAlert';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -35,6 +37,7 @@ export default function ProfileScreen() {
   const { signOut: authStoreSignOut, clearPersistedState: clearAuthData } = useAuthStore();
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [showDownloadAlert, setShowDownloadAlert] = useState(false);
   
   useEffect(() => {
     loadTasks();
@@ -61,6 +64,10 @@ export default function ProfileScreen() {
   
   const handleResources = () => {
     router.push('/resources');
+  };
+
+  const handleDownloadLLM = () => {
+    setShowDownloadAlert(true);
   };
   
   const handleChangePassword = () => {
@@ -221,6 +228,19 @@ export default function ProfileScreen() {
             </View>
             <IconWrapper icon={ChevronRight} size={spacings.xl} color={colors.textTertiary} />
           </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem} 
+            onPress={handleDownloadLLM}
+          >
+            <View style={styles.menuItemLeft}>
+              <IconWrapper icon={Download} size={spacings.xl} color={colors.text} />
+              <Text style={styles.menuItemText}>Download LLM Locally</Text>
+            </View>
+            <IconWrapper icon={ChevronRight} size={spacings.xl} color={colors.textTertiary} />
+          </TouchableOpacity>
+
+          {/* Inline content removed; alert-like overlay used instead */}
         </View>
         
         <View style={styles.section}>
@@ -256,6 +276,12 @@ export default function ProfileScreen() {
         onClose={() => setShowChangePasswordModal(false)}
         onSuccess={handleChangePasswordSuccess}
       />
+      <LlmDownloadAlert
+        visible={showDownloadAlert}
+        onClose={() => setShowDownloadAlert(false)}
+      />
+
+      
     </SafeAreaView>
   );
 }
