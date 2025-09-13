@@ -7,6 +7,9 @@
   "scripts": {
     "start": "expo start",
     "ios": "expo start ios",
+    "prebuild": "expo prebuild",
+    "run:ios": "expo run:ios",
+    "run:android": "expo run:android",
     "start-web": "expo start --web --tunnel",
     "start-web-dev": "DEBUG=expo* expo start --web --tunnel"
   },
@@ -20,6 +23,7 @@
     "expo": "~52.0.47",
     "expo-blur": "~14.0.1",
     "expo-constants": "~17.0.8",
+    "expo-dev-client": "~5.0.20",
     "expo-font": "~13.0.4",
     "expo-haptics": "~14.0.0",
     "expo-image": "~2.0.7",

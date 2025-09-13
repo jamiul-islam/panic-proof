@@ -14,9 +14,16 @@ export default {
       backgroundColor: "#ffffff"
     },
     ios: {
-      supportsTablet: true
+      supportsTablet: true,
+      infoPlist: {
+        NSPhotoLibraryUsageDescription: "We use your photo library so you can select a profile picture.",
+        NSLocationWhenInUseUsageDescription: "We use your location to save and display your saved locations for emergency preparedness.",
+      }
     },
     android: {
+      permissions: [
+        "ACCESS_FINE_LOCATION"
+      ],
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff"
