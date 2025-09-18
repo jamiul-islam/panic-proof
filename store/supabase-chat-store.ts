@@ -4,6 +4,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import { GeminiChatService } from '../services/gemini-service';
+import { getSelectedService } from './llm-store';
 import { useAuthStore } from './auth-store';
 import { useUserStore } from './user-store';
 import type { 
@@ -234,9 +235,10 @@ export const useSupabaseChatStore = create<SupabaseChatStore>()(
             // Show typing indicator
             set({ isTyping: true });
 
-            // Get AI response
+            // Get AI response (selected provider)
             console.log('🤖 Getting AI response...');
-            const aiResponse = await geminiService.sendMessage(text, currentUserId);
+            const service = getSelectedService();
+            const aiResponse = await service.sendMessage(text, currentUserId);
             
             console.log('✅ AI response received, tokens:', aiResponse.tokensUsed);
 
@@ -282,9 +284,10 @@ export const useSupabaseChatStore = create<SupabaseChatStore>()(
           // Show typing indicator
           set({ isTyping: true });
 
-          // Get AI response
+          // Get AI response (selected provider)
           console.log('🤖 Getting AI response...');
-          const aiResponse = await geminiService.sendMessage(text, userUuid);
+          const service = getSelectedService();
+          const aiResponse = await service.sendMessage(text, userUuid);
           
           console.log('✅ AI response received, tokens:', aiResponse.tokensUsed);
 

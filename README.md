@@ -1,64 +1,147 @@
 # Panic Proof ✌️
 
-## A gamified AI-powered disaster preparedness and emergency response app
+AI-powered disaster preparedness and emergency response — now with offline Local LLM support and Expo Development Build.
 
-### Why Panic Proof ✌️?
+## Table of Contents
 
-In an increasingly unpredictable world where natural and man-made disasters are becoming more frequent and severe, being prepared can make all the difference. Panic Proof was born out of the need to provide a comprehensive, user-friendly tool that empowers individuals and communities to take proactive measures before disaster strikes, respond effectively during emergencies, and recover more quickly in the aftermath.
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Architecture Highlights](#architecture-highlights)
+- [Getting Started](#getting-started)
+- [Development Build (Expo Dev Client)](#development-build-expo-dev-client)
+- [Offline AI (Local LLM)](#offline-ai-local-llm)
+- [Screenshots](#screenshots)
+- [Acknowledgments](#acknowledgments)
 
-Our mission is simple: to save lives and reduce suffering by making disaster preparedness accessible to everyone, regardless of their technical expertise or prior knowledge of emergency management.
+## Overview
+
+Panic Proof helps people prepare for and respond to disasters with an AI assistant, location-aware alerts, and gamified checklists. The app works online with Google Gemini and offline using a local model via ExecuTorch.
 
 ## Features
 
-### 🤖 AI-Powered Emergency Assistant
-- Chat with an intelligent AI assistant specialized in disaster preparedness
-- Get personalized advice and actionable checklists based on your specific needs
-- Save AI-generated checklists directly to your preparation list
-- Real-time responses with context-aware emergency guidance
+- AI Assistant: Structured, actionable checklists for emergency prep
+- Smart Alerts: Location-based disaster updates and guidance
+- Gamified Checklists: Progress, points, and achievements
+- Locations & Contacts: Save places, routes, and emergency contacts
+- Resource Library: Curated content for major disaster types
+- Profiles: Household needs and personalized plans
 
-### 🚨 Smart Alert System
-- Receive immediate notifications about impending disasters in your area
-- Customize alert preferences based on location and disaster types
-- Access detailed information about each alert, including severity levels and recommended actions
-- Location-based risk assessment and emergency instructions
+## Tech Stack
 
-### 📋 Gamified Preparation Tasks
-- Complete disaster-specific preparation checklists with point rewards
-- Track your preparedness progress with intuitive visual indicators
-- Unlock badges and achievements for completing preparedness milestones
-- Custom checklist creation and management system
+- React Native + Expo (SDK 52)
+- Expo Router, Expo Modules, Expo Dev Client
+- TypeScript, Zustand (state + persistence)
+- Supabase (Postgres, RLS, real-time), Clerk (Auth)
+- AI: Google Gemini (online) + ExecuTorch (offline local LLM)
 
-### 🗺️ Smart Location Management
-- Save multiple locations (home, work, school, family members) for targeted alerts
-- Set primary location for personalized emergency planning
-- Location-specific disaster risk assessments
-- Manage evacuation routes and safety information for each location
+## Architecture Highlights
 
-### � Emergency Contact System
-- Store and organize important emergency contacts with relationship tags
-- Quick access to emergency services with one-tap calling
-- Local and out-of-state contact management
-- Integrated contact verification and backup systems
+- Development Build first-class: We use Expo Dev Client for native modules (image-picker, location, secure-store, executorch).
+- LLM Provider Abstraction: `online | local | auto` with a small service layer and a zustand store to switch providers.
+- Model Lifecycle: Download → verify → persist metadata → load for inference. Stored under app documents directory (`llm/`).
+- Consistent Chat Pipeline: Online and offline providers produce identical structured JSON for checklists.
 
-### 📚 Comprehensive Resource Library
-- Browse curated disaster preparedness resources by category
-- Access emergency services, medical facilities, and shelter information
-- Educational content covering all major disaster types
-- Offline-available guides for emergency situations
+## Getting Started
 
-### 👤 Personalized User Profiles
-- Detailed household profiles with specific needs (pets, children, elderly, medical conditions)
-- Customized preparedness plans based on family composition
-- Secure profile management with Clerk authentication
-- Two-factor authentication and privacy controls
+Prerequisites
 
-### 💬 Real-time Chat Interface
-- Seamless chat experience with typing indicators
-- Message history persistence across sessions
-- Structured AI responses with actionable checklists
-- Cross-platform message synchronization
+- Node.js 18+
+- Xcode (iOS) and/or Android Studio
+- CocoaPods (macOS): `sudo gem install cocoapods`
+- Accounts: Supabase, Clerk, Google AI Studio
 
-## App Screenshots
+Install
+
+1. Clone and install
+
+```bash
+git clone https://github.com/jamiul-islam/panic-proof.git
+cd panic-proof
+npm install
+# or
+bun install
+```
+
+1. Environment variables (create `.env.local`)
+
+```bash
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+EXPO_PUBLIC_SUPABASE_URL=your_supabase_project_url
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+EXPO_PUBLIC_GEMINI_API_KEY=your_google_gemini_api_key
+```
+
+1. Supabase setup
+
+- Apply schema and enable RLS as per project docs. Ensure JWT from Clerk maps to your user row.
+
+## Development Build (Expo Dev Client)
+
+```bash
+npx expo prebuild
+```
+
+First run builds a native dev client with required modules. Afterwards, you iterate with fast refresh via `expo start`.
+
+iOS (Simulator)
+
+```bash
+npm run run:ios
+# or
+bun run run:ios
+```
+
+Android (Emulator)
+
+```bash
+npm run run:android
+# or
+bun run run:android
+```
+
+Start the bundler (reuse for both platforms)
+
+```bash
+npm start
+# or
+bun start
+```
+
+Notes
+
+- We use `app.config.js` (no `app.json`) to avoid config drift.
+- Hermes/new architecture enabled by default via Expo SDK 52.
+- If native dependencies change, rebuild the dev client with the same commands above.
+
+## Offline AI (Local LLM)
+
+The app supports full offline inference using ExecuTorch.
+
+What’s included
+
+- Provider toggle (Online/Offline) via the profile modal
+- Model download with resumable progress and cancel
+- Metadata persistence (`metadata.json`) and verification on launch
+- Consistent structured JSON responses across providers
+
+How to use
+
+1) Open Profile → Offline AI Support
+2) Select “Offline” and download the model when prompted
+3) After “Ready,” start a chat — checklists are generated locally
+
+Storage & Simulator notes
+
+- Models are stored under the app documents directory at `llm/` with a `metadata.json` file.
+- On iOS Simulator, you can inspect/remove files via Xcode → Devices and Simulators → select the app → Download Container.
+- Reinstalling the app or clearing data removes the model and metadata.
+
+Fallbacks & errors
+
+- If verification fails or inference errors occur, the app guides you to retry or switch back to Online.
+
+## Screenshots
 
 <table>
   <tr>
@@ -73,189 +156,6 @@ Our mission is simple: to save lives and reduce suffering by making disaster pre
   </tr>
 </table>
 
-## Tech Stack
-
-### Frontend & Mobile
-- **Framework**: React Native with Expo (SDK 51+)
-- **Language**: TypeScript for type safety and better developer experience
-- **Navigation**: Expo Router with file-based routing system
-- **UI Components**: Custom component library with consistent design system
-- **Styling**: React Native StyleSheet with custom colors and spacing constants
-
-### State Management
-- **Primary Store**: Zustand for lightweight, scalable state management
-- **Persistence**: AsyncStorage integration for offline data persistence
-- **Store Architecture**: Modular stores (auth, user, tasks, alerts, chat, disasters, resources)
-
-### Backend & Database
-- **Database**: Supabase PostgreSQL with real-time capabilities
-- **Authentication**: Clerk for secure user authentication and management
-- **Security**: Row Level Security (RLS) policies for data protection
-- **File Storage**: Supabase Storage for user assets and media
-
-### AI & External Services
-- **AI Assistant**: Google Gemini API for intelligent emergency preparedness advice
-- **Smart Features**: Context-aware checklist generation and personalized recommendations
-- **Data Processing**: Structured AI responses with actionable insights
-
-### Development & Deployment
-- **Build Tool**: Expo EAS Build for cross-platform compilation
-- **Version Control**: Git with GitHub integration
-- **Environment**: Multiple environment support (development, staging, production)
-- **Package Manager**: npm with bun support for faster installations
-
-### Architecture Patterns
-- **Clean Architecture**: Separation of concerns with services, stores, and components
-- **Error Boundaries**: Comprehensive error handling and user feedback
-- **Offline-First**: Data persistence and graceful offline functionality
-- **Real-time Sync**: Cross-store data synchronization and live updates
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v18 or later)
-- Expo CLI (`npm install -g @expo/cli`)
-- iOS Simulator (for iOS development) or Android Studio (for Android development)
-- Supabase account for database services
-- Clerk account for authentication services
-- Google AI Studio account for Gemini API access
-
-### Installation
-
-1. Clone the repository
-```bash
-git clone https://github.com/jamiul-islam/panic-proof.git
-cd panic-proof
-```
-
-2. Install dependencies
-```bash
-npm install
-# or if you prefer bun for faster installation
-bun install
-```
-
-3. Set up environment variables
-```bash
-# Create a .env.local file in the root directory with:
-EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-EXPO_PUBLIC_SUPABASE_URL=your_supabase_project_url
-EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-EXPO_PUBLIC_GEMINI_API_KEY=your_google_gemini_api_key
-```
-
-4. Set up Supabase database
-```bash
-# Run the database schema and seed data (if available)
-# Make sure to enable RLS policies for security
-```
-
-5. Start the development server
-```bash
-bun start
-```
-
-6. Run on your preferred platform
-```bash
-# For iOS Simulator
-i               # press i for ios simulator
-# or
-bun start --ios
-
-# For Android Emulator
-bun start --android
-
-# For web (limited functionality)
-bun start --web
-```
-
-## Key Features Implemented
-
-### 🗄️ **Database Architecture**
-- **8+ Supabase tables** with complex relationships
-- **Row Level Security (RLS)** for data protection  
-- **Real-time synchronization** between app and database
-- **UUID-based user identification** with Clerk integration
-
-### 🤖 **AI Integration**
-- **Google Gemini AI** for emergency preparedness advice
-- **Structured AI responses** with actionable checklists
-- **Context-aware recommendations** based on user profile
-- **Dynamic checklist generation** for different disaster types
-
-### 🔐 **Security & Authentication**
-- **Clerk authentication** with JWT tokens
-- **Multi-factor authentication** support
-- **Secure profile management** with encrypted data
-- **Cross-platform session management**
-
-### 📱 **Mobile Experience**
-- **Native performance** with Expo React Native
-- **Offline-first architecture** with local data persistence
-- **Cross-screen data synchronization** 
-- **Responsive design** for all screen sizes
-
-### 🎮 **Gamification Elements**
-- **Point-based reward system** for completed tasks
-- **Progress tracking** with visual indicators  
-- **Achievement badges** for preparedness milestones
-- **Category-based filtering** and organization
-
-## Contributing
-
-This project is part of a University of London Final Project. While contributions are welcome, please note that this is primarily an academic project demonstrating full-stack mobile development capabilities.
-
-If you'd like to contribute:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-- Follow TypeScript best practices and maintain type safety
-- Ensure all new features include proper error handling
-- Test on both iOS and Android platforms
-- Update documentation for any new features or API changes
-
-## Project Status
-
-✅ **Core Features Complete**
-- AI-powered emergency assistance with Gemini integration
-- Full authentication system with Clerk
-- Comprehensive database with Supabase RLS
-- Real-time chat interface with persistent storage
-- Gamified task and checklist system
-- Multi-location emergency planning
-- Contact and resource management
-
-🔧 **Known Issues**
-- Minor TypeScript error in `utils/dev-helpers.ts` (duplicate code block)
-- Expo configuration conflicts (app.json vs app.config.js)
-- Missing peer dependency: expo-auth-session
-
-## Performance & Scalability
-
-- **Database**: Optimized queries with proper indexing
-- **Caching**: Local storage with AsyncStorage for offline functionality  
-- **State Management**: Efficient Zustand stores with selective persistence
-- **Real-time Updates**: Supabase real-time subscriptions for live data
-- **Error Handling**: Comprehensive error boundaries and user feedback
-
-## Security Features
-
-- **Row Level Security**: All Supabase tables protected with RLS policies
-- **Authentication**: Secure Clerk integration with JWT tokens
-- **Data Validation**: Input sanitization and type checking throughout
-- **API Security**: Environment-based configuration management
-
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Acknowledgments
 
 ### Academic Institution
@@ -268,6 +168,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Clerk** - For robust authentication and user management services
 - **Google AI** - For Gemini API enabling intelligent emergency assistance
 - **Zustand Team** - For lightweight and efficient state management
+- **React Native ExecuTorch team** - For blazingly fast local llm support
 
 ### Open Source Community
 - **React Native Community** - For continuous improvements and extensive ecosystem

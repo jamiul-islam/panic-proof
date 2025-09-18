@@ -7,28 +7,37 @@
   "scripts": {
     "start": "expo start",
     "ios": "expo start ios",
+    "prebuild": "expo prebuild",
+    "run:ios": "expo run:ios",
+    "run:android": "expo run:android",
     "start-web": "expo start --web --tunnel",
-    "start-web-dev": "DEBUG=expo* expo start --web --tunnel"
+    "start-web-dev": "DEBUG=expo* expo start --web --tunnel",
+    "android": "expo run:android"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^2.9.11",
-    "@expo/vector-icons": "^14.0.2",
+    "@expo/vector-icons": "~14.0.4",
     "@google/genai": "^1.15.0",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-navigation/native": "^7.0.0",
     "@supabase/supabase-js": "^2.55.0",
     "expo": "~52.0.47",
+    "expo-application": "~6.0.0",
+    "expo-auth-session": "~6.0.3",
     "expo-blur": "~14.0.1",
     "expo-constants": "~17.0.8",
+    "expo-dev-client": "~5.0.20",
+    "expo-file-system": "~18.0.12",
     "expo-font": "~13.0.4",
     "expo-haptics": "~14.0.0",
     "expo-image": "~2.0.7",
     "expo-image-picker": "~16.0.6",
-    "expo-linear-gradient": "^14.0.1",
+    "expo-linear-gradient": "~14.0.2",
     "expo-linking": "~7.0.3",
     "expo-location": "~18.0.10",
+    "expo-modules-core": "~2.2.3",
     "expo-router": "~4.0.21",
-    "expo-secure-store": "^14.0.1",
+    "expo-secure-store": "~14.0.1",
     "expo-splash-screen": "~0.29.24",
     "expo-status-bar": "~2.0.0",
     "expo-symbols": "~0.2.0",
@@ -39,6 +48,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.9",
+    "react-native-executorch": "^0.5.4",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.4.0",
@@ -52,5 +62,8 @@
     "@types/react": "~18.3.12",
     "typescript": "~5.8.2"
   },
-  "private": true
+  "private": true,
+  "overrides": {
+    "glob": "^10.3.10"
+  }
 }

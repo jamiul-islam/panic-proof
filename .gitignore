@@ -42,3 +42,7 @@ yarn-error.*
 tasks/
 project-plan/
 docs/
+
+# development build
+android/
+ios/

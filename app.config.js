@@ -10,19 +10,27 @@ export default {
     newArchEnabled: true,
     splash: {
       image: "./assets/images/splash.png",
-      resizeMode: "contain",
       backgroundColor: "#ffffff"
     },
     ios: {
-      supportsTablet: true
+      supportsTablet: true,
+      bundleIdentifier: "com.anonymous.panicproof",
+      infoPlist: {
+        NSPhotoLibraryUsageDescription: "We use your photo library so you can select a profile picture.",
+        NSLocationWhenInUseUsageDescription: "We use your location to save and display your saved locations for emergency preparedness.",
+      }
     },
     android: {
+      package: "com.anonymous.panicproof",
+      permissions: [
+        "ACCESS_FINE_LOCATION"
+      ],
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff"
       }
     },
-    plugins: ["expo-router"],
+    plugins: ["expo-router", "expo-secure-store"],
     experiments: {
       typedRoutes: true
     },
