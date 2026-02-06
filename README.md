@@ -1,6 +1,6 @@
 # Panic Proof ✌️
 
-AI-powered disaster preparedness and emergency response — now with offline Local LLM support and Expo Development Build.
+AI-powered multimodal disaster preparedness and emergency response — now with offline Local LLM support and Expo Development Build.
 
 ## Table of Contents
 
